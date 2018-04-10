@@ -115,7 +115,7 @@ makes the process of symlinking everything much easir (you just gotta type =stow
   ;; I need to set this var because I use stow
   ;; If you have your .emacs.d in the default location
   ;; just set this var to "~/.emacs.d/"
-  (setq user-emacs-directory "~/.dotfiles/emacs/.emacs.d/")
+(setq user-emacs-directory "~/.emacs.d/")
 
   (defun tangle-init ()
     (interactive)
