@@ -50,8 +50,8 @@ edebug in the [[http://www.gnu.org/software/emacs/manual/html_node/elisp/Edebug.
 :CUSTOM_ID: meta
 :END:
 
-All changes to the configuration should be done in =init.org=, not in =init.el=.
-Any changes in the =init.el= will be overwritten by saving =init.org=.
+All changes to the configuration should be done in =README.org=, not in =init.el=.
+Any changes in the =init.el= will be overwritten by saving =README.org=.
 
 Emacs can't load =.org=-files directly, but =org-mode= provides functions to
 extract the code blocks and write them to a file. There are multiple ways of
@@ -67,7 +67,7 @@ that is loaded. It looks like this:
   ;; We can't tangle without org!
   (require 'org)
   ;; Open the configuration
-  (find-file (concat user-emacs-directory "init.org"))
+  (find-file (concat user-emacs-directory "README.org"))
   ;; tangle it
   (org-babel-tangle)
   ;; load it
@@ -94,7 +94,7 @@ again with:
 #+END_SRC
 
 The =init.el= should (after the first run) mirror the source blocks in the
-=init.org=. We can use =C-c C-v t= to run =org-babel-tangle=, which extracts the
+=README.org=. We can use =C-c C-v t= to run =org-babel-tangle=, which extracts the
 code blocks from the current file into a source-specific file (in this case a
 =.el=-file).
 
@@ -119,10 +119,10 @@ makes the process of symlinking everything much easir (you just gotta type =stow
 
   (defun tangle-init ()
     (interactive)
-    "If the current buffer is 'init.org' the code-blocks are
+    "If the current buffer is 'README.org' the code-blocks are
   tangled, and the tangled file is compiled."
     (when (equal (buffer-file-name)
-                 (expand-file-name (concat user-emacs-directory "init.org")))
+                 (expand-file-name (concat user-emacs-directory "README.org")))
       ;; Avoid running hooks when tangling.
       (let ((prog-mode-hook nil))
         (org-babel-tangle)
@@ -132,7 +132,7 @@ makes the process of symlinking everything much easir (you just gotta type =stow
     (interactive)
     "Reload the configuration for Emacs."
     (save-buffer)
-    (org-babel-tangle-file (concat user-emacs-directory "init.org"))
+    (org-babel-tangle-file (concat user-emacs-directory "README.org"))
     (byte-compile-file (concat user-emacs-directory "init.el")))
 
   (global-set-key (kbd "C-x r r") 'reload-config)
