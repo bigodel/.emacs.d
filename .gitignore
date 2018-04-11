@@ -1,7 +1,6 @@
 *
 !.gitignore
+!init.org
 !README.org
 !firstInit.el
 !tramp
-!eshell/alias
-!alias
