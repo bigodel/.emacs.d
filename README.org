@@ -930,8 +930,8 @@ configuration with =setq='s.
     '(org-load-modules-maybe t))
   (eval-after-load "org"
     '(require 'ox-md nil t))
-  (eval-after-load 'org
-    '(require 'ox-pandoc))
+  ;; (eval-after-load 'org
+      ;; '(require 'ox-pandoc))
 
   ;; default options for all output formats
   (setq org-pandoc-options '((standalone . t)))

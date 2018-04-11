@@ -1,0 +1,6 @@
+alias x (my/delete-single-window)
+alias e exit
+alias la ls -la
+alias l ls -l
+alias srcx xrdb -load ~/.Xdefaults
+alias .. cd ..
