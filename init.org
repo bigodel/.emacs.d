@@ -50,8 +50,8 @@ edebug in the [[http://www.gnu.org/software/emacs/manual/html_node/elisp/Edebug.
 :CUSTOM_ID: meta
 :END:
 
-All changes to the configuration should be done in =README.org=, not in =init.el=.
-Any changes in the =init.el= will be overwritten by saving =README.org=.
+All changes to the configuration should be done in =init.org=, not in =init.el=.
+Any changes in the =init.el= will be overwritten by saving =init.org=.
 
 Emacs can't load =.org=-files directly, but =org-mode= provides functions to
 extract the code blocks and write them to a file. There are multiple ways of
@@ -67,7 +67,7 @@ that is loaded. It looks like this:
   ;; We can't tangle without org!
   (require 'org)
   ;; Open the configuration
-  (find-file (concat user-emacs-directory "README.org"))
+  (find-file (concat user-emacs-directory "init.org"))
   ;; tangle it
   (org-babel-tangle)
   ;; load it
@@ -119,23 +119,23 @@ makes the process of symlinking everything much easir (you just gotta type =stow
 
   (defun tangle-init ()
     (interactive)
-    "If the current buffer is 'README.org' the code-blocks are
+    "If the current buffer is init.org' the code-blocks are
   tangled, and the tangled file is compiled."
     (when (equal (buffer-file-name)
-                 (expand-file-name (concat user-emacs-directory "README.org")))
+                 (expand-file-name (concat user-emacs-directory "init.org")))
       ;; Avoid running hooks when tangling.
       (let ((prog-mode-hook nil))
         (org-babel-tangle)
         (byte-compile-file (concat user-emacs-directory "init.el")))))
 
-  (defun reload-config ()
+  (defun my/reload-config ()
     (interactive)
     "Reload the configuration for Emacs."
     (save-buffer)
-    (org-babel-tangle-file (concat user-emacs-directory "README.org"))
+    (org-babel-tangle-file (concat user-emacs-directory "init.org"))
     (byte-compile-file (concat user-emacs-directory "init.el")))
 
-  (global-set-key (kbd "C-x r r") 'reload-config)
+  (global-set-key (kbd "C-x r r") 'my/reload-config)
 
   (add-hook 'after-save-hook 'tangle-init)
 #+END_SRC
@@ -156,6 +156,16 @@ Some personal info.
 #+BEGIN_SRC emacs-lisp
   (setq user-full-name "João Pedro de Amorim Paula"
         user-mail-address "jpedrodeamorim@gmail.com")
+#+END_SRC
+
+Server configuration. This is only define the directory to store the socket.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (defvar server-socket-dir
+    (and (featurep 'make-network-process '(:family local))
+         (format "%s/emacs%d" (or (getenv "TMPDIR") "/tmp") (user-uid)))
+    "The directory in which to place the server socket.
+    If local sockets are not supported, this is nil.")
 #+END_SRC
 
 
@@ -253,9 +263,7 @@ specified that on (when I can remember) the =use-package= call.
 :END:
 
 So, I copied a function from [[http://www.howardism.org/Technical/Emacs/eshell-fun.html][this]] post to start =eshell= in a better way. It is
-used [[A%20better%20way%20to%20start%20%3Deshell%3D][here]]. The function to quit eshell I found in [[https://www.reddit.com/r/emacs/comments/1zkj2d/advanced_usage_of_eshell/][this]] reddit post. To quit it
-you just type x and then run the command (RET), it will exit the current
-instance of eshell, kill the buffer and the window.
+used [[A%20better%20way%20to%20start%20%3Deshell%3D][here]].
 
 #+BEGIN_SRC emacs-lisp
   (defun my/eshell-here ()
@@ -275,21 +283,6 @@ instance of eshell, kill the buffer and the window.
 
       (insert (concat "ls"))
       (eshell-send-input)))
-
-  (defun my/delete-single-window (&optional window)
-    "Remove WINDOW from the display.  Default is `selected-window'.
-  If WINDOW is the only one in its frame, then `delete-frame' too."
-    (interactive)
-    (save-current-buffer
-      (setq window (or window (selected-window)))
-      (select-window window)
-      (kill-buffer)
-      (if (one-window-p t)
-          (delete-frame)
-          (delete-window (selected-window)))))
-
-  (defun eshell/x (&rest args)
-    (my/delete-single-window))
 #+END_SRC
 
 *** Create missing directory
@@ -415,49 +408,6 @@ frame, and you want to change the layout from vertical to horizontal or vice/
         (if this-win-2nd (other-window 1))))))
 #+END_SRC
 
-*** Split the screen and go to next buffer
-:PROPERTIES:
-:CUSTOM_ID: split-the-screen-and-go-to-next-buffer
-:END:
-
-This is a simple workaroud to the common Emacs behaviour of splitting the window
-and copying the same buffer I was in. With the little function it splits the
-window and then goes to the next buffer (like if you had pressed =C-x b RET=).
-
-#+BEGIN_SRC emacs-lisp :tangle yes
-  (defun my/vsplit ()
-    (interactive)
-    (split-window-right)
-    (other-window 1 nil))
-
-  (defun my/hsplit ()
-    (interactive)
-    (split-window-below)
-    (other-window 1 nil))
-#+END_SRC
-
-*** Toggle hide/show dotfiles in dired mode
-:PROPERTIES:
-:CUSTOM_ID: toggle-hide-show-dotfiles-in-dired-mode
-:END:
-
-Exactly what the header says.
-
-#+BEGIN_SRC emacs-lisp :tangle yes
-  (defun my/dired-dotfiles-toggle ()
-    "Show/hide dot-files"
-    (interactive)
-    (when (equal major-mode 'dired-mode)
-      (if (or (not (boundp 'dired-dotfiles-show-p)) dired-dotfiles-show-p) ; if currently showing
-          (progn
-            (set (make-local-variable 'dired-dotfiles-show-p) nil)
-            (message "h")
-            (dired-mark-files-regexp "^\\\.")
-            (dired-do-kill-lines))
-        (progn (revert-buffer) ; otherwise just revert to re-show
-               (set (make-local-variable 'dired-dotfiles-show-p) t)))))
-#+END_SRC
-
 *** Insert unicode character
 
 This is just a helper function to use with a hydra (defined in the [[id:hydra][hydra]] section
@@ -536,9 +486,8 @@ Here's a list of all the evil packages I have:
 #+BEGIN_SRC emacs-lisp
   (use-package evil
     :ensure t
-    :load-path "~/.emacs.d/evil"
     :init
-    (setq evil-shift-width 2
+    (setq evil-shift-width 4
           evil-regexp-search t
           evil-search-wrap t
           evil-want-C-i-jump t
@@ -581,118 +530,6 @@ Here's a list of all the evil packages I have:
 #+END_SRC
 
 
-** Hydra
-
-#+BEGIN_QUOTE
-This is a package for GNU Emacs that can be used to tie related commands into a
-family of short bindings with a common prefix - a Hydra.
-#+END_QUOTE
-
-Here I setup some of my hydras, but the ones that are respective to some
-packages (even built-in packages like =dired=) are on their section on the file.
-
-#+BEGIN_SRC emacs-lisp :tangle yes
-  (use-package hydra
-    :ensure t
-    :delight
-    :config
-
-    (defhydra hydra-zoom (:hint nil)
-      "zoom"
-      ("k" text-scale-increase "in")
-      ("j" text-scale-decrease "out")
-      ("+" text-scale-increase "in")
-      ("-" text-scale-decrease "out")
-      ("0" text-scale-adjust   "normal")
-      ("q" nil                 "quit")
-      ("<escape>" nil))
-
-    (define-key global-map (kbd "M-+") 'hydra-zoom/body)
-
-    (defhydra hydra-toggle (global-map "C-c C-v" :color pink)
-      "
-        _a_ abbrev-mode:       %`abbrev-mode
-        _d_ debug-on-error:    %`debug-on-error
-        _f_ auto-fill-mode:    %`auto-fill-function
-        _t_ truncate-lines:    %`truncate-lines
-        _w_ whitespace-mode:   %`whitespace-mode
-        "
-      ("a" abbrev-mode nil)
-      ("d" toggle-debug-on-error nil)
-      ("f" auto-fill-mode nil)
-      ("t" toggle-truncate-lines nil)
-      ("w" whitespace-mode nil)
-      ("q" nil "quit")
-      ("<escape>" nil))
-
-    (defhydra hydra-window-stuff (:hint nil :color pink :columns 5)
-      "
-      ^Move^      ^Split^    ^Buffers^     ^Move^          ^Resize^
-    -------------------------------------------------------------
-      _h_ left    _v_ert     _b_uffers     _e_ line-up     _<_ dec width
-      _j_ down    _s_plit    _f_ind-file   _y_ line-down   _>_ inc width
-      _k_ up      _t_oggle   _P_rojectile  _u_ up          _-_ dec height
-      _l_ right   _o_nly     _K_ill        _d_ down        _+_ inc height
-      ^ ^         _c_lose    _S_ave        _b_ page-up
-      ^ ^         ^ ^        ^ ^           _f_ page-down
-        "
-
-      ("y" evil-scroll-line-up)
-      ("e" evil-scroll-line-down)
-      ("u" evil-scroll-up)
-      ("d" evil-scroll-down)
-      ("b" evil-scroll-page-up)
-      ("f" evil-scroll-page-down)
-
-      ("h" evil-window-left)
-      ("j" evil-window-down)
-      ("k" evil-window-up)
-      ("l" evil-window-right)
-
-      ("b" helm-mini)
-      ("f" helm-find-files)
-      ("P" projectile-find-file)
-      ("K" kill-this-buffer)
-      ("S" save-buffer)
-
-      ("s" my/hsplit)
-      ("v" my/vsplit)
-      ("t" my/toggle-window-split)
-      ("o" delete-other-windows)
-      ("c" evil-window-delete)
-
-      (">" enlarge-window-horizontally)
-      ("-" shrink-window)
-      ("+" enlarge-window)
-      ("<" shrink-window-horizontally)
-
-      ("<escape>" nil)
-      ("/" evil-search-forward)
-      ("?" evil-search-backward)
-      ("q" nil "quit"))
-
-    (define-key global-map (kbd "C-x w") 'hydra-window-stuff/body)
-
-    (defhydra hydra-unicode (:hint nil)
-      "
-    Unicode:
-    _c_ ç  _s_ ZERO WIDTH SPACE
-    _C_ Ç  _o_ °
-    _O_ ∙  _a_ →
-         "
-      ("q" nil "quit")
-      ("c" (my/insert-unicode "LATIN SMALL LETTER C CEDILLA"))
-      ("C" (my/insert-unicode "LATIN CAPITAL LETTER C CEDILLA"))
-      ("O" (my/insert-unicode "BULLET OPERATOR"))
-      ("s" (my/insert-unicode "ZERO WIDTH SPACE"))
-      ("o" (my/insert-unicode "DEGREE SIGN"))
-      ("a" (my/insert-unicode "RIGHTWARDS ARROW"))
-      ("<escape>" nil))
-
-    (define-key global-map (kbd "C-x 9") 'hydra-unicode/body))
-#+END_SRC
-
-
 ** Helm
 :PROPERTIES:
 :CUSTOM_ID: helm
@@ -728,6 +565,11 @@ main package. For a more detailed in-depth look into Helm, checkout [[http://tuh
     :delight
     :config
     (require 'helm-config)
+
+    (use-package helm-c-yasnippet
+        :ensure t
+        :delight)
+
     ;; The default "C-x c" is quite close to "C-x C-c", which quits Emacs.
     ;; Changed to "C-c h". Note: We must set "C-c h" globally, because we
     ;; cannot change `helm-command-prefix-key' once `helm-config' is loaded.
@@ -741,10 +583,10 @@ main package. For a more detailed in-depth look into Helm, checkout [[http://tuh
     (global-set-key (kbd "M-x") #'helm-M-x)
     (global-set-key (kbd "C-x C-f") #'helm-find-files)
     (global-set-key (kbd "C-c h o") #'helm-occur)
-    (global-set-key (kbd "C-c h s") #'helm-swoop)
-    (global-set-key (kbd "C-c h y") #'helm-yas-complete)
+    (global-set-key (kbd "C-c y") #'helm-yas-complete)
     (global-set-key (kbd "C-c h Y") #'helm-yas-create-snippet-on-region)
     (global-set-key (kbd "C-c h SPC") #'helm-all-mark-rings)
+    (global-set-key (kbd "M-:") #'helm-eval-expression-with-eldoc)
 
     (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action) ; rebind tab to run persistent action
     (define-key helm-map (kbd "C-z")  'helm-select-action) ; list actions using C-z
@@ -762,61 +604,6 @@ main package. For a more detailed in-depth look into Helm, checkout [[http://tuh
           helm-yas-display-key-on-candidate t
           helm-quick-update t
           helm-ff-skip-boring-files t)
-
-    (defhydra hydra-helm (:hint nil :color pink :columns 6)
-      "
-    ^Nav^   ^Other^   ^Sources^   ^Mark^           ^Do^             ^Help^
-    --------------------------------------------------------------------------------
-    _k_     _K_       _p_         _m_ mark         _v_ view         _H_ helm help
-    _g_     ^ ^       ^ ^         _t_ toggle all   _X_ delete       _s_ source help
-    ^ ^     _c_       ^ ^         _u_ unmark all   _f_ follow: %(helm-attr 'follow)
-    _G_     ^ ^       ^ ^         ^ ^              _Y_ yank selection
-    _j_     _J_       _n_         ^ ^              _T_ toggle windows
-    --------------------------------------------------------------------------------
-          "
-      ("<tab>" helm-execute-persistent-action "action")
-      ("i" nil "quit")
-      ("q" nil)
-      ("\\" (insert "\\") "\\" :color blue)
-
-      ;; Make editing in the mini buffer more like vim
-      ("0" evil-digit-argument-or-evil-beginning-of-line)
-      ("$" evil-end-of-line)
-      ("w" evil-forward-word-begin)
-      ("W" evil-forward-WORD-begin)
-      ("b" evil-backward-word-begin)
-      ("B" evil-backward-WORD-begin)
-      ("e" evil-forward-word-end)
-      ("E" evil-forward-WORD-end)
-      ("d" evil-delete)
-      ("D" evil-delete-line)
-      ("y" evil-yank)
-      ("p" evil-paste-after)
-      ("P" evil-paste-before)
-
-      ("h" helm-beginning-of-buffer)
-      ("j" helm-next-line)
-      ("k" helm-previous-line)
-      ("l" helm-end-of-buffer)
-      ("g" helm-beginning-of-buffer)
-      ("G" helm-end-of-buffer)
-      ("n" helm-next-source)
-      ("p" helm-previous-source)
-      ("K" helm-scroll-other-window-down)
-      ("J" helm-scroll-other-window)
-      ("c" helm-recenter-top-bottom-other-window)
-      ("m" helm-toggle-visible-mark)
-      ("t" helm-toggle-all-marks)
-      ("u" helm-unmark-all)
-      ("H" helm-help)
-      ("s" helm-buffer-help)
-      ("v" helm-execute-persistent-action)
-      ("X" helm-persistent-delete-marked)
-      ("Y" helm-yank-selection)
-      ("T" helm-toggle-resplit-and-swap-windows)
-      ("f" helm-follow-mode))
-
-    (define-key helm-map (kbd "<escape>") 'hydra-helm/body)
 
     (helm-mode 1))
 #+END_SRC
@@ -920,20 +707,20 @@ auxiliary packages.
 
 Here is some babel packages.
 
-#+begin_src emacs-lisp :tangle yes
-(use-package ox-pandoc
-  :ensure t)
-#+end_src
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (use-package ox-pandoc
+    :ensure t)
+#+END_SRC
 
 This is used to make beautiful slide presentations.
 
-#+begin_src emacs-lisp :tangle yes
+#+BEGIN_SRC emacs-lisp :tangle yes
   (use-package org-tree-slide
     :ensure t
     :config
     (define-key org-mode-map (kbd "<f8>") 'org-tree-slide-mode)
     (define-key org-mode-map (kbd "S-<f8>") 'org-tree-slide-skip-done-toggle))
-#+end_src
+#+END_SRC
 
 This module is used to manage citations with =org-mode=.
 
@@ -941,14 +728,14 @@ This module is used to manage citations with =org-mode=.
   (use-package org-ref
     :ensure t
     :config
-    (setq reftex-default-bibliography '("~/Templates/LaTeX/index.bib"))
+    (setq reftex-default-bibliography '("~/docs/bib/index.bib"))
 
     ;; see org-ref for use of these variables
     (setq ;; org-ref-bibliography-notes "~/Dropbox/bibliography/notes.org"
-          org-ref-default-bibliography '("~/Documents/Bibliography/index.bib"))
+          org-ref-default-bibliography '("~/docs/bib/index.bib"))
           ;; org-ref-pdf-directory "~/Dropbox/bibliography/bibtex-pdfs/")
 
-    (setq bibtex-completion-bibliography "~/Templates/LaTeX/index.bib")
+    (setq bibtex-completion-bibliography "~/docs/bib/index.bib")
     ;; bibtex-completion-library-path "~/Dropbox/bibliography/bibtex-pdfs"
     ;; bibtex-completion-notes-path "~/Dropbox/bibliography/helm-bibtex-notes")
     )
@@ -967,8 +754,6 @@ configuration with =setq='s.
     '(org-load-modules-maybe t))
   (eval-after-load "org"
     '(require 'ox-md nil t))
-  (eval-after-load 'org
-    '(require 'ox-pandoc))
 
   ;; default options for all output formats
   (setq org-pandoc-options '((standalone . t)))
@@ -999,32 +784,6 @@ configuration with =setq='s.
   (define-key org-mode-map (kbd "C-c l") 'org-store-link)
 #+END_SRC
 
-In this code we "fontify" org headers to look more appealing. I got this from
-[[http://www.howardism.org/Technical/Emacs/orgmode-wordprocessor.html][this]] article.
-
-#+BEGIN_SRC emacs-lisp :tangle yes
-  (let* ((variable-font (cond ('(:family "Source Sans Pro"))
-                              ('(:family "Knack Nerd Font"))
-                              ('(:family "Lucida Grande"))
-                              ('(:family "Verdana"))
-                              ('(:family "Sans Serif"))
-                              (nil (warn "Cannot find a font."))))
-         (base-font-color     (face-foreground 'default nil 'default))
-         (headline           `(:inherit default :weight bold)))
-
-    (custom-theme-set-faces 'user
-                            `(org-level-8 ((t (,@headline ,@variable-font))))
-                            `(org-level-7 ((t (,@headline ,@variable-font))))
-                            `(org-level-6 ((t (,@headline ,@variable-font))))
-                            `(org-level-5 ((t (,@headline ,@variable-font))))
-                            `(org-level-4 ((t (,@headline ,@variable-font :height 1.1))))
-                            `(org-level-3 ((t (,@headline ,@variable-font :height 1.25))))
-                            `(org-level-2 ((t (,@headline ,@variable-font :height 1.5))))
-                            `(org-level-1 ((t (,@headline ,@variable-font :height 1.75))))
-
-                            `(org-document-title ((t (,@headline ,@variable-font :height 1.5 :underline nil))))))
-#+END_SRC
-
 This is to use actual bullets "∙" for org lists, and change the ellipsis.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
@@ -1049,6 +808,7 @@ Here I put some settings for babel, the code system for Org-mode.
    'org-babel-load-languages '((emacs-lisp . t)
                                (C . t)
                                (python . t)
+                               (sh . t)
                                (shell . t)
                                (haskell . t)
                                (makefile . t)
@@ -1088,7 +848,6 @@ Disable line number on the =eshell= buffer.
 #+BEGIN_SRC emacs-lisp
   (add-hook 'eshell-mode-hook
     (lambda ()
-      (nlinum-relative-mode -1)
       (nlinum-mode -1)))
 #+END_SRC
 
@@ -1156,7 +915,9 @@ them in a single buffer. Using =setq-default= we change the buffer-local
 variable’s default value.
 
 #+BEGIN_SRC emacs-lisp
-  (setq-default indent-tabs-mode nil)     ; Spaces instead of tabs
+  (setq-default c-basic-offset 'tab-width     ; Default C indentation
+                lisp-indent-offset 'tab-width ; Default lisp indentation
+                indent-tabs-mode nil)         ; Spaces instead of tabs
 #+END_SRC
 
 By default the narrow-to-region command is disabled and issues a warning,
@@ -1202,7 +963,6 @@ Set the default browser to be =eww=.
   ;; remove line number on the eww buffer
   (add-hook 'eww-mode-hook
     (lambda ()
-      (nlinum-relative-mode -1)
       (nlinum-mode -1)))
 
   ;; use b to go back a word and M-b to set a bookmark
@@ -1331,21 +1091,6 @@ the [[Custom%20functions][Custom functions]] part of this file.
 #+BEGIN_SRC emacs-lisp :tangle yes
   ;; C-x 4 t 'toggle-window-split
   (define-key ctl-x-4-map "t" 'my/toggle-window-split)
-
-  ;; Always split veritcally
-  ;; (setq split-height-threshold nil)
-  ;; (setq split-width-threshold 0)
-
-  (global-set-key (kbd "C-x 2") 'my/hsplit)
-  (global-set-key (kbd "C-x 3") 'my/vsplit)
-
-  (define-key evil-normal-state-map (kbd "C-w s") 'my/hsplit)
-  (define-key evil-visual-state-map (kbd "C-w s") 'my/hsplit)
-  (define-key evil-motion-state-map (kbd "C-w s") 'my/hsplit)
-
-  (define-key evil-normal-state-map (kbd "C-w v") 'my/vsplit)
-  (define-key evil-visual-state-map (kbd "C-w v") 'my/vsplit)
-  (define-key evil-motion-state-map (kbd "C-w v") 'my/vsplit)
 #+END_SRC
 
 *** Charset
@@ -1371,10 +1116,10 @@ This is just a charset definition.
 My color theme.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
-  (use-package gruvbox-theme
-    :ensure t
-    :config
-    (load-theme 'gruvbox-dark-hard t))
+  (use-package color-theme-sanityinc-tomorrow
+    :ensure t)
+
+  (load-theme 'sanityinc-tomorrow-bright t)
 #+END_SRC
 
 *** Cursor color mode
@@ -1405,13 +1150,13 @@ of increasing and decreasing font size on the fly.
 #+BEGIN_SRC emacs-lisp
   (defvar InconsolataNerd-font '(:family "Inconsolata Nerd Font" :size 20))
   (defvar Inconsolata-font '(:family "Inconsolata" :size 20))
-  (defvar Terminus-font '(:family "Terminus" :size 18))
+  (defvar Terminus-font '(:family "Terminus" :size 22))
   (defvar HackNerd-font '(:family "Knack Nerd Font" :size 18))
   (defvar SourceCodeNerd-font '(:family "SauceCodePro Nerd Font" :size 13))
   (defvar UbuntuMonoNerd-font '(:family "UbuntuMono Nerd Font" :size 20))
-  (defvar RobotoMonoNerd-font '(:family "RobotoMono Nerd Font" :size 17))
+  (defvar RobotoMonoNerd-font '(:family "RobotoMono Nerd Font" :size 18))
 
-  (add-to-list 'default-frame-alist '(font . "RobotoMono Nerd Font-13"))
+  (add-to-list 'default-frame-alist '(font . "Terminus-16"))
 
   ;; increase, decrease and adjust font size
   (global-set-key (kbd "C-+") 'text-scale-increase)
@@ -1598,31 +1343,14 @@ Since I use Evil mode, I like having my line number column at the side, so I use
 line number because that is pretty handy when you are using Vim commands.
 
 #+BEGIN_SRC emacs-lisp
-  ;; (use-package linum-relative
-    ;; :delight
-    ;; :ensure t)
-  ;; (setq linum-relative-current-symbol "")
-  ;; (linum-relative-global-mode)
-  ;; (eval-after-load "linum"
-    ;; '(set-face-attribute 'linum nil :height 130))
-
-  (use-package nlinum-relative
+  (use-package nlinum
     :ensure t
     :delight
     :config
-    (global-nlinum-relative-mode)
-    (setq nlinum-relative-current-symbol ""
-          nlinum-relative-redisplay-delay 0.2
-          nlinum-format "%d ")
-    (nlinum-relative-setup-evil))
+    (global-nlinum-mode)
+    (setq nlinum-format "%d "))
 #+END_SRC
 
-There also is the possibility to use a horizontal line, just like Vim, with this
-setting.
-
-#+BEGIN_SRC emacs-lisp
-  (global-hl-line-mode 1)
-#+END_SRC
 
 *** Dired
 :PROPERTIES:
@@ -1634,11 +1362,6 @@ to keep it simple, but I don't think I succeeded.
 
 #+BEGIN_SRC emacs-lisp
   (require 'dired)
-  (require 'dired-x)
-  ;; Hide dotfiles
-  (setq-default dired-omit-files-p nil) ;; Buffer-local variable
-  (setq dired-omit-files (concat dired-omit-files "\\|^\\..+$")
-        dired-find-subdir t)
   ;; allow dired to delete or copy dir
   (setq dired-recursive-copies (quote always) ; “always” means no asking
         dired-recursive-deletes (quote top))  ; “top” means ask once
@@ -1646,59 +1369,6 @@ to keep it simple, but I don't think I succeeded.
   (define-key dired-mode-map (kbd "RET") 'dired-find-alternate-file) ; was dired-advertised-find-file
 
   (define-key dired-mode-map (kbd "^") (lambda () (interactive) (find-alternate-file "..")))  ; was dired-up-directory
-
-  (defhydra hydra-dired (:hint nil :color pink)
-    "
-    _+_ mkdir          _v_iew           _m_ark             _(_ details          _i_nsert-subdir    wdired
-    _C_opy             _O_ view other   _U_nmark all       _)_ omit-mode        _$_ hide-subdir    C-x C-q : edit
-    _D_elete           _o_pen other     _u_nmark           _l_ redisplay        _w_ kill-subdir    C-c C-c : commit
-    _R_ename           _M_ chmod        _t_oggle           _g_ revert buf       _e_ ediff          C-c ESC : abort
-    _Y_ rel symlink    _G_ chgrp        _E_xtension mark   _s_ort               _=_ pdiff
-    _S_ymlink          ^ ^              _F_ind marked      ^ ^                  _?_ summary
-    _r_sync
-    _z_ compress-file  _A_ find regexp
-    _Z_ compress       _Q_ repl regexp
-
-    T - tag prefix
-    "
-    ("\\" dired-do-ispell)
-    ("(" dired-hide-details-mode)
-    (")" dired-omit-mode)
-    ("+" dired-create-directory)
-    ("=" diredp-ediff)         ;; smart diff
-    ("?" dired-summary)
-    ("$" diredp-hide-subdir-nomove)
-    ("A" dired-do-find-regexp)
-    ("C" dired-do-copy)        ;; Copy all marked files
-    ("D" dired-do-delete)
-    ("E" dired-mark-extension)
-    ("e" dired-ediff-files)
-    ("F" dired-do-find-marked-files)
-    ("G" dired-do-chgrp)
-    ("g" revert-buffer)        ;; read all directories again (refresh)
-    ("i" dired-maybe-insert-subdir)
-    ("l" dired-do-redisplay)   ;; relist the marked or singel directory
-    ("M" dired-do-chmod)
-    ("m" dired-mark)
-    ("O" dired-display-file)
-    ("o" dired-find-file-other-window)
-    ("Q" dired-do-find-regexp-and-replace)
-    ("R" dired-do-rename)
-    ("r" dired-do-rsynch)
-    ("S" dired-do-symlink)
-    ("s" dired-sort-toggle-or-edit)
-    ("t" dired-toggle-marks)
-    ("U" dired-unmark-all-marks)
-    ("u" dired-unmark)
-    ("v" dired-view-file)      ;; q to exit, s to search, = gets line #
-    ("w" dired-kill-subdir)
-    ("Y" dired-do-relsymlink)
-    ("z" diredp-compress-this-file)
-    ("Z" dired-do-compress)
-    ("q" nil :color blue)
-    ("<escape>" nil :color blue))
-
-    (define-key dired-mode-map (kbd "C-c ,") 'hydra-dired/body)
 
   (use-package dired-sidebar
     :bind (("C-c d" . dired-sidebar-toggle-sidebar))
@@ -1711,24 +1381,14 @@ to keep it simple, but I don't think I succeeded.
       (if (display-graphic-p)
           (setq dired-sidebar-theme 'icons)
         (setq dired-sidebar-theme 'ascii))
-      (setq dired-sidebar-face '(:family "Knack Nerd Font" :height 140))))
+      (setq dired-sidebar-face '(:family "Terminus" :height 140))))
 
     (setq dired-sidebar-use-term-integration t)
-    (setq dired-sidebar-use-custom-font t)
+    (setq dired-sidebar-use-custom-font t))
 
-    (add-hook 'dired-mode-hook 'my/dired-dotfiles-toggle)
-    (define-key dired-mode-map (kbd "C-c .") 'my/dired-dotfiles-toggle)
-
-    (add-hook 'dired-mode-hook
-              (lambda ()
-                (nlinum-mode -1)
-                (nlinum-relative-mode -1)))
-
-    (use-package all-the-icons-dired
-      ;; M-x all-the-icons-install-fonts
-      :ensure t
-      :config
-      (add-hook 'dired-mode-hook 'all-the-icons-dired-mode)))
+  (add-hook 'dired-mode-hook
+            (lambda ()
+              (nlinum-mode -1)))
 #+END_SRC
 
 *** Flyspell
@@ -1755,15 +1415,13 @@ only verifies comments and strings.
 :END:
 
 I use =avy= to walk around on the screen. I mapped =SPC= on =evil-normal-state=
-(which is Vim's normal mode) to activate it, and =S-SPC= to activate the jump to
-a word.
+(which is Vim's normal mode) to activate it.
 
 #+BEGIN_SRC emacs-lisp
   (use-package avy
     :ensure t
     :config
-    (define-key evil-normal-state-map (kbd "SPC") 'avy-goto-char)
-    (define-key evil-normal-state-map (kbd "S-SPC") 'avy-goto-word-or-subword-1))
+    (define-key evil-normal-state-map (kbd "SPC") 'avy-goto-word-or-subword-1))
 #+END_SRC
 
 *** PDF
@@ -1782,8 +1440,7 @@ I use [[https://github.com/politza/pdf-tools][=pdf-tools=]] to overlap the =doc-
   ;; Disble linum-mode and split horizontally in pdf-view-mode
   (add-hook 'pdf-view-mode-hook
     (lambda()
-      (nlinum-mode -1)
-      (nlinum-relative-mode -1)))
+      (nlinum-mode -1)))
 
   ;; Split horizontally on LaTeX-mode
   (defun my/latex-mode-hook ()
@@ -1798,20 +1455,6 @@ I use [[https://github.com/politza/pdf-tools][=pdf-tools=]] to overlap the =doc-
 
   ;; Update PDF buffers after successful LaTeX runs
   (add-hook 'TeX-after-compilation-finished-functions #'TeX-revert-document-buffer)
-#+END_SRC
-
-*** Fuzzy finding
-:PROPERTIES:
-:CUSTOM_ID: fuzzy-finding
-:END:
-
-For fuzzy finding I use [[https://github.com/junegunn/fzf][=fzf=]] on the command line and used to use a package to
-integrate =fzf= with vim, and, as usual, there is also a package to do that in
-Emacs.
-
-#+BEGIN_SRC emacs-lisp
-  (use-package fzf
-    :ensure t)
 #+END_SRC
 
 *** Presentations
@@ -1872,8 +1515,7 @@ A package that's similar to [[https://github.com/junegunn/goyo.vim][goyo.vim]].
     :config
     (add-hook 'writeroom-mode-hook
       (lambda ()
-        (nlinum-mode -1)
-        (nlinum-relative-mode -1))))
+        (nlinum-mode -1))))
 #+END_SRC
 
 *** Markdown
@@ -1890,56 +1532,12 @@ I need it.
     :mode (("README\\.md\\'" . gfm-mode)
            ("\\.md\\'" . markdown-mode)
            ("\\.markdown\\'" . markdown-mode))
-    :init (setq markdown-command "pandoc")
-    :config
-    (defhydra hydra-markdown-mode (:hint nil)
-      "
-  Formatting        C-c C-s    _s_: bold          _e_: italic     _b_: blockquote   _p_: pre-formatted    _c_: code
-
-  Headings          C-c C-t    _h_: automatic     _1_: h1         _2_: h2           _3_: h3               _4_: h4
-
-  Lists             C-c C-x    _m_: insert item
-
-  Demote/Promote    C-c C-x    _h_: promote       _l_: demote     _u_: move up      _d_: move down
-
-  Links, footnotes  C-c C-a    _L_: link          _U_: uri        _F_: footnote     _W_: wiki-link      _R_: reference
-
-  "
-
-      ("s" markdown-insert-bold)
-      ("e" markdown-insert-italic)
-      ("b" markdown-insert-blockquote :color blue)
-      ("p" markdown-insert-pre :color blue)
-      ("c" markdown-insert-code)
-
-      ("h" markdown-insert-header-dwim)
-      ("1" markdown-insert-header-atx-1)
-      ("2" markdown-insert-header-atx-2)
-      ("3" markdown-insert-header-atx-3)
-      ("4" markdown-insert-header-atx-4)
-
-      ("m" markdown-insert-list-item)
-
-      ("h" markdown-promote)
-      ("l" markdown-demote)
-      ("d" markdown-move-down)
-      ("u" markdown-move-up)
-
-      ("L" markdown-insert-link :color blue)
-      ("U" markdown-insert-uri :color blue)
-      ("F" markdown-insert-footnote :color blue)
-      ("W" markdown-insert-wiki-link :color blue)
-      ("R" markdown-insert-reference-link-dwim :color blue)
-
-      ("q" nil "quit")
-      ("<escape>" nil))
-
-    (define-key markdown-mode-map (kbd "C-c a") 'hydra-markdown-mode/body))
+    :init (setq markdown-command "pandoc"))
 #+END_SRC
 
 *** LaTeX
 :PROPERTIES:
-:CUSTOM_ID: split-the-screen-and-go-to-next-buffer
+:CUSTOM_ID: latex
 :END:
 
 Here we set up our LaTeX environment. I use AUCTeX to do must of my stuff, and
@@ -2060,7 +1658,7 @@ This part I got from [[http://ergoemacs.org/emacs/emacs_tabs_space_indentapassag
 That's all, just the tab width.
 
 #+BEGIN_SRC emacs-lisp
-  (setq-default tab-width 2)
+  (setq-default tab-width 4)
 #+END_SRC
 
 *** Always indent newline
