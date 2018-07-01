@@ -1,8 +1,7 @@
-*
+/*
+/*/
 !.gitignore
 !init.org
 !README.org
 !firstInit.el
-!snippets
-!snippets/
-!snippets/*
+!/snippets/
