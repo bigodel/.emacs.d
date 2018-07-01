@@ -3,5 +3,5 @@
 !init.org
 !README.org
 !firstInit.el
-!tramp
 !snippets
+!snippets/*
