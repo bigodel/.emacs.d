@@ -6,6 +6,11 @@
 #+PROPERTY: header-args :tangle yes
 #+OPTIONS: toc:t
 
+* TODO Redo all of the configuration
+
+Redo the configuration trying to get rid of the maximum amount of things.
+
+
 * About
 :PROPERTIES:
 :CUSTOM_ID: about
@@ -39,6 +44,16 @@ changes. If you want to explore how functions work, use =M-x edebug-defun= to
 set up debugging for that function, and then call it. You can learn more about
 edebug in the [[http://www.gnu.org/software/emacs/manual/html_node/elisp/Edebug.html][Emacs Lisp manual]].
 
+
+* TODO =hl-todo=
+
+This package highlights all of the /TODO's/ in the file.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (require 'hl-todo)
+  (set-face-attribute 'hl-todo nil :weight 'bold :foreground "black" :background "yellow")
+  (global-hl-todo-mode)
+#+END_SRC
 
 * Configuration
 :PROPERTIES:
