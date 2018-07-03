@@ -45,16 +45,6 @@ set up debugging for that function, and then call it. You can learn more about
 edebug in the [[http://www.gnu.org/software/emacs/manual/html_node/elisp/Edebug.html][Emacs Lisp manual]].
 
 
-* TODO =hl-todo=
-
-This package highlights all of the /TODO's/ in the file.
-
-#+BEGIN_SRC emacs-lisp :tangle yes
-  (require 'hl-todo)
-  (set-face-attribute 'hl-todo nil :weight 'bold :foreground "black" :background "yellow")
-  (global-hl-todo-mode)
-#+END_SRC
-
 * Configuration
 :PROPERTIES:
 :CUSTOM_ID: configuration
@@ -433,6 +423,12 @@ ahead) to insert unicode characters.
     "Same as: C-x 8 Enter UNICODE-NAME."
     (insert-char (cdr (assoc-string unicode-name (ucs-names)))))
 #+END_SRC
+
+
+** Server
+
+Emacs server configurations.
+
 
 
 ** TRAMP
@@ -1085,19 +1081,10 @@ deactivate it. And I also don't like the blinking cursor.
     (funcall mode 0))
 #+END_SRC
 
-This is to change the opacity of Emacs window. The first number sets the opacity
-when Emacs is the focus, and the second one sets the opacity when Emacs is not
-the focus.
-
-#+BEGIN_SRC emacs-lisp
-  (set-frame-parameter (selected-frame) 'alpha '(100 . 90))
-  (add-to-list 'default-frame-alist '(alpha . (100 . 90)))
-#+END_SRC
-
 Here I remove the right fringe just because I haven't needed it yet.
 
 #+begin_src emacs-lisp :tangle yes
-  (fringe-mode '(8 . 0))
+  (fringe-mode '(1 . 0))
 #+end_src
 
 Configuration regarding the splitting of windows. The functions used here are in
@@ -1366,7 +1353,6 @@ line number because that is pretty handy when you are using Vim commands.
     (setq nlinum-format "%d "))
 #+END_SRC
 
-
 *** Dired
 :PROPERTIES:
 :CUSTOM_ID: dired
@@ -1378,10 +1364,10 @@ to keep it simple, but I don't think I succeeded.
 #+BEGIN_SRC emacs-lisp
   (require 'dired)
   ;; allow dired to delete or copy dir
-  (setq dired-recursive-copies (quote always) ; “always” means no asking
-        dired-recursive-deletes (quote top))  ; “top” means ask once
+  (setq dired-recursive-copies (quote always) ;; “always” means no asking
+        dired-recursive-deletes (quote top))  ;; “top” means ask once
 
-  (define-key dired-mode-map (kbd "RET") 'dired-find-alternate-file) ; was dired-advertised-find-file
+  (define-key dired-mode-map (kbd "RET") 'dired-find-alternate-file) ;; was dired-advertised-find-file
 
   (define-key dired-mode-map (kbd "^") (lambda () (interactive) (find-alternate-file "..")))  ; was dired-up-directory
 
@@ -1490,7 +1476,6 @@ a elisp file.
     :ensure t)
 #+END_SRC
 
-
 *** Pretty symbols
 
 The package [[https://github.com/akatov/pretty-mode][pretty-mode]] provides default symbol replacements including in, not
@@ -1499,8 +1484,10 @@ in, and, or, and greek letters.
 #+BEGIN_SRC emacs-lisp :tangle yes
   (use-package pretty-mode
     :ensure t
-    :delight)
+    :delight
+    :config (global-pretty-mode))
 #+END_SRC
+
 
 
 ** Text mode
@@ -2053,6 +2040,16 @@ two commands.
     (global-set-key (kbd "M-\'") 'corral-double-quotes-forward))
 #+END_SRC
 
+
+* TODO =hl-todo=
+
+This package highlights all of the /TODO's/ in the file.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (require 'hl-todo)
+  (set-face-attribute 'hl-todo nil :weight 'bold :foreground "black" :background "yellow")
+  (global-hl-todo-mode)
+#+END_SRC
 
 * TODO IRC
 :PROPERTIES:
