@@ -1,0 +1,245 @@
+#+TITLE: heartb1t's Emacs
+#+BABEL: :cache yes :tangle "~/.emacs.d/new.el"
+#+LATEX_HEADER: \usepackage{parskip}
+#+LATEX_HEADER: \usepackage[utf8]{inputenc}
+#+PROPERTY: header-args :tangle yes
+#+OPTIONS: toc:t
+
+* About
+:PROPERTIES:
+:CUSTOM_ID: about
+:END:
+
+
+* Meta
+:PROPERTIES:
+:CUSTOM_ID: meta
+:END:
+
+All changes to the configuration should be done in =init.org=, not in =init.el=.
+Any changes in the =init.el= file will be overwritten by saving this =init.org=.
+
+Emacs can't load =.org=-files directly, but =org-mode= provides functions to
+extract the code blocks and write them to a file. There are multiple ways of
+handling this; like suggested by [[http://emacs.stackexchange.com/questions/3143/can-i-use-org-mode-to-structure-my/emacs-or-other-el-configuration-file][this StackOverflow post]], one could just use
+=org-babel-load-file=. But here I use the approach suggested by Lars Tveito.
+
+When this configuration is loaded the first time, the =init.el= is the file that
+is loaded. It looks like this:
+
+#+BEGIN_SRC emacs-lisp :tangle no
+  ;; This file replaces itself with the actual configuration at first run
+
+  ;; We can't tangle without org!
+  (require 'org)
+  ;; Open the configuration
+  (find-file (concat user-emacs-directory "init.el"))
+  ;; Tangle it
+  (org-babel-tangle)
+  ;; Load it
+  (load-file (concat user-emacs-directory "init.el"))
+  ;; Finally, byte-compile itself
+  (byte-compile-file (concat user-emacs-directory "init.el"))
+#+END_SRC
+
+It tangles the org-file, so that this file is overwritten with the actual
+configuration.
+
+There is no reason to track the =init.el= that is generated; by running the
+following command =git= will not bother tracking it:
+
+#+BEGIN_SRC sh :tangle no
+  git update-index --assume-unchanged init.el
+#+END_SRC
+
+If one wishes to make changes to the repo-version of =init.el= start tracking
+again with:
+
+#+BEGIN_SRC sh :tangle no
+  git update-index --no-assume-unchanged init.el
+#+END_SRC
+
+The =init.el= should (after the first run) mirror the source blocks in the
+=README.org=. We can use =C-c C-v t= to run =org-babel-tangle=, which extracts the
+code blocks from the current file into a source-specific file (in this case a
+=.el=-file).
+
+To avoid doing this each time a change is made we can add a function to the
+=after-save-hook= ensuring to always tangle and byte-compile the =org=-document
+after changes. I also made a function to update, in case the hook fails (which
+has happened).
+
+WARNING: This function might not work on your setup because I had to set the
+=user-emacs-directory= variable to the location of my dotfiles. I use stow to
+manage my dotfiles, it automatically creates symlinks from my configuration
+files to the specified directory, that way I can keep all of my dotfiles inside
+a single directory, making it easier for me to keep track of them via github and
+makes the process of symlinking everything much easir (you just gotta type =stow
+<program-name>=). If you want to learn more there is [[https://alexpearce.me/2016/02/managing-dotfiles-with-stow/][this]] link and [[http://brandon.invergo.net/news/2012-05-26-using-gnu-stow-to-manage-your-dotfiles.html][this]] link.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  ;; default location of emacs' files
+  (setq user-emacs-directory "~/.emacs.d/")
+
+  (defun tangle-init ()
+    (interactive)
+    "If the current buffer is init.org the code-blocks are
+  tangled, and the tangled file is compiled."
+    (when (equal (buffer-file-name)
+                 (expand-file-name (concat user-emacs-directory "init.org")))
+      ;; Avoid running hooks when tangling.
+      (let ((prog-mode-hook nil))
+        (org-babel-tangle)
+        (byte-compile-file (concat user-emacs-directory "init.el")))))
+
+  ;; execute the tangle function every time init.org is saved
+  (add-hook 'after-save-hook 'tangle-init)
+#+END_SRC
+
+Some personal info.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (setq user-full-name "João Pedro de Amorim Paula"
+        user-mail-address "jpedrodeamorim@gmail.com")
+#+END_SRC
+
+Server configuration. This is only define the directory to store the socket.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (defvar server-socket-dir
+    (and (featurep 'make-network-process '(:family local))
+         (format "%s/emacs%d" (or (getenv "TMPDIR") "/tmp") (user-uid)))
+    "The directory in which to place the server socket. If local
+    sockets are not supported, this is nil.")
+#+END_SRC
+
+* [[https://glyph.twistedmatrix.com/2015/11/editor-malware.html][Your text editor is malware]]
+
+
+Here is just some recommendations from [[https://glyph.twistedmatrix.com/2015/11/editor-malware.html][this post]]. I highly recommend anyone to
+read it.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (setq tls-checktrust t)
+#+END_SRC
+
+* Sane defaults
+
+Disable all bars if they are not void.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (when (fboundp 'menu-bar-mode)
+    (menu-bar-mode -1))
+  (when (fboundp 'tool-bar-mode)
+    (tool-bar-mode -1))
+  (when (fboundp 'scroll-bar-mode)
+    (scroll-bar-mode -1))
+  (when (fboundp 'horizontal-scroll-bar-mode)
+    (horizontal-scroll-bar-mode -1))
+#+END_SRC
+
+Uniquify makes buffer names unique, instead of having suffixes like =<2>=,
+=<3>=...
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (require 'uniquify)
+  (setq uniquify-buffer-name 'forward)
+#+END_SRC
+
+Save the location of the pointer.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (save-place-mode t)
+#+END_SRC
+
+[[https://www.emacswiki.org/emacs/HippieExpand][=hippie-expand=]] is [[https://www.emacswiki.org/emacs/DynamicAbbreviations][=dabbrev=]] on steroids. But I also want to use
+[[https://www.emacswiki.org/emacs/AbbrevMode][=abbrev-mode=]] globally.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (setq hippie-expand-try-functions-list '(try-expand-dabbrev
+                                           try-expand-dabbrev-all-buffers
+                                           try-expand-dabbrev-from-kill
+                                           try-complete-file-name-partially
+                                           try-complete-file-name
+                                           try-expand-all-abbrevs
+                                           try-expand-list
+                                           try-expand-line
+                                           try-complete-lisp-symbol-partially
+                                           try-complete-lisp-symbol))
+
+  (global-set-key (kbd "M-/") 'hippie-expand)
+
+  (setq save-abbrevs 'silently)
+
+  (setq-default abbrev-mode t)
+#+END_SRC
+
+Show matching pairs of parenthesis, curly braces, etc...
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  ;; remove the delay
+  (setq show-paren-delay 0)
+  (show-paren-mode t)
+#+END_SRC
+
+Tabs configuration.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (setq-default tab-width 4                   ; a tab is 4 spaces
+                c-basic-offset 'tab-width     ; default C indentation
+                lisp-indent-offset 'tab-width ; default lisp indentation
+                indent-tabs-mode nil)         ; spaces instead of tabs
+#+END_SRC
+
+Some nice default configuration.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (setq auto-revert-interval 1                   ; refresh buffers fast
+        apropos-do-all t                         ; apropos search more extensively
+        default-input-method "portuguese-prefix" ; i'm brazilian
+        inhibit-startup-message t                ; no splash screen please
+        initial-scratch-message nil              ; clean scratch buffer
+        recentf-max-saved-items 100              ; show more recent files
+        ring-bell-function 'ignore               ; quiet
+        visible-bell t                           ; flash the frame to represent bell
+        save-interprogram-paste-before-kill t    ; integrate clipboard with kill ring
+        require-final-newline t)                 ; always end a file with newline
+#+END_SRC
+
+Backup files and the "places" file.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (setq save-place-file (concat user-emacs-directory "places")
+        backup-directory-alist `(("." . ,(concat user-emacs-directory
+                                                 "backups")))))
+#+END_SRC
+
+* General packages configuration
+
+I manage my packages with =package.el=, which comes pre-installed on Emacs 24+.
+To load downloaded packages we need to initialize =package=. =cl= is a library
+with some often handy Common Lisp functions, so we also initialize it in here.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (require 'package)
+  (package-initialize)
+#+END_SRC
+
+Packages can be installed from various repos, here we add the two that I use
+(which, frankly, is enough, since [[http://melpa.milkbox.net/#/][melpa]] is very large and well maintained).
+There are also some packages that I need to load manually; I keep them stored in
+=~/.emacs.d/elisp=, so I need to add it to my =load-path=.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (unless (assoc-default "melpa" package-archives)
+    (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t))
+  (unless (assoc-default "melpa-stable" package-archives)
+    (add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t))
+  (unless (assoc-default "org" package-archives)
+    (add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t))
+
+  (add-to-list 'load-path "~/.emacs.d/elisp")
+#+END_SRC
+
+Use =M-x package-refresh-contents= to reload the list of packages after adding
+these for the first time.

@@ -168,7 +168,7 @@ Server configuration. This is only define the directory to store the socket.
 #+BEGIN_SRC emacs-lisp :tangle yes
   (defvar server-socket-dir
     (and (featurep 'make-network-process '(:family local))
-         (format "%s/emacs%d" (or (getenv "TMPDIR") "/tmp") (user-uid)))
+       (format "%s/emacs%d" (or (getenv "TMPDIR") "/tmp") (user-uid)))
     "The directory in which to place the server socket.
     If local sockets are not supported, this is nil.")
 #+END_SRC
@@ -314,14 +314,13 @@ file without one.
 
 #+BEGIN_SRC emacs-lisp
   (defun my/switch-font (font)
-    (interactive "Switch font (1. Inconsolata Nerd | 2. Inconsolata | 3. Terminus | 4. Hack Nerd | 5. Source Code Nerd | 6. Ubuntu Mono Nerd | 7. Roboto Mono Nerd): ")
+    (interactive "Switch font (1. Inconsolata Nerd | 2. Terminus | 3. Hack Nerd | 4. Source Code Nerd | 5. Roboto Mono Nerd | 6. Monospace): ")
     (cond ((string= font "1") (set-frame-font (apply 'font-spec InconsolataNerd-font) nil t))
-          ((string= font "2") (set-frame-font (apply 'font-spec Inconsolata-font) nil t))
-          ((string= font "3") (set-frame-font (apply 'font-spec Terminus-font) nil t))
-          ((string= font "4") (set-frame-font (apply 'font-spec HackNerd-font) nil t))
-          ((string= font "5") (set-frame-font (apply 'font-spec SourceCodeNerd-font) nil t))
-          ((string= font "6") (set-frame-font (apply 'font-spec UbuntuMonoNerd-font) nil t))
-          ((string= font "7") (set-frame-font (apply 'font-spec RobotoMonoNerd-font) nil t))
+          ((string= font "2") (set-frame-font (apply 'font-spec Terminus-font) nil t))
+          ((string= font "3") (set-frame-font (apply 'font-spec HackNerd-font) nil t))
+          ((string= font "4") (set-frame-font (apply 'font-spec SourceCodeNerd-font) nil t))
+          ((string= font "5") (set-frame-font (apply 'font-spec RobotoMonoNerd-font) nil t))
+          ((string= font "6") (set-frame-font (apply 'font-spec Monospace-font) nil t))
           (t (message "Invalid option. Please choose a valide number."))))
 #+END_SRC
 
@@ -1028,7 +1027,7 @@ me already), so I tell Emacs to save it on =~/.emacs.d/backups=.
   (setq backup-directory-alist '(("." . "~/.emacs.d/backups")))
 #+END_SRC
 
-    But I'm quite paranoid, so I have a lot of backup configuration.
+But I'm quite paranoid, so I have a lot of backup configuration.
 
 #+BEGIN_SRC emacs-lisp
   (setq backup-by-copying t               ; don't clobber symlinks
@@ -1151,12 +1150,11 @@ of increasing and decreasing font size on the fly.
 
 #+BEGIN_SRC emacs-lisp
   (defvar InconsolataNerd-font '(:family "Inconsolata Nerd Font" :size 20))
-  (defvar Inconsolata-font '(:family "Inconsolata" :size 20))
   (defvar Terminus-font '(:family "Terminus" :size 22))
   (defvar HackNerd-font '(:family "Knack Nerd Font" :size 18))
   (defvar SourceCodeNerd-font '(:family "SauceCodePro Nerd Font" :size 13))
-  (defvar UbuntuMonoNerd-font '(:family "UbuntuMono Nerd Font" :size 20))
   (defvar RobotoMonoNerd-font '(:family "RobotoMono Nerd Font" :size 18))
+  (defvar Monospace-font '(:family "monospace" :size 18))
 
   (add-to-list 'default-frame-alist '(font . "Terminus-16"))
 
