@@ -424,12 +424,6 @@ ahead) to insert unicode characters.
 #+END_SRC
 
 
-** Server
-
-Emacs server configurations.
-
-
-
 ** TRAMP
 :PROPERTIES:
 :CUSTOM_ID: tramp
@@ -1164,7 +1158,7 @@ of increasing and decreasing font size on the fly.
   (global-set-key (kbd "C-0") 'text-scale-adjust)
 #+END_SRC
 
-*** Mode line
+*** COMMENT Mode line
 :PROPERTIES:
 :CUSTOM_ID: mode-line
 :END:
@@ -1195,10 +1189,10 @@ Here is the configuration regarding the mode line. I install a package called
            (defvar mode-line-my/vc
              '(:propertize
                (:eval (when vc-mode
-               (cond
-                ((string-match "Git[:-]" vc-mode) (my/modeline-github-vc))
-                ((string-match "SVN-" vc-mode) (my/modeline-svn-vc))
-                (t (format "%s" vc-mode)))))
+                        (cond
+                         ((string-match "Git[:-]" vc-mode) (my/modeline-github-vc))
+                         ((string-match "SVN-" vc-mode) (my/modeline-svn-vc))
+                         (t (format "%s" vc-mode)))))
                face mode-line-directory)
              "Formats the current directory.")
 
@@ -1210,6 +1204,7 @@ Here is the configuration regarding the mode line. I install a package called
                           "  "
                           mode-line-mule-info
                           mode-line-modified
+                          mode-line-client
                           mode-line-frame-identification
                           mode-line-buffer-identification
                           mode-line-remote
