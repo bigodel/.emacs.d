@@ -1,21 +1,14 @@
-;;; init.el --- Init file that ties all together
-;;; Commentary:
-;;;
-;;;     This serves to tie together all of the scattered configuration files.
-;;;
-;;; Code:
-
 (eval-when-compile (require 'cl))
 
 (lexical-let ((emacs-start-time (current-time)))
   (add-hook 'emacs-startup-hook
             (lambda ()
               (let ((elapsed (float-time (time-subtract (current-time) emacs-start-time))))
-                (message "[Emacs initialized in %.3fs]" elapsed)))))
+                (message "[ Emacs initialized in %.3fs ]" elapsed)))))
 
 (let ((gc-cons-threshold (* 256 1024 1024))
       (file-name-handler-alist nil)
-      (core-directory (concat user-emacs-directory "core/core-"))
+      (core-directory (concat user-emacs-directory "core/"))
       (config-directory (concat user-emacs-directory "config/")))
 
   (when (fboundp 'tool-bar-mode) (tool-bar-mode -1))
@@ -82,17 +75,3 @@
                           (insert (format "[INIT ERROR]\n%s\n%s\n\n" file ex)))))))               (load (file-name-sans-extension file))
 
 (provide 'init.el) ;;; init.el ends here
-
-(defgroup dotemacs-core nil
-  "Configuration options for core Emacs functionality."
-  :group 'dotemacs
-  :prefix 'dotemacs-core)
-
-(defcustom dotemacs-core/default-coding-system
-  'utf-8
-  "The default coding system to use."
-  :type '(radio
-          (const :tag "utf-8" utf-8)
-          (const :tag "utf-8-dos" utf-8-dos)
-          (const :tag "utf-8-unix" utf-8-unix))
-  :group 'dotemacs-core)
