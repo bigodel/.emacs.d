@@ -5,9 +5,9 @@
 #+PROPERTY: header-args :tangle yes
 #+OPTIONS: toc:t
 
-* About
+* Introduction
 :PROPERTIES:
-:CUSTOM_ID: about
+:CUSTOM_ID: intro
 :END:
 
 #+BEGIN_QUOTE
@@ -16,6 +16,11 @@ peoples' configs.
 
     -- Me
 #+END_QUOTE
+
+** About
+:PROPERTIES:
+:CUSTOM_ID: about
+:END:
 
 This configuration is almost a full copy of Bailey Ling's config, availabe in
 [[https://github.com/bling/dotemacs][this link]]. I highly recommend you check out his config first, even though ours
@@ -33,7 +38,7 @@ separate, each with their own context. For example, since =helm= is [[https://tu
 a league of its own]] it makes sense to have a =config/helm-cfg.el=.
 
 You might not want to simply copy and paste this into your configuration, I
-recommend you get used to the defaults of Emacs (I'm using [[https://github.com/emacs-evil/evil][=evil-mode=]]) and
+recommend you get used to the defaults of Emacs (I'm using [[https://github.com/emacs-evil/evil][evil-mode]]) and
 Emacs Lisp, so you can understand everything written in here. For a introduction
 (a very comprehensive one) in elisp, refer to [[https://www.gnu.org/software/emacs/manual/html_mono/eintr.html][An Introduction to Programming in
 Emacs Lisp]] from the GNU Project website, or you could use the built in info by
@@ -50,7 +55,17 @@ changes. If you want to explore how functions work, use =M-x edebug-defun= to
 set up debugging for that function, and then call it. You can learn more about
 =edebug= in the [[http://www.gnu.org/software/emacs/manual/html_node/elisp/Edebug.html][Emacs Lisp manual]].
 
-The heart of this setup lies in 3 snippets of elisp code.
+** Tools
+:PROPERTIES:
+:CUSTOM_ID: tools
+:END:
+
+The heart of this setup lies in 3 snippets of elisp/common lisp code.
+
+*** =require-package=
+:PROPERTIES:
+:CUSTOM_ID: require-pkg
+:END:
 
 The first is a wrapper on the =require= Emacs function (you can learn more about
 it with =C-h f RET require=. It checks if the package is installed and if not
@@ -66,6 +81,11 @@ install it, and then uses =require= to load its libraries. This was actually
         (package-refresh-contents))
       (package-install package)))
 #+END_SRC
+
+*** =after=
+:PROPERTIES:
+:CUSTOM_ID: after
+:END:
 
 =with-eval-after-load= is a function that lets you defer execution of code until
 after a feature has been loaded. It is very useful to only load some packages
@@ -114,6 +134,11 @@ This was take from [[http://milkbox.net/note/single-file-master-emacs-configurat
       `(with-eval-after-load ,feature ,@body))))
 #+END_SRC
 
+*** Bootstrap
+:PROPERTIES:
+:CUSTOM_ID: bootstrap
+:END:
+
 The last and simplest of all is just a common lisp loop at the end of =init.el=
 (the main configuration file) to recursively load all of the files ending in
 =.el= inside the =config/= directory. That ensures that all of our configuration
@@ -128,8 +153,35 @@ order so that any functions defined will be available in child nodes.
            do (load file))
 #+END_SRC
 
+*** Bindings
+:PROPERTIES:
+:CUSTOM_ID: bindings
+:END:
+
 Other important part (but not necessarily the heart) of the setup are the
-bindings, which are all kept
+bindings, which are mostly kept on the =config/config-bindings.el=. Some
+packages and modes have too much bindings, so they have their own specific
+bindings file under the =config/bindings= directory. Because of this, things
+like =use-package= aren't particularly useful here because it doesn't add much
+value over =require-package= and =after=.
+
+Keybindings are the single most differentiating factor between configs. By
+defining them in one place, if you want to use/fork this config, you can simply
+change the bindings to your liking and still use all the other pre-configured
+packages as is. If you're not an =evil= user, delete =config-evil.el= and you
+will get a pure Emacs experience.
+
+*** Lazy major modes
+:PROPERTIES:
+:CUSTOM_ID: lazy-major-modes
+:END:
+
+Another important part is that by combining =after=, =require-package= and
+=auto-mode-alist=, packages are only installed when needed. So python packages
+are only installed if a python file is opened (and so for any other language).
+If you never open a python file, none of the python specific packages will ever
+be installed.
+
 
 * Main file
 
@@ -162,12 +214,13 @@ all of the bars are disabled if they're enabled.
 
   (let ((gc-cons-threshold (* 256 1024 1024))
         (file-name-handler-alist nil)
-        (core-directory (concat user-emacs-directory "core/"))
+        (core-directory (concat user-emacs-directory "core/core-"))
         (config-directory (concat user-emacs-directory "config/")))
 
     (when (fboundp 'tool-bar-mode) (tool-bar-mode -1))
     (when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
     (when (fboundp 'menu-bar-mode) (menu-bar-mode -1))
+    (when (fboundp 'horizontal-scroll-bar-mode) (horizontal-scroll-bar-mode -1))
 #+END_SRC
 
 These are some definitions of custom variables. They serve the purpose of
@@ -175,45 +228,45 @@ choosing what package to use for different parts of my Emacs setup, like
 completion engine, which could either be =helm=, =ido= or =ivy=.
 
 #+BEGIN_SRC emacs-lisp :tangle new.el
-    (defgroup dotemacs nil
-      "Custom configuration for dotemacs."
-      :group 'local)
+  (defgroup dotemacs nil
+    "Custom configuration for dotemacs."
+    :group 'local)
 
-    (defcustom dotemacs-cache-directory (concat user-emacs-directory ".cache/")
-      "The storage location for various persistent files."
-      :type 'directory
-      :group 'dotemacs)
+  (defcustom dotemacs-cache-directory (concat user-emacs-directory ".cache/")
+    "The storage location for various persistent files."
+    :type 'directory
+    :group 'dotemacs)
 
-    (defcustom dotemacs-completion-engine
-      'company
-      "The completion engine the use."
-      :type '(radio
-              (const :tag "company-mode" company)
-              (const :tag "auto-complete-mode" auto-complete))
-      :group 'dotemacs)
+  (defcustom dotemacs-completion-engine
+    'company
+    "The completion engine the use."
+    :type '(radio
+            (const :tag "company-mode" company)
+            (const :tag "auto-complete-mode" auto-complete))
+    :group 'dotemacs)
 
-    (defcustom dotemacs-switch-engine
-      'helm
-      "The primary engine to use for narrowing and navigation."
-      :type '(radio
-              (const :tag "helm" helm)
-              (const :tag "ido" ido)
-              (const :tag "ivy" ivy))
-      :group 'dotemacs)
+  (defcustom dotemacs-switch-engine
+    'helm
+    "The primary engine to use for narrowing and navigation."
+    :type '(radio
+            (const :tag "helm" helm)
+            (const :tag "ido" ido)
+            (const :tag "ivy" ivy))
+    :group 'dotemacs)
 
-    (defcustom dotemacs-pair-engine
-      'emacs
-      "The primary engine to use auto-pairing and parens matching."
-      :type '(radio
-              (const :tag "emacs" emacs)
-              (const :tag "smartparens" smartparens))
-      :group 'dotemacs)
+  (defcustom dotemacs-pair-engine
+    'emacs
+    "The primary engine to use auto-pairing and parens matching."
+    :type '(radio
+            (const :tag "emacs" emacs)
+            (const :tag "smartparens" smartparens))
+    :group 'dotemacs)
 
-    (defcustom dotemacs-globally-ignored-directories
-      '("elpa" ".cache" "target" "dist" "node_modules" ".git" ".hg" ".svn" ".idea")
-      "A set of default directories to ignore for anything that involves searching."
-      :type '(repeat string)
-      :group 'dotemacs)
+  (defcustom dotemacs-globally-ignored-directories
+    '("elpa" ".cache" "target" "dist" "node_modules" ".git" ".hg" ".svn" ".idea")
+    "A set of default directories to ignore for anything that involves searching."
+    :type '(repeat string)
+    :group 'dotemacs)
 #+END_SRC
 
 Here is where we set the default repositories from where Emacs should fetch
@@ -235,7 +288,7 @@ the elisp files in =~/.emacs.d/config=.
 
 Note that if the variable =user-emacs-directory= is changed to, let's say,
 =~/.myemacs=, this configuration file will look for elisp files in
-=~/.myemacs/=, =~/.myemacs/core/= and =~/.myemacs/config/= instead of the above
+=~/.myemacs/=, =~/.myemacscore/core-= and =~/.myemacs/config/= instead of the above
 mentioned paths with =~/.emacs.d/=.
 
 #+BEGIN_SRC emacs-lisp :tangle new.el
@@ -254,19 +307,32 @@ mentioned paths with =~/.emacs.d/=.
   (provide 'init.el) ;;; init.el ends here
 #+END_SRC
 
+
 * Core
 ** Load at boot
 
+We also load the common lisp libraries here.
+
 #+BEGIN_SRC emacs-lisp :tangle core/core-boot.el
   (eval-when-compile (require 'cl))
+#+END_SRC
 
+Load any manually installed packages on the =elisp/= directory.
+
+#+BEGIN_SRC emacs-lisp :tangle core/core-boot.el
   (let ((base (concat user-emacs-directory "elisp/")))
     (add-to-list 'load-path base)
     (dolist (dir (directory-files base t "^[^.]"))
       (when (file-directory-p dir)
         (add-to-list 'load-path dir))))
+#+END_SRC
 
-  (defmacro /boot/measure-load (target &rest body)
+This handy macro creates a new buffer with the name =*Load Times*= and shows a
+moderately detailed information about the load time of TARGET. It is used here
+to show the load times of packages loaded with =require= or =load=.
+
+#+BEGIN_SRC emacs-lisp :tangle core/core-boot.el
+  (defmacro boot/measure-load (target &rest body)
     (declare (indent defun))
     `(let ((elapsed)
            (start (current-time)))
@@ -284,19 +350,23 @@ mentioned paths with =~/.emacs.d/=.
                            elapsed))))))
 
   (defadvice load (around dotemacs activate)
-    (/boot/measure-load file ad-do-it))
+    (boot/measure-load file ad-do-it))
 
   (defadvice require (around dotemacs activate)
     (if (memq feature features)
         ad-do-it
-      (/boot/measure-load feature ad-do-it)))
+      (boot/measure-load feature ad-do-it)))
 
   (defmacro bind (&rest commands)
     "Convenience macro which creates a lambda interactive command."
     `(lambda (arg)
        (interactive "P")
        ,@commands))
+#+END_SRC
 
+Here are the macros mentioned on the [[#intro][introduction]] section.
+
+#+BEGIN_SRC emacs-lisp :tangle core/core-boot.el
   (defun require-package (package)
     "Ensures that PACKAGE is installed."
     (unless (or (package-installed-p package)
@@ -332,8 +402,13 @@ mentioned paths with =~/.emacs.d/=.
         prog))
      (t
       `(with-eval-after-load ,feature ,@body))))
+#+END_SRC
 
-  (defmacro /boot/lazy-major-mode (pattern mode)
+The first macro is to lazily install a major mode like described in [[#lazy-major-modes][Lazy major
+modes]]. The second one is self explanatory.
+
+#+BEGIN_SRC emacs-lisp :tangle core/core-boot.el
+  (defmacro boot/lazy-major-mode (pattern mode)
     "Defines a new major-mode matched by PATTERN, installs MODE if
   necessary, and activates it."
     `(add-to-list 'auto-mode-alist
@@ -341,7 +416,7 @@ mentioned paths with =~/.emacs.d/=.
                                  (require-package (quote ,mode))
                                  (,mode)))))
 
-  (defmacro /boot/delayed-init (&rest body)
+  (defmacro boot/delayed-init (&rest body)
     "Runs BODY after idle for a predetermined amount of time."
     `(run-with-idle-timer
       0.5
@@ -349,4 +424,397 @@ mentioned paths with =~/.emacs.d/=.
       (lambda () ,@body)))
 
   (provide 'core-boot) ;;; core-boot.el ends here
+#+END_SRC
+
+
+* Config
+
+This is the section where configuration actually takes place.
+
+** Core
+
+Here we place some core configurations, without depending on any package. Just
+some default Emacs config.
+
+First we create a group to keep all the core configuration together in one
+place. And them define a customizable variable for the coding system, which is
+UTF-8 by default.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (defgroup dotemacs-core nil
+    "Configuration options for core Emacs functionality."
+    :group 'dotemacs
+    :prefix 'dotemacs-core)
+
+  (defcustom dotemacs-core/default-coding-system
+    'utf-8
+    "The default coding system to use."
+    :type '(radio
+            (const :tag "utf-8" utf-8)
+            (const :tag "utf-8-dos" utf-8-dos)
+            (const :tag "utf-8-unix" utf-8-unix))
+    :group 'dotemacs-core)
+#+END_SRC
+
+This setting sets the default location for the Emacs socket to be in and then
+initializes the server if it is not already running.
+
+#+BEGIN_SRC emacs-lisp :tangle config/config-core.el
+  (defcustom dotemacs-core/server-directory
+    (format "%s/emacs%d/" (or (getenv "TMPDIR") "/tmp") (user-uid))
+    "The storage location for the socket file used to connect to the daemon."
+    :type 'directory
+    :group 'dotemacs-core)
+  (setq server-socket-dir dotemacs-core/server-directory)
+  (setq server-auth-dir (concat dotemacs-core/server-directory "server"))
+  (require 'server)
+  (unless (server-running-p)
+    (server-start))
+#+END_SRC
+
+This function is to create a ask to create a directory if trying to access a
+non-existing directory.
+
+#+BEGIN_SRC emacs-lisp :tangle config/config-core.el
+  (defun core/create-non-existent-directory ()
+    (let ((parent-directory (file-name-directory buffer-file-name)))
+      (when (and (not (file-exists-p parent-directory))
+               (y-or-n-p (format "Directory `%s' does not exist! Create it?" parent-directory)))
+        (make-directory parent-directory t))))
+
+  (add-to-list 'find-file-not-found-functions #'core/create-non-existent-directory)
+#+END_SRC
+
+=saveplace= is a minor mode that automatically saves place in each file. This
+means when you visit a file, point goes to the last place where it was when you
+previously visited the same file. =savehist-mode= save the minibuffer history in
+the file defined by =savehist-file=. And =recentf= displays recently visited
+files (excluding some temporary files we don't want to revisit).
+
+#+BEGIN_SRC emacs-lisp :tangle config/config-core.el
+  ;; move cursor to the last position upon open
+  (require 'saveplace)
+  (setq save-place-file (concat dotemacs-cache-directory "places"))
+  (save-place-mode t)
+
+  ;; savehist
+  (setq savehist-file (concat dotemacs-cache-directory "savehist")
+        savehist-additional-variables '(search ring regexp-search-ring)
+        savehist-autosave-interval 60
+        history-length 1000)
+  (savehist-mode t)
+
+  ;; recent files
+  (require 'recentf)
+  (setq recentf-save-file (concat dotemacs-cache-directory "recentf"))
+  (setq recentf-max-saved-items 1000)
+  (setq recentf-max-menu-items 500)
+  (setq recentf-auto-cleanup 300)
+  (add-to-list 'recentf-exclude "COMMIT_EDITMSG\\'")
+  (add-to-list 'recentf-exclude ".*elpa.*autoloads\.el$")
+  (recentf-mode t)
+  (run-with-idle-timer 600 t #'recentf-save-list)
+#+END_SRC
+
+These configurations are regarding garbage collection on Emacs. I mostly took it
+from [[http://bling.github.io/blog/2016/01/18/why-are-you-changing-gc-cons-threshold/][this]] post.
+
+#+BEGIN_SRC emacs-lisp :tangle config/config-core.el
+  ;; gc
+  (defun core/minibuffer-setup-hook ()
+    (setq gc-cons-threshold most-positive-fixnum))
+  (defun core/minibuffer-exit-hook ()
+    (setq gc-cons-threshold (* 64 1024 1024)))
+  (add-hook 'minibuffer-setup-hook #'core/minibuffer-setup-hook)
+  (add-hook 'minibuffer-exit-hook #'core/minibuffer-exit-hook)
+#+END_SRC
+
+Here we configure the behavior of some default Emacs functions. If you'd like to
+take a look at what they do you could =C-h f= (or =C-h a=) and type the name of
+the function (the comment right before the config) or search on the web, but I
+recommend you look the default documentation about it on Emacs first.
+
+#+BEGIN_SRC emacs-lisp :tangle config/config-core.el
+  ;; pcomplete
+  (setq pcomplete-ignore-case t)
+
+  ;; imenu
+  (setq-default imenu-auto-rescan t)
+
+  ;; narrowing
+  (put 'narrow-to-region 'disabled nil)
+
+  ;; dired
+  (after 'dired
+         (require 'dired-x))
+
+  ;; url
+  (setq url-configuration-directory (concat dotemacs-cache-directory "url/"))
+
+  ;; tramp
+  (setq tramp-persistency-file-name (concat dotemacs-cache-directory "tramp"))
+  (setq tramp-default-method "ssh")
+  (setq remote-file-name-inhibit-cache nil)
+  (setq vc-ignore-dir-regexp
+        (format "%s\\|%s"
+                vc-ignore-dir-regexp
+                tramp-file-name-regexp))
+  ;; TODO: review this
+  ;;(eval-after-load 'tramp '(setenv "SHELL" "/bin/bash"))
+
+  ;; comint
+  (after 'comint
+         (defun core/toggle-comint-scroll-to-bottom-on-output ()
+           (interactive)
+           (if comint-scroll-to-bottom-on-output
+               (setq comint-scroll-to-bottom-on-output nil)
+             (setq comint-scroll-to-bottom-on-output t))))
+
+  ;; compile
+  (setq compilation-always-kill t)
+  (setq compilation-ask-about-save nil)
+  (add-hook 'compilation-filter-hook
+            (lambda ()
+              (when (eq major-mode 'compilation-mode)
+                (require 'ansi-color)
+                (let ((inhibit-read-only t))
+                  (ansi-color-apply-on-region (point-min) (point-max))))))
+
+  ;; bookmarks
+  (setq bookmark-default-file (concat dotemacs-cache-directory "bookmarks"))
+  (setq bookmark-save-flag 1) ;; save after every change
+
+  ;; fringe
+  (when (display-graphic-p)
+    (fringe-mode '(2 . 0)))
+
+  ;; ediff
+  (setq ediff-split-window-function 'split-window-horizontally) ;; side-by-side diffs
+  (setq ediff-window-setup-function 'ediff-setup-windows-plain) ;; no extra frames
+
+  ;; re-builder
+  (setq reb-re-syntax 'string) ;; fix backslash madness
+
+  ;; clean up old buffers periodically
+  (midnight-mode)
+  (midnight-delay-set 'midnight-delay 0)
+
+  ;; ibuffer
+  (setq ibuffer-expert t)
+  (setq ibuffer-show-empty-filter-groups nil)
+  (add-hook 'ibuffer-mode-hook #'ibuffer-auto-mode)
+
+  ;; move auto-save to the cache
+  (let ((dir (expand-file-name (concat dotemacs-cache-directory "auto-save/"))))
+    (setq auto-save-list-file-prefix (concat dir "saves-"))
+    (setq auto-save-file-name-transforms `((".*" ,(concat dir "save-") t))))
+
+  ;; multiple-backups
+  (setq backup-directory-alist `((".*" . ,(expand-file-name (concat dotemacs-cache-directory "backups/")))))
+  (setq backup-by-copying t)
+  (setq version-control t)
+  (setq kept-old-versions 0)
+  (setq kept-new-versions 20)
+  (setq delete-old-versions t)
+
+  ;; better scrolling
+  (setq scroll-conservatively 9999
+        scroll-preserve-screen-position t
+        scroll-margin 3)
+
+  ;; better buffer names for duplicates
+  (require 'uniquify)
+  (setq uniquify-buffer-name-style 'forward
+        uniquify-separator "/"
+        uniquify-ignore-buffers-re "^\\*" ; leave special buffers alone
+        uniquify-after-kill-buffer-p t)
+
+  (defun core/do-not-kill-scratch-buffer ()
+    (if (member (buffer-name (current-buffer))
+                '("*scratch*" "*Messages*" "*Require Times*"))
+        (progn
+          (bury-buffer)
+          nil)
+      t))
+  (add-hook 'kill-buffer-query-functions 'core/do-not-kill-scratch-buffer)
+#+END_SRC
+
+Change the "yes or no" prompt to "y-or-n", set the coding system based on the
+custom variable we defined above and set some variables value.
+
+#+BEGIN_SRC emacs-lisp :tangle config/config-core.el
+  (defalias 'yes-or-no-p 'y-or-n-p)
+
+  (let ((coding dotemacs-core/default-coding-system))
+    (setq locale-coding-system coding)
+    (set-selection-coding-system coding)
+    (set-default-coding-systems coding)
+    (prefer-coding-system coding)
+    (setq-default buffer-file-coding-system coding))
+
+  (setq sentence-end-double-space nil)
+  (setq ring-bell-function 'ignore)
+  (setq mark-ring-max 64)
+  (setq global-mark-ring-max 128)
+  (setq save-interprogram-paste-before-kill t)
+  (setq create-lockfiles nil)
+  (setq echo-keystrokes 0.01)
+  (setq initial-major-mode 'emacs-lisp-mode)
+  (setq eval-expression-print-level nil)
+#+END_SRC
+
+These are some configurations regarding indentation.
+
+#+BEGIN_SRC emacs-lisp :tangle config/config-core.el
+  (setq-default indent-tabs-mode nil) ;; spaces instead of tabs
+  (setq-default tab-width 4)
+
+  (defun core/infer-indentation-style ()
+    "If our source file uses tabs, we use tabs, if spaces spaces,
+  and if neither, we use the current indent-tabs-mode"
+    (let ((space-count (how-many "^  " (point-min) (point-max)))
+          (tab-count (how-many "^\t" (point-min) (point-max))))
+      (if (> space-count tab-count) (setq indent-tabs-mode nil))
+      (if (> tab-count space-count) (setq indent-tabs-mode t))))
+
+  (add-hook 'prog-mode-hook 'core/infer-indentation-style)
+#+END_SRC
+
+Do not show the initial default splash screen and do not show any message on
+start-up.
+
+#+BEGIN_SRC emacs-lisp :tangle config/config-core.el
+  (setq inhibit-splash-screen t)
+  (setq inhibit-startup-echo-area-message t)
+  (setq inhibit-startup-message t)
+#+END_SRC
+
+Some modes that I like to have by default.
+
+#+BEGIN_SRC emacs-lisp :tangle config/config-core.el
+  (global-visual-line-mode)
+  (xterm-mouse-mode t)
+  (which-function-mode t)
+  (blink-cursor-mode -1)
+  (global-auto-revert-mode t)
+  (electric-indent-mode t)
+  (transient-mark-mode t)
+  (delete-selection-mode t)
+  (random t) ;; seed
+
+  (defun core/find-file-hook ()
+    (when (string-match "\\.min\\." (buffer-file-name))
+      (fundamental-mode)))
+  (add-hook 'find-file-hook #'core/find-file-hook)
+
+  (provide 'config-core)
+#+END_SRC
+
+** Util
+
+Some useful functions. They are pretty much self documented
+
+#+BEGIN_SRC emacs-lisp :tangle config/config-util.el
+  (defun util/window-killer ()
+    "Closes the window, and deletes the buffer if it's the last window open."
+    (interactive)
+    (if (> buffer-display-count 1)
+        (if (= (length (window-list)) 1)
+            (kill-buffer)
+          (delete-window))
+      (kill-buffer-and-window)))
+
+  (defun util/minibuffer-keyboard-quit ()
+    "Abort recursive edit.
+  In Delete Selection mode, if the mark is active, just deactivate it;
+  then it takes a second \\[keyboard-quit] to abort the minibuffer."
+    (interactive)
+    (if (and delete-selection-mode transient-mark-mode mark-active)
+        (setq deactivate-mark t)
+      (when (get-buffer "*Completions*") (delete-windows-on "*Completions*"))
+      (abort-recursive-edit)))
+
+  (defun util/set-transparency (alpha)
+    "Sets the transparency of the current frame."
+    (interactive "nAlpha: ")
+    (set-frame-parameter nil 'alpha alpha))
+
+  (defun util/google ()
+    "Google the selected region if any, display a query prompt otherwise."
+    (interactive)
+    (browse-url
+     (concat
+      "http://www.google.com/search?ie=utf-8&oe=utf-8&q="
+      (url-hexify-string (if mark-active
+                             (buffer-substring (region-beginning) (region-end))
+                           (read-string "Search Google: "))))))
+
+  (defun util/copy-file-name-to-clipboard ()
+    "Copy the current buffer file name to the clipboard."
+    (interactive)
+    (let ((filename (if (equal major-mode 'dired-mode)
+                        default-directory
+                      (buffer-file-name))))
+      (when filename
+        (kill-new filename)
+        (message "Copied buffer file name '%s' to the clipboard." filename))))
+
+  (defun util/eval-and-replace ()
+    "Replace the preceding sexp with its value."
+    (interactive)
+    (let ((value (eval (preceding-sexp))))
+      (backward-kill-sexp)
+      (insert (format "%s" value))))
+
+  (defun util/rename-current-buffer-file ()
+    "Renames current buffer and file it is visiting."
+    (interactive)
+    (let ((filename (buffer-file-name)))
+      (if (not (and filename (file-exists-p filename)))
+          (message "Buffer is not visiting a file!")
+        (let ((new-name (read-file-name "New name: " filename)))
+          (cond
+           ((vc-backend filename) (vc-rename-file filename new-name))
+           (t
+            (rename-file filename new-name t)
+            (set-visited-file-name new-name t t)))))))
+
+  (defun util/delete-current-buffer-file ()
+    "Kill the current buffer and deletes the file it is visiting."
+    (interactive)
+    (let ((filename (buffer-file-name)))
+      (when filename
+        (if (vc-backend filename)
+            (vc-delete-file filename)
+          (when (y-or-n-p (format "Are you sure you want to delete %s? " filename))
+            (delete-file filename)
+            (message "Deleted file %s" filename)
+            (kill-buffer))))))
+
+  (defun util/goto-scratch-buffer ()
+    "Create a new scratch buffer."
+    (interactive)
+    (switch-to-buffer (get-buffer-create "*scratch*")))
+
+  (defun util/insert-last-kbd-macro ()
+    (interactive)
+    (name-last-kbd-macro 'my-last-macro)
+    (insert-kbd-macro 'my-last-macro))
+
+  (defun util/set-buffer-to-unix-format ()
+    "Converts the current buffer to UNIX file format."
+    (interactive)
+    (set-buffer-file-coding-system 'undecided-unix nil))
+
+  (defun util/set-buffer-to-dos-format ()
+    "Converts the current buffer to DOS file format."
+    (interactive)
+    (set-buffer-file-coding-system 'undecided-dos nil))
+
+  (defun util/find-file-as-root (file)
+    "Edits a file as root."
+    (interactive "f")
+    (find-file-other-window (concat "/sudo:root@localhost:" file)))
+
+  (provide 'config-util)
 #+END_SRC
