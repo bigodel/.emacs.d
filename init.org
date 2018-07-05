@@ -2053,3 +2053,458 @@ This package highlights all of the /TODO's/ in the file.
 :PROPERTIES:
 :CUSTOM_ID: mail
 :END:
+
+* COMMENT Meta
+:PROPERTIES:
+:CUSTOM_ID: meta
+:END:
+
+All changes to the configuration should be done in =init.org=, not in =init.el=.
+Any changes in the =init.el= file will be overwritten by saving this =init.org=.
+
+Emacs can't load =.org=-files directly, but =org-mode= provides functions to
+extract the code blocks and write them to a file. There are multiple ways of
+handling this; like suggested by [[http://emacs.stackexchange.com/questions/3143/can-i-use-org-mode-to-structure-my/emacs-or-other-el-configuration-file][this StackOverflow post]], one could just use
+=org-babel-load-file=. But here I use the approach suggested by Lars Tveito.
+
+When this configuration is loaded the first time, the =init.el= is the file that
+is loaded. It looks like this:
+
+#+BEGIN_SRC emacs-lisp :tangle no
+  ;; This file replaces itself with the actual configuration at first run
+
+  ;; We can't tangle without org!
+  (require 'org)
+  ;; Open the configuration
+  (find-file (concat user-emacs-directory "init.el"))
+  ;; Tangle it
+  (org-babel-tangle)
+  ;; Load it
+  (load-file (concat user-emacs-directory "init.el"))
+  ;; Finally, byte-compile itself
+  (byte-compile-file (concat user-emacs-directory "init.el"))
+#+END_SRC
+
+It tangles the org-file, so that this file is overwritten with the actual
+configuration.
+
+There is no reason to track the =init.el= that is generated; by running the
+following command =git= will not bother tracking it:
+
+#+BEGIN_SRC sh :tangle no
+  git update-index --assume-unchanged init.el
+#+END_SRC
+
+If one wishes to make changes to the repo-version of =init.el= start tracking
+again with:
+
+#+BEGIN_SRC sh :tangle no
+  git update-index --no-assume-unchanged init.el
+#+END_SRC
+
+The =init.el= should (after the first run) mirror the source blocks in the
+=README.org=. We can use =C-c C-v t= to run =org-babel-tangle=, which extracts the
+code blocks from the current file into a source-specific file (in this case a
+=.el=-file).
+
+To avoid doing this each time a change is made we can add a function to the
+=after-save-hook= ensuring to always tangle and byte-compile the =org=-document
+after changes. I also made a function to update, in case the hook fails (which
+has happened).
+
+WARNING: This function might not work on your setup because I had to set the
+=user-emacs-directory= variable to the location of my dotfiles. I use stow to
+manage my dotfiles, it automatically creates symlinks from my configuration
+files to the specified directory, that way I can keep all of my dotfiles inside
+a single directory, making it easier for me to keep track of them via github and
+makes the process of symlinking everything much easir (you just gotta type =stow
+<program-name>=). If you want to learn more there is [[https://alexpearce.me/2016/02/managing-dotfiles-with-stow/][this]] link and [[http://brandon.invergo.net/news/2012-05-26-using-gnu-stow-to-manage-your-dotfiles.html][this]] link.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  ;; default location of emacs' files
+  (setq user-emacs-directory "~/.emacs.d/")
+
+  (defun tangle-init ()
+    (interactive)
+    "If the current buffer is init.org the code-blocks are
+  tangled, and the tangled file is compiled."
+    (when (equal (buffer-file-name)
+                 (expand-file-name (concat user-emacs-directory "init.org")))
+      ;; Avoid running hooks when tangling.
+      (let ((prog-mode-hook nil))
+        (org-babel-tangle)
+        (byte-compile-file (concat user-emacs-directory "init.el")))))
+
+  ;; execute the tangle function every time init.org is saved
+  (add-hook 'after-save-hook 'tangle-init)
+#+END_SRC
+
+Some personal info.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (setq user-full-name "João Pedro de Amorim Paula"
+        user-mail-address "jpedrodeamorim@gmail.com")
+#+END_SRC
+
+Server configuration. This is only define the directory to store the socket.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (defvar server-socket-dir
+    (and (featurep 'make-network-process '(:family local))
+         (format "%s/emacs%d" (or (getenv "TMPDIR") "/tmp") (user-uid)))
+    "The directory in which to place the server socket. If local
+    sockets are not supported, this is nil.")
+#+END_SRC
+
+* COMMENT [[https://glyph.twistedmatrix.com/2015/11/editor-malware.html][Your text editor is malware]]
+
+
+Here is just some recommendations from [[https://glyph.twistedmatrix.com/2015/11/editor-malware.html][this post]]. I highly recommend anyone to
+read it.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (setq tls-checktrust t)
+#+END_SRC
+
+* COMMENT Sane defaults
+
+Disable all bars if they are not void.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (when (fboundp 'menu-bar-mode)
+    (menu-bar-mode -1))
+  (when (fboundp 'tool-bar-mode)
+    (tool-bar-mode -1))
+  (when (fboundp 'scroll-bar-mode)
+    (scroll-bar-mode -1))
+  (when (fboundp 'horizontal-scroll-bar-mode)
+    (horizontal-scroll-bar-mode -1))
+#+END_SRC
+
+Change "yes or no" prompt to "y or n".
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (fset 'yes-or-no-p 'y-or-n-p)
+#+END_SRC
+
+Uniquify makes buffer names unique, instead of having suffixes like =<2>=,
+=<3>=...
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (require 'uniquify)
+  (setq uniquify-buffer-name 'forward)
+#+END_SRC
+
+Save the location of the pointer.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (save-place-mode t)
+#+END_SRC
+
+[[https://www.emacswiki.org/emacs/HippieExpand][=hippie-expand=]] is [[https://www.emacswiki.org/emacs/DynamicAbbreviations][=dabbrev=]] on steroids. But I also want to use
+[[https://www.emacswiki.org/emacs/AbbrevMode][=abbrev-mode=]] globally.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (setq hippie-expand-try-functions-list '(try-expand-dabbrev
+                                           try-expand-dabbrev-all-buffers
+                                           try-expand-dabbrev-from-kill
+                                           try-complete-file-name-partially
+                                           try-complete-file-name
+                                           try-expand-all-abbrevs
+                                           try-expand-list
+                                           try-expand-line
+                                           try-complete-lisp-symbol-partially
+                                           try-complete-lisp-symbol))
+
+  (global-set-key (kbd "M-/") 'hippie-expand)
+
+  (setq save-abbrevs 'silently)
+
+  (setq-default abbrev-mode t)
+#+END_SRC
+
+Show matching pairs of parenthesis, curly braces, etc...
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  ;; remove the delay
+  (setq show-paren-delay 0)
+  (show-paren-mode t)
+#+END_SRC
+
+Tabs configuration.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (setq-default tab-width 4                   ; a tab is 4 spaces
+                c-basic-offset 'tab-width     ; default C indentation
+                lisp-indent-offset 'tab-width ; default lisp indentation
+                indent-tabs-mode nil)         ; spaces instead of tabs
+#+END_SRC
+
+This function I got from the EmacsWiki page on [[https://www.emacswiki.org/emacs/NoTabs][spaces instead of tabs]]. It is a
+pretty simple function that verifies if the number or spaces is bigger or
+smaller than the number of tabs and chooses the appropriate option.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (defun jpprime/infer-indentation-style ()
+    ;; if our source file uses tabs, we use tabs, if spaces spaces, and if
+    ;; neither, we use the current indent-tabs-mode
+    (let ((space-count (how-many "^  " (point-min) (point-max)))
+          (tab-count (how-many "^\t" (point-min) (point-max))))
+      (if (> space-count tab-count) (setq indent-tabs-mode nil))
+      (if (> tab-count space-count) (setq indent-tabs-mode t))))
+
+  (add-hook 'prog-mode-hook 'jpprime/infer-indentation-style)
+#+END_SRC
+
+Some nice default configuration.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (setq auto-revert-interval 1                   ; refresh buffers fast
+        apropos-do-all t                         ; apropos search more extensively
+        default-input-method "portuguese-prefix" ; i'm brazilian
+        inhibit-startup-message t                ; no splash screen please
+        initial-scratch-message nil              ; clean scratch buffer
+        recentf-max-saved-items 100              ; show more recent files
+        ring-bell-function 'ignore               ; quiet
+        visible-bell t                           ; flash the frame to represent bell
+        save-interprogram-paste-before-kill t    ; integrate clipboard with kill ring
+        require-final-newline t)                 ; always end a file with newline
+#+END_SRC
+
+Backup files and the "places" file.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (setq save-place-file (concat user-emacs-directory "places")
+        backup-directory-alist `(("." . ,(concat user-emacs-directory
+                                                 "backups"))))
+#+END_SRC
+
+Show recently visited files.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (recentf-mode 1)
+#+END_SRC
+
+* COMMENT Custom functions
+
+** Create missing directory
+
+This function asks to create a parent directory if you're trying to access a
+file without one.
+
+#+BEGIN_SRC emacs-lisp
+  (defun jpprime/create-non-existent-directory ()
+    (let ((parent-directory (file-name-directory buffer-file-name)))
+      (when (and (not (file-exists-p parent-directory))
+                 j            (y-or-n-p (format "Directory `%s' does not exist! Create it?" parent-directory)))
+        (make-directory parent-directory t))))
+
+  (add-to-list 'find-file-not-found-functions #'my/create-non-existent-directory)
+#+END_SRC
+
+** Insert line above and below
+
+Insert a newline above or below the current line without moving the point.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (defun jpprime/insert-line-below ()
+    "Insert a line below the cursor."
+    (interactive)
+    (let ((current-point (point)))
+      (move-end-of-line 1)
+      (open-line 1)
+      (goto-char current-point)))
+
+  (defun jpprime/insert-line-above ()
+    "Insert a line above the cursor."
+    (interactive)
+    (let ((current-point (point)))
+      (move-beginning-of-line 1)
+      (newline-and-indent)
+      (indent-according-to-mode)
+      (goto-char current-point)
+      (forward-char)))
+
+  (global-set-key (kbd "C-S-n") 'jpprime/insert-line-below)
+  (global-set-key (kbd "C-S-o") 'jpprime/insert-line-above)
+#+END_SRC
+
+** Toggle between vertical and horizontal split
+:PROPERTIES:
+:CUSTOM_ID: toggle-vertical-horizontal-split
+:END:
+
+This function I got from a [[https://stackoverflow.com/questions/2081577/setting-emacs-split-to-horizontal][StackOverflow post]] when I was looking for a way to
+set the default split to be vertical, because I use the =C-c o= on helm to open
+a new file or a buffer on another window, but that would always open a
+horizontal window. The functions lets me toggle between horizontal and vertical
+split in the current window; from the post: "/If you got two windows in one
+frame, and you want to change the layout from vertical to horizontal or vice/
+/versa/".
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (defun jpprime/toggle-window-split ()
+    (interactive)
+      (if (= (count-windows) 2)
+        (let* ((this-win-buffer (window-buffer))
+              (next-win-buffer (window-buffer (next-window)))
+              (this-win-edges (window-edges (selected-window)))
+              (next-win-edges (window-edges (next-window)))
+              (this-win-2nd
+               (not (and (<= (car this-win-edges)
+                          (car next-win-edges))
+                      (<= (cadr this-win-edges)
+                          (cadr next-win-edges)))))
+           (splitter
+            (if (= (car this-win-edges)
+                   (car (window-edges (next-window))))
+                'split-window-horizontally
+              'split-window-vertically)))
+      (delete-other-windows)
+      (let ((first-win (selected-window)))
+        (funcall splitter)
+        (if this-win-2nd (other-window 1))
+        (set-window-buffer (selected-window) this-win-buffer)
+        (set-window-buffer (next-window) next-win-buffer)
+        (select-window first-win)
+        (if this-win-2nd (other-window 1))))))
+
+  ;; C-x 4 t jpprime/toggle-window-split
+  (define-key ctl-x-4-map "t" 'jpprime/toggle-window-split)
+#+END_SRC
+
+* COMMENT Interface
+
+** Switch fonts
+
+Function to switch functions on the fly.
+
+#+BEGIN_SRC emacs-lisp
+  (defun jpprime/switch-font (font)
+    (interactive "Switch font (1. Inconsolata Nerd | 2. Terminus | 3. Hack Nerd | 4. Source Code Nerd | 5. Roboto Mono Nerd | 6. Monospace): ")
+    (cond ((string= font "1") (set-frame-font (apply 'font-spec InconsolataNerd-font) nil t))
+          ((string= font "2") (set-frame-font (apply 'font-spec Terminus-font) nil t))
+          ((string= font "3") (set-frame-font (apply 'font-spec HackNerd-font) nil t))
+          ((string= font "4") (set-frame-font (apply 'font-spec SourceCodeNerd-font) nil t))
+          ((string= font "5") (set-frame-font (apply 'font-spec RobotoMonoNerd-font) nil t))
+          ((string= font "6") (set-frame-font (apply 'font-spec Monospace-font) nil t))
+          (t (message "Invalid option. Please choose a valide number."))))
+#+END_SRC
+
+* COMMENT General packages configuration
+
+I manage my packages with =package.el=, which comes pre-installed on Emacs 24+.
+To load downloaded packages we need to initialize =package=.
+
+Packages can be installed from various repos, here we add the three that I use
+(which, frankly, is enough, since [[http://melpa.milkbox.net/#/][melpa]] is very large and well maintained).
+There are also some packages that I need to load manually; I keep them stored in
+=~/.emacs.d/elisp=, so I need to add it to my =load-path=.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (require 'package)
+
+  ;; do not activate installed packages on startup
+  (setq package-enable-at-startup nil)
+
+  ;; configure some some repositorys to fetch packages from
+  (unless (assoc-default "melpa" package-archives)
+    (add-to-list 'package-archives
+                 '("melpa" . "https://melpa.org/packages/") t))
+  (unless (assoc-default "melpa-stable" package-archives)
+    (add-to-list 'package-archives
+                 '("melpa-stable" . "https://stable.melpa.org/packages/") t))
+  (unless (assoc-default "org" package-archives)
+    (add-to-list 'package-archives
+                 '("org" . "https://orgmode.org/elpa/") t))
+
+  ;; packages installed manually go here
+  (add-to-list 'load-path "~/.emacs.d/elisp")
+
+  ;; activate installed packages
+  (package-initialize)
+#+END_SRC
+
+Use =M-x package-refresh-contents= to reload the list of packages after adding
+these for the first time.
+
+* COMMENT TRAMP
+
+Here is some configuration regarding TRAMP, the "Transparent Remote (file)
+Acess, Multiple Protocol". It allows me to access remote files from inside my
+current Emacs, that is, I can use my local Emacs configuration to edit remote
+files seamlessly.
+
+Since I mostly use it to edit files over =ssh= it makes sense to set it as the
+default method. This allows me to omit the =/ssh:= part when using it.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (require 'tramp)
+  (setq tramp-default-method "ssh")
+
+  ;; from the TRAMP FAQ {{{
+  ;; disable version control to avoid delays
+  (setq vc-ignore-dir-regexp
+        (format "\\(%s\\)\\|\\(%s\\)"
+                vc-ignore-dir-regexp
+                tramp-file-name-regexp))
+
+  ;; TODO: move this to the modeline section
+  ;; show a modeline indication when working on root
+  (defun my-mode-line-function ()
+    (when (string-match "^/su\\(do\\)?:" default-directory)
+      (setq mode-line-format
+            (format-mode-line mode-line-format 'font-lock-warning-face))))
+  ;; }}}
+
+  (add-hook 'find-file-hook 'my-mode-line-function)
+  (add-hook 'dired-mode-hook 'my-mode-line-function)
+
+  ;; TODO review the necessity of this
+  ;; (eval-after-load 'tramp '(setenv "SHELL" "/bin/bash"))
+#+END_SRC
+
+* COMMENT Eshell
+
+This is a function to start =eshell=, a shell written in Emacs Lisp, on the
+bottom part of the window, but only covering 30% of it. It opens it on the
+current working directory and renames the buffer to the directory name.
+
+#+BEGIN_SRC emacs-lisp
+  (defun jpprime/eshell-here ()
+    "Opens up a new shell in the directory associated with the
+  current buffer's file. The eshell is renamed to match that
+  directory to make multiple eshell windows easier."
+    (interactive)
+    (let* ((parent (if (buffer-file-name)
+                       (file-name-directory (buffer-file-name))
+                       default-directory))
+           (height (/ (window-total-height) 3))
+           (name   (car (last (split-string parent "/" t)))))
+      (split-window-vertically (- height))
+      (other-window 1)
+      (eshell "new")
+      (rename-buffer (concat "*eshell: " name "*"))
+
+      (insert (concat "ls"))
+      (eshell-send-input)))
+
+  (global-set-key (kbd "C-!") 'jpprime/eshell-here)
+  (define-key evil-normal-state-map (kbd "!") 'my/eshell-here)
+  (define-key evil-visual-state-map (kbd "!") 'my/eshell-here)
+  (define-key evil-motion-state-map (kbd "!") 'my/eshell-here)
+#+END_SRC
+
+Disable line number in =eshell=.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (add-hook 'eshell-mode-hook
+            (lambda ()
+              (nlinum-mode -1)))
+#+END_SRC
+
+Use =eshell= instead of the regular interpreter when I type =M-!=.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (global-set-key (kbd "M-!") 'eshell-command)
+#+END_SRC

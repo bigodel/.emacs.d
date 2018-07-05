@@ -10,462 +10,343 @@
 :CUSTOM_ID: about
 :END:
 
-* Meta
-:PROPERTIES:
-:CUSTOM_ID: meta
-:END:
+#+BEGIN_QUOTE
+No Emacs configuration is original, everything is a copy of a bunch of other
+peoples' configs.
 
-All changes to the configuration should be done in =init.org=, not in =init.el=.
-Any changes in the =init.el= file will be overwritten by saving this =init.org=.
+    -- Me
+#+END_QUOTE
 
-Emacs can't load =.org=-files directly, but =org-mode= provides functions to
-extract the code blocks and write them to a file. There are multiple ways of
-handling this; like suggested by [[http://emacs.stackexchange.com/questions/3143/can-i-use-org-mode-to-structure-my/emacs-or-other-el-configuration-file][this StackOverflow post]], one could just use
-=org-babel-load-file=. But here I use the approach suggested by Lars Tveito.
+This configuration is almost a full copy of Bailey Ling's config, availabe in
+[[https://github.com/bling/dotemacs][this link]]. I highly recommend you check out his config first, even though ours
+do not differ much. I also recommend you to check out [[https://github.com/purcell/emacs.d][Steve Purcell's]] config. If
+none of those two are your cup of tea, there is a compilation of [[https://github.com/caisah/emacs.dz][awesome emacs
+configs]] to help you get started (or restarted) on you journey to create the
+perfect editor.
 
-When this configuration is loaded the first time, the =init.el= is the file that
-is loaded. It looks like this:
+My aim here was to use his KISS (Keep It Simple Stupid) approach to Emacs
+configuration and merge it with a literate programming approach. Usually
+literate programming Emacs' configuration files are one huge Org file that
+tangles all of the code blocks into a single =init.el=. This can get pretty
+messy pretty quick (in my opinion), so I prefer to keep a bunch of files
+separate, each with their own context. For example, since =helm= is [[https://tuhdo.github.io/helm-intro.html][A Package in
+a league of its own]] it makes sense to have a =config/helm-cfg.el=.
+
+You might not want to simply copy and paste this into your configuration, I
+recommend you get used to the defaults of Emacs (I'm using [[https://github.com/emacs-evil/evil][=evil-mode=]]) and
+Emacs Lisp, so you can understand everything written in here. For a introduction
+(a very comprehensive one) in elisp, refer to [[https://www.gnu.org/software/emacs/manual/html_mono/eintr.html][An Introduction to Programming in
+Emacs Lisp]] from the GNU Project website, or you could use the built in info by
+typing =C-h i= and selecting "Emacs Lisp Intro". Also, as Sasha Chua
+recommended, you could paste small portions of =elisp= code in the =*scratch*=
+buffer and use the command =M-x eval buffer= to see what that code might do
+without making the change permanent.
+
+If you're viewing the Org file, you can open source code blocks (those are the
+ones in =BEGIN_SRC=) in a separate buffer by moving your point inside them and
+typing =C-c '= which calls the function =org-edit-special=. This opens another
+buffer in =emacs-lisp-mode=, so you can use =M-x eval-buffer= to load the
+changes. If you want to explore how functions work, use =M-x edebug-defun= to
+set up debugging for that function, and then call it. You can learn more about
+=edebug= in the [[http://www.gnu.org/software/emacs/manual/html_node/elisp/Edebug.html][Emacs Lisp manual]].
+
+The heart of this setup lies in 3 snippets of elisp code.
+
+The first is a wrapper on the =require= Emacs function (you can learn more about
+it with =C-h f RET require=. It checks if the package is installed and if not
+install it, and then uses =require= to load its libraries. This was actually
+[[https://github.com/purcell/emacs.d][Purcell's]] idea, and copied from its config.
 
 #+BEGIN_SRC emacs-lisp :tangle no
-  ;; This file replaces itself with the actual configuration at first run
-
-  ;; We can't tangle without org!
-  (require 'org)
-  ;; Open the configuration
-  (find-file (concat user-emacs-directory "init.el"))
-  ;; Tangle it
-  (org-babel-tangle)
-  ;; Load it
-  (load-file (concat user-emacs-directory "init.el"))
-  ;; Finally, byte-compile itself
-  (byte-compile-file (concat user-emacs-directory "init.el"))
+  (defun require-package (package)
+    "Ensures that PACKAGE is installed."
+    (unless (or (package-installed-p package)
+                (require package nil 'noerror))
+      (unless (assoc package package-archive-contents)
+        (package-refresh-contents))
+      (package-install package)))
 #+END_SRC
 
-It tangles the org-file, so that this file is overwritten with the actual
-configuration.
+=with-eval-after-load= is a function that lets you defer execution of code until
+after a feature has been loaded. It is very useful to only load some packages
+when they're (we don't want Python related packages to be loaded when we are
+hacking elisp, right?), and because of that it is extensively used in this
+setup. So of course there is a macro to make it simpler. It can also run code if
+a package has been installed by using "pkgname-autoloads" or only if multiple
+packages have been loaded. This also avoids loading config for packages that
+haven't been loaded yet, resulting in void variables of function definitions.
+This was take from [[http://milkbox.net/note/single-file-master-emacs-configuration/][milkypostman]] (along with some other things).
 
-There is no reason to track the =init.el= that is generated; by running the
-following command =git= will not bother tracking it:
+#+BEGIN_SRC emacs-lisp :tangle no
+  ;; examples
+  (after 'magit
+    ;; execute after magit has been loaded
+    )
+  (after "magit-autoloads"
+    ;; execute if magit is installed/available
+    )
+  (after [evil magit]
+    ;; execute after evil and magit have been loaded
+    )
 
-#+BEGIN_SRC sh :tangle no
-  git update-index --assume-unchanged init.el
+  ;; macro definiton
+  (defmacro after (feature &rest body)
+    "Executes BODY after FEATURE has been loaded.
+
+  FEATURE may be any one of:
+      'evil            => (with-eval-after-load 'evil BODY)
+      \"evil-autoloads\" => (with-eval-after-load \"evil-autolaods\" BODY)
+      [evil cider]     => (with-eval-after-load 'evil
+                            (with-eval-after-load 'cider
+                              BODY))
+  "
+    (declare (indent 1))
+    (cond
+     ((vectorp feature)
+      (let ((prog (macroexp-progn body)))
+        (cl-loop for f across feature
+                 do
+                 (progn
+                   (setq prog (append `(',f) `(,prog)))
+                   (setq prog (append '(with-eval-after-load) prog))))
+        prog))
+     (t
+      `(with-eval-after-load ,feature ,@body))))
 #+END_SRC
 
-If one wishes to make changes to the repo-version of =init.el= start tracking
-again with:
+The last and simplest of all is just a common lisp loop at the end of =init.el=
+(the main configuration file) to recursively load all of the files ending in
+=.el= inside the =config/= directory. That ensures that all of our configuration
+scattered in a lot of files is loaded. If you want to add additional
+configuration for a new language, simply create =new-language.el= in
+=config/langs= and it will automatically be loaded. Files are loaded in reverse
+order so that any functions defined will be available in child nodes.
 
-#+BEGIN_SRC sh :tangle no
-  git update-index --no-assume-unchanged init.el
+#+BEGIN_SRC emacs-lisp :tangle no
+  (cl-loop for file in (reverse
+                        (directory-files-recursively config-directory "\\.el$"))
+           do (load file))
 #+END_SRC
 
-The =init.el= should (after the first run) mirror the source blocks in the
-=README.org=. We can use =C-c C-v t= to run =org-babel-tangle=, which extracts the
-code blocks from the current file into a source-specific file (in this case a
-=.el=-file).
+Other important part (but not necessarily the heart) of the setup are the
+bindings, which are all kept
 
-To avoid doing this each time a change is made we can add a function to the
-=after-save-hook= ensuring to always tangle and byte-compile the =org=-document
-after changes. I also made a function to update, in case the hook fails (which
-has happened).
-
-WARNING: This function might not work on your setup because I had to set the
-=user-emacs-directory= variable to the location of my dotfiles. I use stow to
-manage my dotfiles, it automatically creates symlinks from my configuration
-files to the specified directory, that way I can keep all of my dotfiles inside
-a single directory, making it easier for me to keep track of them via github and
-makes the process of symlinking everything much easir (you just gotta type =stow
-<program-name>=). If you want to learn more there is [[https://alexpearce.me/2016/02/managing-dotfiles-with-stow/][this]] link and [[http://brandon.invergo.net/news/2012-05-26-using-gnu-stow-to-manage-your-dotfiles.html][this]] link.
-
-#+BEGIN_SRC emacs-lisp :tangle yes
-  ;; default location of emacs' files
-  (setq user-emacs-directory "~/.emacs.d/")
-
-  (defun tangle-init ()
-    (interactive)
-    "If the current buffer is init.org the code-blocks are
-  tangled, and the tangled file is compiled."
-    (when (equal (buffer-file-name)
-                 (expand-file-name (concat user-emacs-directory "init.org")))
-      ;; Avoid running hooks when tangling.
-      (let ((prog-mode-hook nil))
-        (org-babel-tangle)
-        (byte-compile-file (concat user-emacs-directory "init.el")))))
-
-  ;; execute the tangle function every time init.org is saved
-  (add-hook 'after-save-hook 'tangle-init)
-#+END_SRC
-
-Some personal info.
-
-#+BEGIN_SRC emacs-lisp :tangle yes
-  (setq user-full-name "João Pedro de Amorim Paula"
-        user-mail-address "jpedrodeamorim@gmail.com")
-#+END_SRC
-
-Server configuration. This is only define the directory to store the socket.
-
-#+BEGIN_SRC emacs-lisp :tangle yes
-  (defvar server-socket-dir
-    (and (featurep 'make-network-process '(:family local))
-         (format "%s/emacs%d" (or (getenv "TMPDIR") "/tmp") (user-uid)))
-    "The directory in which to place the server socket. If local
-    sockets are not supported, this is nil.")
-#+END_SRC
-
-* [[https://glyph.twistedmatrix.com/2015/11/editor-malware.html][Your text editor is malware]]
-
-
-Here is just some recommendations from [[https://glyph.twistedmatrix.com/2015/11/editor-malware.html][this post]]. I highly recommend anyone to
-read it.
-
-#+BEGIN_SRC emacs-lisp :tangle yes
-  (setq tls-checktrust t)
-#+END_SRC
-
-* Sane defaults
-
-Disable all bars if they are not void.
-
-#+BEGIN_SRC emacs-lisp :tangle yes
-  (when (fboundp 'menu-bar-mode)
-    (menu-bar-mode -1))
-  (when (fboundp 'tool-bar-mode)
-    (tool-bar-mode -1))
-  (when (fboundp 'scroll-bar-mode)
-    (scroll-bar-mode -1))
-  (when (fboundp 'horizontal-scroll-bar-mode)
-    (horizontal-scroll-bar-mode -1))
-#+END_SRC
-
-Change "yes or no" prompt to "y or n".
-
-#+BEGIN_SRC emacs-lisp :tangle yes
-  (fset 'yes-or-no-p 'y-or-n-p)
-#+END_SRC
-
-Uniquify makes buffer names unique, instead of having suffixes like =<2>=,
-=<3>=...
-
-#+BEGIN_SRC emacs-lisp :tangle yes
-  (require 'uniquify)
-  (setq uniquify-buffer-name 'forward)
-#+END_SRC
-
-Save the location of the pointer.
-
-#+BEGIN_SRC emacs-lisp :tangle yes
-  (save-place-mode t)
-#+END_SRC
-
-[[https://www.emacswiki.org/emacs/HippieExpand][=hippie-expand=]] is [[https://www.emacswiki.org/emacs/DynamicAbbreviations][=dabbrev=]] on steroids. But I also want to use
-[[https://www.emacswiki.org/emacs/AbbrevMode][=abbrev-mode=]] globally.
-
-#+BEGIN_SRC emacs-lisp :tangle yes
-  (setq hippie-expand-try-functions-list '(try-expand-dabbrev
-                                           try-expand-dabbrev-all-buffers
-                                           try-expand-dabbrev-from-kill
-                                           try-complete-file-name-partially
-                                           try-complete-file-name
-                                           try-expand-all-abbrevs
-                                           try-expand-list
-                                           try-expand-line
-                                           try-complete-lisp-symbol-partially
-                                           try-complete-lisp-symbol))
-
-  (global-set-key (kbd "M-/") 'hippie-expand)
-
-  (setq save-abbrevs 'silently)
-
-  (setq-default abbrev-mode t)
-#+END_SRC
-
-Show matching pairs of parenthesis, curly braces, etc...
-
-#+BEGIN_SRC emacs-lisp :tangle yes
-  ;; remove the delay
-  (setq show-paren-delay 0)
-  (show-paren-mode t)
-#+END_SRC
-
-Tabs configuration.
-
-#+BEGIN_SRC emacs-lisp :tangle yes
-  (setq-default tab-width 4                   ; a tab is 4 spaces
-                c-basic-offset 'tab-width     ; default C indentation
-                lisp-indent-offset 'tab-width ; default lisp indentation
-                indent-tabs-mode nil)         ; spaces instead of tabs
-#+END_SRC
-
-This function I got from the EmacsWiki page on [[https://www.emacswiki.org/emacs/NoTabs][spaces instead of tabs]]. It is a
-pretty simple function that verifies if the number or spaces is bigger or
-smaller than the number of tabs and chooses the appropriate option.
-
-#+BEGIN_SRC emacs-lisp :tangle yes
-  (defun jpprime/infer-indentation-style ()
-    ;; if our source file uses tabs, we use tabs, if spaces spaces, and if
-    ;; neither, we use the current indent-tabs-mode
-    (let ((space-count (how-many "^  " (point-min) (point-max)))
-          (tab-count (how-many "^\t" (point-min) (point-max))))
-      (if (> space-count tab-count) (setq indent-tabs-mode nil))
-      (if (> tab-count space-count) (setq indent-tabs-mode t))))
-
-  (add-hook 'prog-mode-hook 'jpprime/infer-indentation-style)
-#+END_SRC
-
-Some nice default configuration.
-
-#+BEGIN_SRC emacs-lisp :tangle yes
-  (setq auto-revert-interval 1                   ; refresh buffers fast
-        apropos-do-all t                         ; apropos search more extensively
-        default-input-method "portuguese-prefix" ; i'm brazilian
-        inhibit-startup-message t                ; no splash screen please
-        initial-scratch-message nil              ; clean scratch buffer
-        recentf-max-saved-items 100              ; show more recent files
-        ring-bell-function 'ignore               ; quiet
-        visible-bell t                           ; flash the frame to represent bell
-        save-interprogram-paste-before-kill t    ; integrate clipboard with kill ring
-        require-final-newline t)                 ; always end a file with newline
-#+END_SRC
-
-Backup files and the "places" file.
-
-#+BEGIN_SRC emacs-lisp :tangle yes
-  (setq save-place-file (concat user-emacs-directory "places")
-        backup-directory-alist `(("." . ,(concat user-emacs-directory
-                                                 "backups"))))
-#+END_SRC
-
-Show recently visited files.
-
-#+BEGIN_SRC emacs-lisp :tangle yes
-  (recentf-mode 1)
-#+END_SRC
-
-* Custom functions
-
-** Create missing directory
-
-This function asks to create a parent directory if you're trying to access a
-file without one.
-
-#+BEGIN_SRC emacs-lisp
-  (defun jpprime/create-non-existent-directory ()
-    (let ((parent-directory (file-name-directory buffer-file-name)))
-      (when (and (not (file-exists-p parent-directory))
-                 j            (y-or-n-p (format "Directory `%s' does not exist! Create it?" parent-directory)))
-        (make-directory parent-directory t))))
-
-  (add-to-list 'find-file-not-found-functions #'my/create-non-existent-directory)
-#+END_SRC
-
-** Insert line above and below
-
-Insert a newline above or below the current line without moving the point.
-
-#+BEGIN_SRC emacs-lisp :tangle yes
-  (defun jpprime/insert-line-below ()
-    "Insert a line below the cursor."
-    (interactive)
-    (let ((current-point (point)))
-      (move-end-of-line 1)
-      (open-line 1)
-      (goto-char current-point)))
-
-  (defun jpprime/insert-line-above ()
-    "Insert a line above the cursor."
-    (interactive)
-    (let ((current-point (point)))
-      (move-beginning-of-line 1)
-      (newline-and-indent)
-      (indent-according-to-mode)
-      (goto-char current-point)
-      (forward-char)))
-
-  (global-set-key (kbd "C-S-n") 'jpprime/insert-line-below)
-  (global-set-key (kbd "C-S-o") 'jpprime/insert-line-above)
-#+END_SRC
-
-** Toggle between vertical and horizontal split
-:PROPERTIES:
-:CUSTOM_ID: toggle-vertical-horizontal-split
-:END:
-
-This function I got from a [[https://stackoverflow.com/questions/2081577/setting-emacs-split-to-horizontal][StackOverflow post]] when I was looking for a way to
-set the default split to be vertical, because I use the =C-c o= on helm to open
-a new file or a buffer on another window, but that would always open a
-horizontal window. The functions lets me toggle between horizontal and vertical
-split in the current window; from the post: "/If you got two windows in one
-frame, and you want to change the layout from vertical to horizontal or vice/
-/versa/".
-
-#+BEGIN_SRC emacs-lisp :tangle yes
-  (defun jpprime/toggle-window-split ()
-    (interactive)
-      (if (= (count-windows) 2)
-        (let* ((this-win-buffer (window-buffer))
-              (next-win-buffer (window-buffer (next-window)))
-              (this-win-edges (window-edges (selected-window)))
-              (next-win-edges (window-edges (next-window)))
-              (this-win-2nd
-               (not (and (<= (car this-win-edges)
-                          (car next-win-edges))
-                      (<= (cadr this-win-edges)
-                          (cadr next-win-edges)))))
-           (splitter
-            (if (= (car this-win-edges)
-                   (car (window-edges (next-window))))
-                'split-window-horizontally
-              'split-window-vertically)))
-      (delete-other-windows)
-      (let ((first-win (selected-window)))
-        (funcall splitter)
-        (if this-win-2nd (other-window 1))
-        (set-window-buffer (selected-window) this-win-buffer)
-        (set-window-buffer (next-window) next-win-buffer)
-        (select-window first-win)
-        (if this-win-2nd (other-window 1))))))
-
-  ;; C-x 4 t jpprime/toggle-window-split
-  (define-key ctl-x-4-map "t" 'jpprime/toggle-window-split)
-#+END_SRC
-
-* Interface
-
-** Switch fonts
-
-Function to switch functions on the fly.
-
-#+BEGIN_SRC emacs-lisp
-  (defun jpprime/switch-font (font)
-    (interactive "Switch font (1. Inconsolata Nerd | 2. Terminus | 3. Hack Nerd | 4. Source Code Nerd | 5. Roboto Mono Nerd | 6. Monospace): ")
-    (cond ((string= font "1") (set-frame-font (apply 'font-spec InconsolataNerd-font) nil t))
-          ((string= font "2") (set-frame-font (apply 'font-spec Terminus-font) nil t))
-          ((string= font "3") (set-frame-font (apply 'font-spec HackNerd-font) nil t))
-          ((string= font "4") (set-frame-font (apply 'font-spec SourceCodeNerd-font) nil t))
-          ((string= font "5") (set-frame-font (apply 'font-spec RobotoMonoNerd-font) nil t))
-          ((string= font "6") (set-frame-font (apply 'font-spec Monospace-font) nil t))
-          (t (message "Invalid option. Please choose a valide number."))))
-#+END_SRC
-
-* General packages configuration
-
-I manage my packages with =package.el=, which comes pre-installed on Emacs 24+.
-To load downloaded packages we need to initialize =package=.
-
-Packages can be installed from various repos, here we add the three that I use
-(which, frankly, is enough, since [[http://melpa.milkbox.net/#/][melpa]] is very large and well maintained).
-There are also some packages that I need to load manually; I keep them stored in
-=~/.emacs.d/elisp=, so I need to add it to my =load-path=.
-
-#+BEGIN_SRC emacs-lisp :tangle yes
-  (require 'package)
-
-  ;; do not activate installed packages on startup
-  (setq package-enable-at-startup nil)
-
-  ;; configure some some repositorys to fetch packages from
-  (unless (assoc-default "melpa" package-archives)
-    (add-to-list 'package-archives
-                 '("melpa" . "https://melpa.org/packages/") t))
-  (unless (assoc-default "melpa-stable" package-archives)
-    (add-to-list 'package-archives
-                 '("melpa-stable" . "https://stable.melpa.org/packages/") t))
-  (unless (assoc-default "org" package-archives)
-    (add-to-list 'package-archives
-                 '("org" . "https://orgmode.org/elpa/") t))
-
-  ;; packages installed manually go here
-  (add-to-list 'load-path "~/.emacs.d/elisp")
-
-  ;; activate installed packages
-  (package-initialize)
-#+END_SRC
-
-Use =M-x package-refresh-contents= to reload the list of packages after adding
-these for the first time.
-
-* TRAMP
-
-Here is some configuration regarding TRAMP, the "Transparent Remote (file)
-Acess, Multiple Protocol". It allows me to access remote files from inside my
-current Emacs, that is, I can use my local Emacs configuration to edit remote
-files seamlessly.
-
-Since I mostly use it to edit files over =ssh= it makes sense to set it as the
-default method. This allows me to omit the =/ssh:= part when using it.
-
-#+BEGIN_SRC emacs-lisp :tangle yes
-  (require 'tramp)
-  (setq tramp-default-method "ssh")
-
-  ;; from the TRAMP FAQ {{{
-  ;; disable version control to avoid delays
-  (setq vc-ignore-dir-regexp
-        (format "\\(%s\\)\\|\\(%s\\)"
-                vc-ignore-dir-regexp
-                tramp-file-name-regexp))
-
-  ;; TODO: move this to the modeline section
-  ;; show a modeline indication when working on root
-  (defun my-mode-line-function ()
-    (when (string-match "^/su\\(do\\)?:" default-directory)
-      (setq mode-line-format
-            (format-mode-line mode-line-format 'font-lock-warning-face))))
-  ;; }}}
-
-  (add-hook 'find-file-hook 'my-mode-line-function)
-  (add-hook 'dired-mode-hook 'my-mode-line-function)
-
-  ;; TODO review the necessity of this
-  ;; (eval-after-load 'tramp '(setenv "SHELL" "/bin/bash"))
-#+END_SRC
-
-* Eshell
-
-This is a function to start =eshell=, a shell written in Emacs Lisp, on the
-bottom part of the window, but only covering 30% of it. It opens it on the
-current working directory and renames the buffer to the directory name.
-
-#+BEGIN_SRC emacs-lisp
-  (defun jpprime/eshell-here ()
-    "Opens up a new shell in the directory associated with the
-  current buffer's file. The eshell is renamed to match that
-  directory to make multiple eshell windows easier."
-    (interactive)
-    (let* ((parent (if (buffer-file-name)
-                       (file-name-directory (buffer-file-name))
-                       default-directory))
-           (height (/ (window-total-height) 3))
-           (name   (car (last (split-string parent "/" t)))))
-      (split-window-vertically (- height))
-      (other-window 1)
-      (eshell "new")
-      (rename-buffer (concat "*eshell: " name "*"))
-
-      (insert (concat "ls"))
-      (eshell-send-input)))
-
-  (global-set-key (kbd "C-!") 'jpprime/eshell-here)
-  (define-key evil-normal-state-map (kbd "!") 'my/eshell-here)
-  (define-key evil-visual-state-map (kbd "!") 'my/eshell-here)
-  (define-key evil-motion-state-map (kbd "!") 'my/eshell-here)
-#+END_SRC
-
-Disable line number in =eshell=.
-
-#+BEGIN_SRC emacs-lisp :tangle yes
-  (add-hook 'eshell-mode-hook
-            (lambda ()
-              (nlinum-mode -1)))
-#+END_SRC
-
-Use =eshell= instead of the regular interpreter when I type =M-!=.
-
-#+BEGIN_SRC emacs-lisp :tangle yes
-  (global-set-key (kbd "M-!") 'eshell-command)
-#+END_SRC
-
-* =init.el=
+* Main file
 
 This is the main configuration file, the one that ties all of the others
 together.
+
+I start by requiring some common lisp libraries and then setting up a lexical
+variable to store the start-up time for Emacs, and then display it in the
+minibuffer when Emacs loads.
+
+The next code block sets the garbage collector threshold and the =core= and
+=config= directories, where our configuration files are going to be. Right after
+all of the bars are disabled if they're enabled.
+
+#+BEGIN_SRC emacs-lisp :tangle new.el
+  ;;; init.el --- Init file that ties all together
+  ;;; Commentary:
+  ;;;
+  ;;;     This serves to tie together all of the scattered configuration files.
+  ;;;
+  ;;; Code:
+
+  (eval-when-compile (require 'cl))
+
+  (lexical-let ((emacs-start-time (current-time)))
+    (add-hook 'emacs-startup-hook
+              (lambda ()
+                (let ((elapsed (float-time (time-subtract (current-time) emacs-start-time))))
+                  (message "[Emacs initialized in %.3fs]" elapsed)))))
+
+  (let ((gc-cons-threshold (* 256 1024 1024))
+        (file-name-handler-alist nil)
+        (core-directory (concat user-emacs-directory "core/"))
+        (config-directory (concat user-emacs-directory "config/")))
+
+    (when (fboundp 'tool-bar-mode) (tool-bar-mode -1))
+    (when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
+    (when (fboundp 'menu-bar-mode) (menu-bar-mode -1))
+#+END_SRC
+
+These are some definitions of custom variables. They serve the purpose of
+choosing what package to use for different parts of my Emacs setup, like
+completion engine, which could either be =helm=, =ido= or =ivy=.
+
+#+BEGIN_SRC emacs-lisp :tangle new.el
+    (defgroup dotemacs nil
+      "Custom configuration for dotemacs."
+      :group 'local)
+
+    (defcustom dotemacs-cache-directory (concat user-emacs-directory ".cache/")
+      "The storage location for various persistent files."
+      :type 'directory
+      :group 'dotemacs)
+
+    (defcustom dotemacs-completion-engine
+      'company
+      "The completion engine the use."
+      :type '(radio
+              (const :tag "company-mode" company)
+              (const :tag "auto-complete-mode" auto-complete))
+      :group 'dotemacs)
+
+    (defcustom dotemacs-switch-engine
+      'helm
+      "The primary engine to use for narrowing and navigation."
+      :type '(radio
+              (const :tag "helm" helm)
+              (const :tag "ido" ido)
+              (const :tag "ivy" ivy))
+      :group 'dotemacs)
+
+    (defcustom dotemacs-pair-engine
+      'emacs
+      "The primary engine to use auto-pairing and parens matching."
+      :type '(radio
+              (const :tag "emacs" emacs)
+              (const :tag "smartparens" smartparens))
+      :group 'dotemacs)
+
+    (defcustom dotemacs-globally-ignored-directories
+      '("elpa" ".cache" "target" "dist" "node_modules" ".git" ".hg" ".svn" ".idea")
+      "A set of default directories to ignore for anything that involves searching."
+      :type '(repeat string)
+      :group 'dotemacs)
+#+END_SRC
+
+Here is where we set the default repositories from where Emacs should fetch
+packages from.
+
+#+BEGIN_SRC emacs-lisp :tangle new.el
+    (setq package-archives '(("melpa" . "http://melpa.org/packages/")
+                             ("org" . "http://orgmode.org/elpa/")
+                             ("gnu" . "http://elpa.gnu.org/packages/")))
+    (setq package-enable-at-startup nil)
+    (package-initialize)
+#+END_SRC
+
+This is where we load all of our configuration files stored in
+=~/.emacs.d/core=, =~/.emacs.d/config= and any custom configuration in the file
+=~/.emacs.d/custom.el=. The first to be loaded is the core part, followed by the
+=custom.el= file. Then there is a common lisp loop to recursively load all of
+the elisp files in =~/.emacs.d/config=.
+
+Note that if the variable =user-emacs-directory= is changed to, let's say,
+=~/.myemacs=, this configuration file will look for elisp files in
+=~/.myemacs/=, =~/.myemacs/core/= and =~/.myemacs/config/= instead of the above
+mentioned paths with =~/.emacs.d/=.
+
+#+BEGIN_SRC emacs-lisp :tangle new.el
+    (load (concat core-directory "core-boot"))
+
+    (setq custom-file (concat user-emacs-directory "custom.el"))
+    (when (file-exists-p custom-file)
+      (load custom-file))
+
+    (cl-loop for file in (reverse (directory-files-recursively config-directory "\\.el$"))
+             do (condition-case ex
+                    (load (file-name-sans-extension file))
+                  ('error (with-current-buffer "*scratch*"
+                            (insert (format "[INIT ERROR]\n%s\n%s\n\n" file ex)))))))               (load (file-name-sans-extension file))
+
+  (provide 'init.el) ;;; init.el ends here
+#+END_SRC
+
+* Core
+** Load at boot
+
+#+BEGIN_SRC emacs-lisp :tangle core/core-boot.el
+  (eval-when-compile (require 'cl))
+
+  (let ((base (concat user-emacs-directory "elisp/")))
+    (add-to-list 'load-path base)
+    (dolist (dir (directory-files base t "^[^.]"))
+      (when (file-directory-p dir)
+        (add-to-list 'load-path dir))))
+
+  (defmacro /boot/measure-load (target &rest body)
+    (declare (indent defun))
+    `(let ((elapsed)
+           (start (current-time)))
+       (prog1
+           ,@body
+         (with-current-buffer (get-buffer-create "*Load Times*")
+           (when (= 0 (buffer-size))
+             (insert (format "| %-60s | %-23s | elapsed  |\n" "feature" "timestamp"))
+             (insert "|------------------------------------------+-------------------------+----------|\n"))
+           (goto-char (point-max))
+           (setq elapsed (float-time (time-subtract (current-time) start)))
+           (insert (format "| %-60s | %s | %f |\n"
+                           ,target
+                           (format-time-string "%Y-%m-%d %H:%M:%S.%3N" (current-time))
+                           elapsed))))))
+
+  (defadvice load (around dotemacs activate)
+    (/boot/measure-load file ad-do-it))
+
+  (defadvice require (around dotemacs activate)
+    (if (memq feature features)
+        ad-do-it
+      (/boot/measure-load feature ad-do-it)))
+
+  (defmacro bind (&rest commands)
+    "Convenience macro which creates a lambda interactive command."
+    `(lambda (arg)
+       (interactive "P")
+       ,@commands))
+
+  (defun require-package (package)
+    "Ensures that PACKAGE is installed."
+    (unless (or (package-installed-p package)
+                (require package nil 'noerror))
+      (unless (assoc package package-archive-contents)
+        (package-refresh-contents))
+      (package-install package)))
+
+  (unless (fboundp 'with-eval-after-load)
+    (defmacro with-eval-after-load (file &rest body)
+      (declare (indent 1))
+      `(eval-after-load ,file (lambda () ,@body))))
+
+  (defmacro after (feature &rest body)
+    "Executes BODY after FEATURE has been loaded.
+
+  FEATURE may be any one of:
+      'evil            => (with-eval-after-load 'evil BODY)
+      \"evil-autoloads\" => (with-eval-after-load \"evil-autolaods\" BODY)
+      [evil cider]     => (with-eval-after-load 'evil
+                            (with-eval-after-load 'cider
+                              BODY))
+  "
+    (declare (indent 1))
+    (cond
+     ((vectorp feature)
+      (let ((prog (macroexp-progn body)))
+        (cl-loop for f across feature
+                 do
+                 (progn
+                   (setq prog (append `(',f) `(,prog)))
+                   (setq prog (append '(with-eval-after-load) prog))))
+        prog))
+     (t
+      `(with-eval-after-load ,feature ,@body))))
+
+  (defmacro /boot/lazy-major-mode (pattern mode)
+    "Defines a new major-mode matched by PATTERN, installs MODE if
+  necessary, and activates it."
+    `(add-to-list 'auto-mode-alist
+                  '(,pattern . (lambda ()
+                                 (require-package (quote ,mode))
+                                 (,mode)))))
+
+  (defmacro /boot/delayed-init (&rest body)
+    "Runs BODY after idle for a predetermined amount of time."
+    `(run-with-idle-timer
+      0.5
+      nil
+      (lambda () ,@body)))
+
+  (provide 'core-boot) ;;; core-boot.el ends here
+#+END_SRC
