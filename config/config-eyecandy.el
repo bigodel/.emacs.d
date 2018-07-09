@@ -1,12 +1,37 @@
+
 (load-theme 'manoj-dark t)
+
+(cond
+ ((member "DejaVu Sans Mono" (font-family-list))
+  (add-to-list 'initial-frame-alist '(font . "DejaVu Sans Mono-14"))
+  (add-to-list 'default-frame-alist '(font . "DejaVu Sans Mono-14")))
+ ((member "Terminus" (font-family-list))
+  (add-to-list 'initial-frame-alist '(font . "Terminus-16"))
+  (add-to-list 'default-frame-alist '(font . "Terminus-16"))))
+
+;; make comments grey
+(set-face-foreground 'font-lock-comment-face "dimgray")
+(set-face-foreground 'font-lock-comment-delimiter-face "dimgray")
+
+;; disable the bigger scale on bold fonts
+(set-face-attribute 'font-lock-function-name-face nil :height 1.0)
+
+;; change the mouse color
+(set-mouse-color "black")
+
+;; increase, decrease and adjust font size
+(global-set-key (kbd "C-+") 'text-scale-increase)
+(global-set-key (kbd "C--") 'text-scale-decrease)
+(global-set-key (kbd "C-0") 'text-scale-adjust)
 
 (line-number-mode t)
 (column-number-mode t)
 (display-time-mode t)
 (size-indication-mode t)
 
-(require-package 'origami)
-(global-origami-mode)
+(require-package 'vimish-fold)
+(require 'vimish-fold)
+(vimish-fold-global-mode t)
 
 (require-package 'diminish)
 (diminish 'visual-line-mode)
@@ -31,18 +56,13 @@
 (after 'undo-tree (diminish 'undo-tree-mode))
 (after 'which-key (diminish 'which-key-mode))
 (after 'yasnippet (diminish 'yas-minor-mode))
+(after 'evil-org (diminish 'evil-org-mode))
+(after 'evil-vimish-fold (diminish 'evil-vimish-fold-mode))
 
 ;; (require-package 'smart-mode-line)
 ;; (setq sml/theme 'dark)
 ;; (setq sml/no-confirm-load-theme t)
 ;; (sml/setup)
-
-(when (fboundp 'global-prettify-symbols-mode)
-  (global-prettify-symbols-mode)
-  (add-hook 'js2-mode-hook
-            (lambda ()
-              (push '("function" . 955) prettify-symbols-alist)
-              (push '("return" . 8592) prettify-symbols-alist))))
 
 (/boot/delayed-init
  (require-package 'color-identifiers-mode)
@@ -65,11 +85,5 @@
 (require-package 'eval-sexp-fu)
 (require 'eval-sexp-fu)
 (eval-sexp-fu-flash-mode)
-
-(add-hook 'find-file-hook #'hl-line-mode)
-
-(if (fboundp #'display-line-numbers-mode)
-    (add-hook 'find-file-hook #'display-line-numbers-mode)
-  (add-hook 'find-file-hook 'linum-mode))
 
 (provide 'config-eyecandy)

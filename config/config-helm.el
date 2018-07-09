@@ -1,7 +1,13 @@
+
 (require-package 'helm)
 
 (setq helm-bookmark-show-location t)
 (setq helm-buffer-max-length 40)
+(setq helm-split-window-inside-p t)
+(setq helm-mode-fuzzy-match t)
+(setq helm-ff-file-name-history-use-recentf t)
+(setq helm-ff-skip-boring-files t)
+(setq helm-follow-mode-persistent t)
 
 (after 'helm-source
   (defun /helm/make-source (f &rest args)
@@ -50,16 +56,10 @@
   (setq helm-autoresize-max-height 30)
   (helm-autoresize-mode t))
 
-(defun /helm/activate-as-switch-engine (on)
-  (if on
-      (progn
-        (global-set-key [remap execute-extended-command] #'helm-M-x)
-        (global-set-key [remap find-file] #'helm-find-files)
-        (helm-mode t))
-    (global-set-key [remap execute-extended-command] nil)
-    (global-set-key [remap find-file] nil)
-    (helm-mode -1)))
-
-(/boot/delayed-init (/helm/activate-as-switch-engine t))
+(/boot/delayed-init
+ (progn
+   (global-set-key [remap execute-extended-command] #'helm-M-x)
+   (global-set-key [remap find-file] #'helm-find-files)
+   (helm-mode t)))
 
 (provide 'config-helm)

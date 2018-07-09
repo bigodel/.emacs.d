@@ -1,39 +1,39 @@
+
 (after 'evil
-       (/bindings/define-keys evil-normal-state-map ("g d" #'dumb-jump-go))
+  (/bindings/define-keys evil-normal-state-map ("g d" #'dumb-jump-go))
 
-       (require-package 'key-chord)
-       (key-chord-mode 1)
-       (key-chord-define evil-insert-state-map "jk" 'evil-normal-state)
-       (key-chord-define evil-insert-state-map "kj" 'evil-normal-state)
+  (require-package 'key-chord)
+  (key-chord-mode 1)
+  (key-chord-define evil-insert-state-map "jk" 'evil-normal-state)
+  (key-chord-define evil-insert-state-map "kj" 'evil-normal-state)
 
-       (after "evil-numbers-autoloads"
-              (/bindings/define-key evil-normal-state-map "C-a" #'evil-numbers/inc-at-pt)
-              (/bindings/define-key evil-normal-state-map "C-S-a" #'evil-numbers/dec-at-pt))
+  (after "evil-numbers-autoloads"
+    (/bindings/define-key evil-normal-state-map "C-a" #'evil-numbers/inc-at-pt)
+    (/bindings/define-key evil-normal-state-map "C-S-a" #'evil-numbers/dec-at-pt))
 
-       (/bindings/define-keys evil-normal-state-map
-                              ("C-b" #'evil-scroll-up)
-                              ("C-f" #'evil-scroll-down))
+  (after 'company
+    (/bindings/define-key evil-insert-state-map "C-TAB" #'company-complete))
 
-       (after 'evil-evilified-state
-              (/bindings/define-keys evil-evilified-state-map
-                                     ("C-w h" #'evil-window-left)
-                                     ("C-w j" #'evil-window-down)
-                                     ("C-w h" #'evil-window-up)
-                                     ("C-w l" #'evil-window-right)))
-       (/bindings/define-keys evil-normal-state-map
-                              ("C-w h" #'evil-window-left)
-                              ("C-w j" #'evil-window-down)
-                              ("C-w k" #'evil-window-up)
-                              ("C-w l" #'evil-window-right))
+  (/bindings/define-keys evil-normal-state-map
+    ("C-b" #'evil-scroll-up)
+    ("C-f" #'evil-scroll-down))
 
-       (/bindings/define-keys evil-motion-state-map
-                              ("j" #'evil-next-visual-line)
-                              ("k" #'evil-previous-visual-line))
+  (after 'evil-evilified-state
+    (/bindings/define-keys evil-evilified-state-map
+      ("C-w h" #'evil-window-left)
+      ("C-w j" #'evil-window-down)
+      ("C-w h" #'evil-window-up)
+      ("C-w l" #'evil-window-right)))
+  (/bindings/define-keys evil-normal-state-map
+    ("C-w h" #'evil-window-left)
+    ("C-w j" #'evil-window-down)
+    ("C-w k" #'evil-window-up)
+    ("C-w l" #'evil-window-right))
 
-       (/bindings/define-key evil-normal-state-map "Y" "y$")
+  (/bindings/define-keys evil-motion-state-map
+    ("j" #'evil-next-visual-line)
+    ("k" #'evil-previous-visual-line))
 
-       (require-package 'evil-collection)
-       (setq evil-collection-company-use-tng nil)
-       (evil-collection-init))
+  (/bindings/define-key evil-normal-state-map "Y" "y$"))
 
 (provide 'config-bindings-evil)

@@ -1,3 +1,4 @@
+
 (require-package 'dired-sidebar)
 (setq dired-sidebar-should-follow-file t)
 (setq dired-sidebar-follow-file-idle-delay 0.2)
@@ -34,6 +35,7 @@
 
 (require-package 'popwin)
 (require 'popwin)
+(push '(compilation-mode :noselect t) popwin:special-display-config)
 (popwin-mode)
 
 (require-package 'restart-emacs)

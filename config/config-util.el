@@ -1,3 +1,4 @@
+
 (defun /util/window-killer ()
   "Closes the window, and deletes the buffer if it's the last window open."
   (interactive)
@@ -106,5 +107,16 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
     (indent-according-to-mode)
     (goto-char current-point)
     (forward-char)))
+
+(defun /util/tangle-init ()
+  (interactive)
+  "If the current buffer is init.org' the code-blocks are
+tangled, and the tangled file is compiled."
+  (when (equal (buffer-file-name)
+               (expand-file-name (concat user-emacs-directory "init.org")))
+    ;; Avoid running hooks when tangling.
+    (let ((prog-mode-hook nil))
+      (org-babel-tangle)
+      (byte-compile-file (concat user-emacs-directory "init.el")))))
 
 (provide 'config-util)

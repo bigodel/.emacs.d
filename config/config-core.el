@@ -1,3 +1,4 @@
+
 (defvar dotemacs-core/default-coding-system 'utf-8
   "The default coding system to use.")
 
@@ -20,6 +21,9 @@
       (make-directory parent-directory t))))
 
 (add-to-list 'find-file-not-found-functions #'/core/create-non-existent-directory)
+
+(setq user-full-name "João Pedro de Amorim Paula")
+(setq user-mail-address "jpedrodeamorim@gmail.com")
 
 ;; move cursor to the last position upon open
 (require 'saveplace)
@@ -52,6 +56,41 @@
 (add-hook 'minibuffer-setup-hook #'/core/minibuffer-setup-hook)
 (add-hook 'minibuffer-exit-hook #'/core/minibuffer-exit-hook)
 
+(require 'whitespace)
+(setq whitespace-display-mappings
+      '((space-mark 32 [183])
+        (newline-mark 10 [182 10])
+        (tab-mark 9 [9655 9] [92 9])
+        ))
+
+(setq whitespace-style '(face trailing spaces space-mark newlines tab-mark))
+
+(set-face-attribute 'whitespace-space nil
+                    :background nil
+                    :foreground "black")
+
+(set-face-attribute 'whitespace-trailing nil
+                    :background "gray15")
+
+(global-whitespace-mode t)
+
+(setq hippie-expand-try-functions-list '(try-expand-dabbrev
+                                         try-expand-dabbrev-all-buffers
+                                         try-expand-dabbrev-from-kill
+                                         try-complete-file-name-partially
+                                         try-complete-file-name
+                                         try-expand-all-abbrevs
+                                         try-expand-list
+                                         try-expand-line
+                                         try-complete-lisp-symbol-partially
+                                         try-complete-lisp-symbol))
+
+(global-set-key (kbd "M-/") 'hippie-expand)
+
+(setq save-abbrevs 'silently)
+
+(add-hook 'after-save-hook '/util/tangle-init)
+
 ;; pcomplete
 (setq pcomplete-ignore-case t)
 
@@ -63,7 +102,7 @@
 
 ;; dired
 (after 'dired
-       (require 'dired-x))
+  (require 'dired-x))
 
 ;; url
 (setq url-configuration-directory (concat dotemacs-cache-directory "url/"))
@@ -81,11 +120,11 @@
 
 ;; comint
 (after 'comint
-       (defun /core/toggle-comint-scroll-to-bottom-on-output ()
-         (interactive)
-         (if comint-scroll-to-bottom-on-output
-             (setq comint-scroll-to-bottom-on-output nil)
-           (setq comint-scroll-to-bottom-on-output t))))
+  (defun /core/toggle-comint-scroll-to-bottom-on-output ()
+    (interactive)
+    (if comint-scroll-to-bottom-on-output
+        (setq comint-scroll-to-bottom-on-output nil)
+      (setq comint-scroll-to-bottom-on-output t))))
 
 ;; compile
 (setq compilation-always-kill t)
@@ -103,7 +142,7 @@
 
 ;; fringe
 (when (display-graphic-p)
-  (fringe-mode '(2 . 0)))
+  (fringe-mode '(0 . 0)))
 
 ;; ediff
 (setq ediff-split-window-function 'split-window-horizontally) ;; side-by-side diffs
@@ -137,7 +176,7 @@
 ;; better scrolling
 (setq scroll-conservatively 9999
       scroll-preserve-screen-position t
-      scroll-margin 3)
+      scroll-margin 1)
 
 ;; better buffer names for duplicates
 (require 'uniquify)
@@ -147,8 +186,8 @@
       uniquify-after-kill-buffer-p t)
 
 (require 'paren)
-(set-face-background 'show-paren-match (face-background 'default))
-(set-face-foreground 'show-paren-match "#def")
+(set-face-background 'show-paren-match (face-foreground 'default))
+(set-face-foreground 'show-paren-match (face-background 'default))
 (set-face-attribute 'show-paren-match nil :weight 'extra-bold)
 (show-paren-mode 1)
 
@@ -157,15 +196,13 @@
 (defun /core/do-not-kill-scratch-buffer ()
   (if (member (buffer-name (current-buffer))
               '("*scratch*" "*Messages*" "*Require Times*"))
-      (progn
-        (bury-buffer)
-        nil)
+      (progn (bury-buffer) nil)
     t))
 (add-hook 'kill-buffer-query-functions '/core/do-not-kill-scratch-buffer)
 
 (defalias 'yes-or-no-p 'y-or-n-p)
 
-(let ((coding dotemacs-core/default-coding-system))
+(let ((coding 'utf-8))
   (setq locale-coding-system coding)
   (set-selection-coding-system coding)
   (set-default-coding-systems coding)
@@ -176,10 +213,10 @@
 (setq ring-bell-function 'ignore)
 (setq mark-ring-max 64)
 (setq global-mark-ring-max 128)
-(setq save-interprogram-paste-before-kill t)
+(setq select-enable-clipboard t)
+(setq save-interprogram-paste-before-kill nil)
 (setq create-lockfiles nil)
 (setq echo-keystrokes 0.01)
-(setq initial-major-mode 'emacs-lisp-mode)
 (setq eval-expression-print-level nil)
 
 (setq-default indent-tabs-mode nil) ;; spaces instead of tabs
@@ -198,6 +235,7 @@ and if neither, we use the current indent-tabs-mode"
 (setq inhibit-splash-screen t)
 (setq inhibit-startup-echo-area-message t)
 (setq inhibit-startup-message t)
+(setq initial-scratch-message nil)
 
 (global-visual-line-mode)
 (xterm-mouse-mode t)

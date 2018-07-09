@@ -1,3 +1,4 @@
+
 (defvar dotemacs-evil/emacs-state-hooks
   '(org-log-buffer-setup-hook
     org-capture-mode-hook)
@@ -69,10 +70,6 @@
 (unless (display-graphic-p)
   (evil-esc-mode 1))
 
-(require-package 'evil-nerd-commenter)
-(require 'evil-nerd-commenter)
-(require 'evil-nerd-commenter-operator)
-
 (require-package 'evil-surround)
 (global-evil-surround-mode t)
 
@@ -83,33 +80,44 @@
 (require 'evil-anzu)
 
 (after 'magit
-       (require-package 'evil-magit)
-       (require 'evil-magit))
+  (require-package 'evil-magit)
+  (require 'evil-magit))
 
 (after 'org
-       (require-package 'evil-org)
-       (require 'evil-org)
-       (add-hook 'org-mode-hook 'evil-org-mode)
-       (add-hook 'evil-org-mode-hook
-                 (lambda ()
-                   (evil-org-set-key-theme))))
+  (require-package 'evil-org)
+  (require 'evil-org)
+  (add-hook 'org-mode-hook 'evil-org-mode)
+  (add-hook 'evil-org-mode-hook
+            (lambda ()
+              (evil-org-set-key-theme))))
 
-(require-package 'evil-matchit)
-(defun evilmi-customize-keybinding ()
-  (evil-define-key 'normal evil-matchit-mode-map
-    "%" 'evilmi-jump-items))
-(global-evil-matchit-mode t)
+(after 'vimish-fold
+  (require-package 'evil-vimish-fold)
+  (require 'evil-vimish-fold)
+  (evil-vimish-fold-mode t))
 
-(require-package 'evil-indent-textobject)
-(require 'evil-indent-textobject)
+  (require-package 'evil-matchit)
+  (defun evilmi-customize-keybinding ()
+    (evil-define-key 'normal evil-matchit-mode-map
+      "%" 'evilmi-jump-items))
+  (global-evil-matchit-mode t)
 
-(require-package 'evil-visualstar)
-(global-evil-visualstar-mode t)
+  (require-package 'evil-indent-textobject)
+  (require 'evil-indent-textobject)
 
-(require-package 'evil-numbers)
+  (require-package 'evil-visualstar)
+  (global-evil-visualstar-mode t)
 
-(require-package 'evil-terminal-cursor-changer)
-(evil-terminal-cursor-changer-activate)
+  (require-package 'evil-numbers)
+
+  (require-package 'evil-terminal-cursor-changer)
+  (evil-terminal-cursor-changer-activate)
+
+(after 'evil
+  (require-package 'evil-collection)
+  (setq evil-collection-setup-minibuffer t)
+  (setq evil-collection-company-use-tng nil)
+  (evil-collection-init))
 
 (defadvice evil-ex-search-next (after dotemacs activate)
   (recenter))

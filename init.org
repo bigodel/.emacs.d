@@ -5,7 +5,11 @@
 #+PROPERTY: header-args :tangle yes
 #+OPTIONS: toc:t
 
-* TODO REMOVED ALL UNUSED PACKAGES!
+* TODO
+
+** TODO Add Magit-todos and hl-todo
+** TODO Add flycheck
+** TODO Add org config
 
 
 * Introduction
@@ -223,13 +227,15 @@ These serve the purpose of choosing what package to use for different parts of
 my Emacs setup, like completion engine, which could either be =helm=, =ido= or
 =ivy=.
 
-#+TΟDO: switch this to init.el
 #+BEGIN_SRC emacs-lisp :tangle init.el
   (defvar dotemacs-cache-directory (concat user-emacs-directory ".cache/")
     "The storage location for various persistent files.")
 
-  (defvar dotemacs-completion-engine 'company
-    "The completion engine the use.")
+  (when (and (not (file-directory-p dotemacs-cache-directory))
+             (y-or-n-p
+              (format "Directory `%s' does not exist! Create it?"
+                      dotemacs-cache-directory)))
+    (make-directory dotemacs-cache-directory t))
 
   (defvar dotemacs-globally-ignored-directories
     '("elpa" ".cache" "target" "dist" "node_modules" ".git" ".hg" ".svn" ".idea")
@@ -294,7 +300,21 @@ We also load the common lisp libraries here.
 Load any manually installed packages on the =elisp/= directory.
 
 #+BEGIN_SRC emacs-lisp :tangle core/core-boot.el
+  (defun /core/create-non-existent-directory ()
+    "When trying to access non-exising directories, ask to create them."
+    (let ((parent-directory (file-name-directory buffer-file-name)))
+      (when (and (not (file-exists-p parent-directory))
+                 (y-or-n-p
+                  (format "Directory `%s' does not exist! Create it?"
+                          parent-directory)))
+        (make-directory parent-directory t))))
+
   (let ((base (concat user-emacs-directory "elisp/")))
+    (when (and (not (file-exists-p base))
+               (y-or-n-p
+                (format "Directory `%s' does not exist! Create it?"
+                        base)))
+      (make-directory base t))
     (add-to-list 'load-path base)
     (dolist (dir (directory-files base t "^[^.]"))
       (when (file-directory-p dir)
@@ -453,6 +473,13 @@ non-existing directory.
   (add-to-list 'find-file-not-found-functions #'/core/create-non-existent-directory)
 #+END_SRC
 
+Some personal information.
+
+#+BEGIN_SRC emacs-lisp :tangle config/config-core.el
+  (setq user-full-name "João Pedro de Amorim Paula")
+  (setq user-mail-address "jpedrodeamorim@gmail.com")
+#+END_SRC
+
 =saveplace= is a minor mode that automatically saves place in each file. This
 means when you visit a file, point goes to the last place where it was when you
 previously visited the same file. =savehist-mode= save the minibuffer history in
@@ -497,12 +524,64 @@ from [[http://bling.github.io/blog/2016/01/18/why-are-you-changing-gc-cons-thres
   (add-hook 'minibuffer-exit-hook #'/core/minibuffer-exit-hook)
 #+END_SRC
 
+By default Emacs has =whitespace-mode=. It is used to show whitespace. For more
+information, visit [[https://www.emacswiki.org/emacs/WhiteSpace#toc1][this]] page. The configuration I got mostly from [[http://ergoemacs.org/emacs/whitespace-mode.html][here]].
+
+#+BEGIN_SRC emacs-lisp :tangle config/config-core.el
+  (require 'whitespace)
+  (setq whitespace-display-mappings
+        '((space-mark 32 [183])
+          (newline-mark 10 [182 10])
+          (tab-mark 9 [9655 9] [92 9])
+          ))
+
+  (setq whitespace-style '(face trailing spaces space-mark newlines tab-mark))
+
+  (set-face-attribute 'whitespace-space nil
+                      :background nil
+                      :foreground "black")
+
+  (set-face-attribute 'whitespace-trailing nil
+                      :background "gray15")
+
+  (global-whitespace-mode t)
+#+END_SRC
+
+Another neat feature Emacs has by default it Dynamic Abbreviations (=dabbrev=).
+It After you type a word once, if you type that word again, you can type it
+partially and =M-/= to complete it. If you type a prefix that has many
+candidates, =M-/= cycles the candidates. =hippie-expand= is basically
+=dabbrev-extend= on steroids. It adds a bunch of completion engines to the mix.
+It has an info page =C-h F hippie-expand= in case you want to know more, and the
+[[https://www.emacswiki.org/emacs/HippieExpand][EmacsWiki page]] has a bunch of configurations for different modes.
+
+#+BEGIN_SRC emacs-lisp :tangle config/config-core.el
+  (setq hippie-expand-try-functions-list '(try-expand-dabbrev
+                                           try-expand-dabbrev-all-buffers
+                                           try-expand-dabbrev-from-kill
+                                           try-complete-file-name-partially
+                                           try-complete-file-name
+                                           try-expand-all-abbrevs
+                                           try-expand-list
+                                           try-expand-line
+                                           try-complete-lisp-symbol-partially
+                                           try-complete-lisp-symbol))
+
+  (global-set-key (kbd "M-/") 'hippie-expand)
+
+  (setq save-abbrevs 'silently)
+#+END_SRC
+
 Here we configure the behavior of some default Emacs functions. If you'd like to
 take a look at what they do you could =C-h f= (or =C-h a=) and type the name of
 the function (the comment right before the config) or search on the web, but I
-recommend you look the default documentation about it on Emacs first.
+recommend you look the default documentation about it on Emacs first. It is also
+in this portion that I have added a hook to reload tangle and compile Emacs
+every time it loads.
 
 #+BEGIN_SRC emacs-lisp :tangle config/config-core.el
+  (add-hook 'after-save-hook '/util/tangle-init)
+
   ;; pcomplete
   (setq pcomplete-ignore-case t)
 
@@ -514,7 +593,7 @@ recommend you look the default documentation about it on Emacs first.
 
   ;; dired
   (after 'dired
-         (require 'dired-x))
+    (require 'dired-x))
 
   ;; url
   (setq url-configuration-directory (concat dotemacs-cache-directory "url/"))
@@ -532,11 +611,11 @@ recommend you look the default documentation about it on Emacs first.
 
   ;; comint
   (after 'comint
-         (defun /core/toggle-comint-scroll-to-bottom-on-output ()
-           (interactive)
-           (if comint-scroll-to-bottom-on-output
-               (setq comint-scroll-to-bottom-on-output nil)
-             (setq comint-scroll-to-bottom-on-output t))))
+    (defun /core/toggle-comint-scroll-to-bottom-on-output ()
+      (interactive)
+      (if comint-scroll-to-bottom-on-output
+          (setq comint-scroll-to-bottom-on-output nil)
+        (setq comint-scroll-to-bottom-on-output t))))
 
   ;; compile
   (setq compilation-always-kill t)
@@ -554,7 +633,7 @@ recommend you look the default documentation about it on Emacs first.
 
   ;; fringe
   (when (display-graphic-p)
-    (fringe-mode '(2 . 0)))
+    (fringe-mode '(0 . 0)))
 
   ;; ediff
   (setq ediff-split-window-function 'split-window-horizontally) ;; side-by-side diffs
@@ -588,7 +667,7 @@ recommend you look the default documentation about it on Emacs first.
   ;; better scrolling
   (setq scroll-conservatively 9999
         scroll-preserve-screen-position t
-        scroll-margin 3)
+        scroll-margin 1)
 
   ;; better buffer names for duplicates
   (require 'uniquify)
@@ -598,8 +677,8 @@ recommend you look the default documentation about it on Emacs first.
         uniquify-after-kill-buffer-p t)
 
   (require 'paren)
-  (set-face-background 'show-paren-match (face-background 'default))
-  (set-face-foreground 'show-paren-match "#def")
+  (set-face-background 'show-paren-match (face-foreground 'default))
+  (set-face-foreground 'show-paren-match (face-background 'default))
   (set-face-attribute 'show-paren-match nil :weight 'extra-bold)
   (show-paren-mode 1)
 
@@ -608,9 +687,7 @@ recommend you look the default documentation about it on Emacs first.
   (defun /core/do-not-kill-scratch-buffer ()
     (if (member (buffer-name (current-buffer))
                 '("*scratch*" "*Messages*" "*Require Times*"))
-        (progn
-          (bury-buffer)
-          nil)
+        (progn (bury-buffer) nil)
       t))
   (add-hook 'kill-buffer-query-functions '/core/do-not-kill-scratch-buffer)
 #+END_SRC
@@ -621,7 +698,7 @@ custom variable we defined above and set some variables value.
 #+BEGIN_SRC emacs-lisp :tangle config/config-core.el
   (defalias 'yes-or-no-p 'y-or-n-p)
 
-  (let ((coding dotemacs-core/default-coding-system))
+  (let ((coding 'utf-8))
     (setq locale-coding-system coding)
     (set-selection-coding-system coding)
     (set-default-coding-systems coding)
@@ -632,10 +709,10 @@ custom variable we defined above and set some variables value.
   (setq ring-bell-function 'ignore)
   (setq mark-ring-max 64)
   (setq global-mark-ring-max 128)
-  (setq save-interprogram-paste-before-kill t)
+  (setq select-enable-clipboard t)
+  (setq save-interprogram-paste-before-kill nil)
   (setq create-lockfiles nil)
   (setq echo-keystrokes 0.01)
-  (setq initial-major-mode 'emacs-lisp-mode)
   (setq eval-expression-print-level nil)
 #+END_SRC
 
@@ -663,6 +740,7 @@ start-up.
   (setq inhibit-splash-screen t)
   (setq inhibit-startup-echo-area-message t)
   (setq inhibit-startup-message t)
+  (setq initial-scratch-message nil)
 #+END_SRC
 
 Some modes that I like to have by default.
@@ -804,6 +882,17 @@ more I could say about it.
       (goto-char current-point)
       (forward-char)))
 
+  (defun /util/tangle-init ()
+    (interactive)
+    "If the current buffer is init.org' the code-blocks are
+  tangled, and the tangled file is compiled."
+    (when (equal (buffer-file-name)
+                 (expand-file-name (concat user-emacs-directory "init.org")))
+      ;; Avoid running hooks when tangling.
+      (let ((prog-mode-hook nil))
+        (org-babel-tangle)
+        (byte-compile-file (concat user-emacs-directory "init.el")))))
+
   (provide 'config-util)
 #+END_SRC
 
@@ -909,10 +998,6 @@ Here is the configuration for the comment package. And some more additional
 packages to help integrate =evil= into the most modes possible.
 
 #+BEGIN_SRC emacs-lisp :tangle config/config-evil.el
-  (require-package 'evil-nerd-commenter)
-  (require 'evil-nerd-commenter)
-  (require 'evil-nerd-commenter-operator)
-
   (require-package 'evil-surround)
   (global-evil-surround-mode t)
 
@@ -923,33 +1008,48 @@ packages to help integrate =evil= into the most modes possible.
   (require 'evil-anzu)
 
   (after 'magit
-         (require-package 'evil-magit)
-         (require 'evil-magit))
+    (require-package 'evil-magit)
+    (require 'evil-magit))
 
   (after 'org
-         (require-package 'evil-org)
-         (require 'evil-org)
-         (add-hook 'org-mode-hook 'evil-org-mode)
-         (add-hook 'evil-org-mode-hook
-                   (lambda ()
-                     (evil-org-set-key-theme))))
+    (require-package 'evil-org)
+    (require 'evil-org)
+    (add-hook 'org-mode-hook 'evil-org-mode)
+    (add-hook 'evil-org-mode-hook
+              (lambda ()
+                (evil-org-set-key-theme))))
 
-  (require-package 'evil-matchit)
-  (defun evilmi-customize-keybinding ()
-    (evil-define-key 'normal evil-matchit-mode-map
-      "%" 'evilmi-jump-items))
-  (global-evil-matchit-mode t)
+  (after 'vimish-fold
+    (require-package 'evil-vimish-fold)
+    (require 'evil-vimish-fold)
+    (evil-vimish-fold-mode t))
 
-  (require-package 'evil-indent-textobject)
-  (require 'evil-indent-textobject)
+    (require-package 'evil-matchit)
+    (defun evilmi-customize-keybinding ()
+      (evil-define-key 'normal evil-matchit-mode-map
+        "%" 'evilmi-jump-items))
+    (global-evil-matchit-mode t)
 
-  (require-package 'evil-visualstar)
-  (global-evil-visualstar-mode t)
+    (require-package 'evil-indent-textobject)
+    (require 'evil-indent-textobject)
 
-  (require-package 'evil-numbers)
+    (require-package 'evil-visualstar)
+    (global-evil-visualstar-mode t)
 
-  (require-package 'evil-terminal-cursor-changer)
-  (evil-terminal-cursor-changer-activate)
+    (require-package 'evil-numbers)
+
+    (require-package 'evil-terminal-cursor-changer)
+    (evil-terminal-cursor-changer-activate)
+#+END_SRC 
+
+I also use [[https://github.com/emacs-evil/evil-collection][=evil-collection=]], a set of keybindings for =evil-mode=.
+
+#+BEGIN_SRC emacs-lisp :tangle config/config-evil.el
+  (after 'evil
+    (require-package 'evil-collection)
+    (setq evil-collection-setup-minibuffer t)
+    (setq evil-collection-company-use-tng nil)
+    (evil-collection-init))
 
   (defadvice evil-ex-search-next (after dotemacs activate)
     (recenter))
@@ -961,6 +1061,9 @@ packages to help integrate =evil= into the most modes possible.
 #+END_SRC
 
 ** Helm
+   :PROPERTIES:
+   :CUSTOM_ID: cfg-helm
+   :END:
 
 Helm is a /Emacs incremental completion and selection narrowing framework/
 https://emacs-helm.github.io/helm.
@@ -970,11 +1073,11 @@ People often think helm is just something like [[https://www.emacswiki.org/emacs
 completion in a vertical layout instead of an horizontal one, it is not,
 helm is much more powerful than that.
 
-  + Helm is able to complete multiple lists dispatched in different sources against a pattern.
+  - Helm is able to complete multiple lists dispatched in different sources against a pattern.
 
-  + Helm allows executing an unlimited number of actions on candidates.
+  - Helm allows executing an unlimited number of actions on candidates.
 
-  + Helm allows marking candidates to execute chosen action against this set of candidates.
+  - Helm allows marking candidates to execute chosen action against this set of candidates.
 #+END_QUOTE
 
 #+BEGIN_SRC emacs-lisp :tangle config/config-helm.el
@@ -982,6 +1085,11 @@ helm is much more powerful than that.
 
   (setq helm-bookmark-show-location t)
   (setq helm-buffer-max-length 40)
+  (setq helm-split-window-inside-p t)
+  (setq helm-mode-fuzzy-match t)
+  (setq helm-ff-file-name-history-use-recentf t)
+  (setq helm-ff-skip-boring-files t)
+  (setq helm-follow-mode-persistent t)
 
   (after 'helm-source
     (defun /helm/make-source (f &rest args)
@@ -1036,20 +1144,16 @@ parts of Emacs that the default package doesn't cover. Here are some of those.
     (helm-autoresize-mode t))
 #+END_SRC
 
-Decide if helm is the wanted switch engine or not.
+Start =helm= with the default =find-file= and =M-x= functions to be
+=helm='s alternatives. And also start =helm= on idle time
+(=delayed-init=).
 
 #+BEGIN_SRC emacs-lisp :tangle config/config-helm.el
-  (defun /helm/activate-as-switch-engine (on)
-    (if on
-        (progn
-          (global-set-key [remap execute-extended-command] #'helm-M-x)
-          (global-set-key [remap find-file] #'helm-find-files)
-          (helm-mode t))
-      (global-set-key [remap execute-extended-command] nil)
-      (global-set-key [remap find-file] nil)
-      (helm-mode -1)))
-
-  (/boot/delayed-init (/helm/activate-as-switch-engine t))
+  (/boot/delayed-init
+   (progn
+     (global-set-key [remap execute-extended-command] #'helm-M-x)
+     (global-set-key [remap find-file] #'helm-find-files)
+     (helm-mode t)))
 
   (provide 'config-helm)
 #+END_SRC
@@ -1071,6 +1175,8 @@ starting with the prefix you pressed.
   (require-package 'which-key)
   (setq which-key-idle-delay 0.2)
   (setq which-key-min-display-lines 3)
+  (setq which-key-max-description-length 20)
+  (setq which-key-max-display-columns 6)
   (which-key-mode)
 #+END_SRC
 
@@ -1103,24 +1209,32 @@ These macros are to help me remap keys.
        (,sequence ,binding ,description)))
 #+END_SRC
 
-With this, pressing =ESC= actually leaves the minibuffer. Also, like in Vim's
-"minibuffer", pressing =C-w= deletes a word back.
+With this, pressing =ESC= actually leaves the minibuffer. Also, like
+in Vim's "minibuffer", pressing =C-w= deletes a word back. This is now
+commented because I have =evil-collection-setup-minibuffer= activated
+by default, which makes the minibuffer behave like a normal emacs
+buffer with =evil= activated.
 
 #+BEGIN_SRC emacs-lisp :tangle config/config-bindings.el
   ;; escape minibuffer
-  (define-key minibuffer-local-map [escape] '/utils/minibuffer-keyboard-quit)
-  (define-key minibuffer-local-ns-map [escape] '/utils/minibuffer-keyboard-quit)
-  (define-key minibuffer-local-completion-map [escape] '/utils/minibuffer-keyboard-quit)
-  (define-key minibuffer-local-must-match-map [escape] '/utils/minibuffer-keyboard-quit)
-  (define-key minibuffer-local-isearch-map [escape] '/utils/minibuffer-keyboard-quit)
+  ;; (define-key minibuffer-local-map [escape] '/util/minibuffer-keyboard-quit)
+  ;; (define-key minibuffer-local-ns-map [escape] '/util/minibuffer-keyboard-quit)
+  ;; (define-key minibuffer-local-completion-map [escape] '/util/minibuffer-keyboard-quit)
+  ;; (define-key minibuffer-local-must-match-map [escape] '/util/minibuffer-keyboard-quit)
+  ;; (define-key minibuffer-local-isearch-map [escape] '/util/minibuffer-keyboard-quit)
 
-  (define-key minibuffer-local-map (kbd "C-w") 'backward-kill-word)
+  ;; (define-key minibuffer-local-map (kbd "C-w") 'backward-kill-word)
 #+END_SRC
 
-More configuration regarding a bunch of packages and modes.
+First I map =C-S-n= to create a new below where the point is, and
+=C-S-o= to create one above. The rest is just more configuration
+regarding a bunch of packages and modes.
 
 #+BEGIN_SRC emacs-lisp :tangle config/config-bindings.el
-  (global-set-key (kbd "C-c d") #'dired-sidebar-toggle)
+  (global-set-key (kbd "C-S-n") '/util/insert-line-below)
+  (global-set-key (kbd "C-S-o") '/util/insert-line-above)
+
+  (global-set-key (kbd "C-c d") #'dired-sidebar-toggle-sidebar)
 
   (after "expand-region-autoloads"
     (global-set-key (kbd "C-=") 'er/expand-region))
@@ -1135,57 +1249,67 @@ More configuration regarding a bunch of packages and modes.
     (define-key compilation-mode-map (kbd "k") 'compilation-previous-error))
 #+END_SRC
 
-I like using =helm= to pretty much anything I can, so I set most of the common
-variables as =helm= commands.
+I like using =helm= to pretty much anything I can, so I set most of
+the common variables as =helm= commands. I also find it useful to
+remap the =helm-command-prefix= to =C-c h=, because it is easy to
+mistype =C-x C-c= with the default prefix.
 
 #+BEGIN_SRC emacs-lisp :tangle config/config-bindings.el
   (after 'helm
+    (require 'helm-config)
+    (global-set-key (kbd "C-c h") #'helm-command-prefix)
     (global-unset-key (kbd "C-x c"))
-    (global-set-key (kbd "C-x h") #'helm-command-prefix)
     (global-set-key (kbd "C-h a") #'helm-apropos)
     (global-set-key (kbd "C-x b") #'helm-buffers-list)
     (global-set-key (kbd "C-x C-b") #'helm-mini)
     (global-set-key (kbd "C-x C-f") #'helm-find-files)
     (global-set-key (kbd "C-x r b") #'helm-bookmarks)
-    (global-set-key (kbd "C-p") #'helm-projectile)
+    (global-set-key (kbd "C-S-p") #'helm-projectile-switch-project)
+    (define-key evil-normal-state-map (kbd "C-p") #'helm-projectile)
     (global-set-key (kbd "M-x") #'helm-M-x)
     (global-set-key (kbd "M-y") #'helm-show-kill-ring)
     (global-set-key (kbd "M-:") #'helm-eval-expression-with-eldoc)
     (define-key helm-map (kbd "<tab>") #'helm-execute-persistent-action)
-    (define-key helm-map (kbd "C-z") #'helm-select-action))
+    (define-key helm-map (kbd "C-z") #'helm-select-action)
 
-  (global-set-key (kbd "M-!") 'eshell-command)
-  (global-set-key (kbd "C-!") '/eshell/new-window)
+    (after "helm-ag-autoloads"
+      (global-set-key (kbd "C-c h g") #'helm-do-ag))
 
-  (after 'evil
-    (define-key evil-normal-state-map (kbd "!") '/eshell/new-window)
-    (define-key evil-visual-state-map (kbd "!") '/eshell/new-window)
-    (define-key evil-motion-state-map (kbd "!") '/eshell/new-window))
+    (after "helm-swoop-autoloads"
+      (global-set-key (kbd "C-c h S") #'helm-swoop)))
 
-  (/bindings/define-keys (current-global-map)
-    ("C-c c" #'org-capture)
-    ("C-c a" #'org-agenda)
-    ("C-c l" #'org-store-link)
-    ("C-c s" #'/utils/goto-scratch-buffer)
-    ("C-c e" #'/utils/eval-and-replace)
-    ("C-c t" #'/eshell/new-split))
+    (global-set-key (kbd "M-!") 'eshell-command)
+    (global-set-key (kbd "C-!") '/eshell/new-window)
 
-  (/bindings/define-keys (current-global-map)
-    ("C-x c" #'calculator)
-    ("C-x C" #'calendar)
-    ("C-x C-k" #'kill-this-buffer)
-    ("C-x p" #'proced))
+    (after 'evil
+      (define-key evil-normal-state-map (kbd "!") '/eshell/new-window)
+      (define-key evil-visual-state-map (kbd "!") '/eshell/new-window)
+      (define-key evil-motion-state-map (kbd "!") '/eshell/new-window))
 
-  (/bindings/define-keys (current-global-map)
-    ("C-s"   #'isearch-forward-regexp)
-    ("C-M-s" #'isearch-forward)
-    ("C-r"   #'isearch-backward-regexp)
-    ("C-M-r" #'isearch-backward))
+    (/bindings/define-keys (current-global-map)
+      ("C-c c" #'org-capture)
+      ("C-c a" #'org-agenda)
+      ("C-c l" #'org-store-link)
+      ("C-c s" #'/util/goto-scratch-buffer)
+      ("C-c e" #'/util/eval-and-replace)
+      ("C-c t" #'/eshell/new-split))
 
-  (global-set-key (kbd "<M-f7>") (bind (profiler-start 'cpu+mem)))
-  (global-set-key (kbd "<M-f6>") (bind (profiler-report) (profiler-stop)))
+    (/bindings/define-keys (current-global-map)
+      ("C-x c" #'calculator)
+      ("C-x C" #'calendar)
+      ("C-x C-k" #'kill-this-buffer)
+      ("C-x p" #'proced))
 
-  (provide 'config-bindings)
+    (/bindings/define-keys (current-global-map)
+      ("C-s"   #'isearch-forward-regexp)
+      ("C-M-s" #'isearch-forward)
+      ("C-r"   #'isearch-backward-regexp)
+      ("C-M-r" #'isearch-backward))
+
+    (global-set-key (kbd "<M-f7>") (bind (profiler-start 'cpu+mem)))
+    (global-set-key (kbd "<M-f6>") (bind (profiler-report) (profiler-stop)))
+
+    (provide 'config-bindings)
 #+END_SRC
 
 Some packages have specific bindings and/or too much bindings to be on the
@@ -1197,42 +1321,41 @@ Since it is my most used package it makes total sense that is has it's own file.
 
 #+BEGIN_SRC emacs-lisp :tangle config/bindings/bind-evil.el
   (after 'evil
-         (/bindings/define-keys evil-normal-state-map ("g d" #'dumb-jump-go))
+    (/bindings/define-keys evil-normal-state-map ("g d" #'dumb-jump-go))
 
-         (require-package 'key-chord)
-         (key-chord-mode 1)
-         (key-chord-define evil-insert-state-map "jk" 'evil-normal-state)
-         (key-chord-define evil-insert-state-map "kj" 'evil-normal-state)
+    (require-package 'key-chord)
+    (key-chord-mode 1)
+    (key-chord-define evil-insert-state-map "jk" 'evil-normal-state)
+    (key-chord-define evil-insert-state-map "kj" 'evil-normal-state)
 
-         (after "evil-numbers-autoloads"
-                (/bindings/define-key evil-normal-state-map "C-a" #'evil-numbers/inc-at-pt)
-                (/bindings/define-key evil-normal-state-map "C-S-a" #'evil-numbers/dec-at-pt))
+    (after "evil-numbers-autoloads"
+      (/bindings/define-key evil-normal-state-map "C-a" #'evil-numbers/inc-at-pt)
+      (/bindings/define-key evil-normal-state-map "C-S-a" #'evil-numbers/dec-at-pt))
 
-         (/bindings/define-keys evil-normal-state-map
-                                ("C-b" #'evil-scroll-up)
-                                ("C-f" #'evil-scroll-down))
+    (after 'company
+      (/bindings/define-key evil-insert-state-map "C-TAB" #'company-complete))
 
-         (after 'evil-evilified-state
-                (/bindings/define-keys evil-evilified-state-map
-                                       ("C-w h" #'evil-window-left)
-                                       ("C-w j" #'evil-window-down)
-                                       ("C-w h" #'evil-window-up)
-                                       ("C-w l" #'evil-window-right)))
-         (/bindings/define-keys evil-normal-state-map
-                                ("C-w h" #'evil-window-left)
-                                ("C-w j" #'evil-window-down)
-                                ("C-w k" #'evil-window-up)
-                                ("C-w l" #'evil-window-right))
+    (/bindings/define-keys evil-normal-state-map
+      ("C-b" #'evil-scroll-up)
+      ("C-f" #'evil-scroll-down))
 
-         (/bindings/define-keys evil-motion-state-map
-                                ("j" #'evil-next-visual-line)
-                                ("k" #'evil-previous-visual-line))
+    (after 'evil-evilified-state
+      (/bindings/define-keys evil-evilified-state-map
+        ("C-w h" #'evil-window-left)
+        ("C-w j" #'evil-window-down)
+        ("C-w h" #'evil-window-up)
+        ("C-w l" #'evil-window-right)))
+    (/bindings/define-keys evil-normal-state-map
+      ("C-w h" #'evil-window-left)
+      ("C-w j" #'evil-window-down)
+      ("C-w k" #'evil-window-up)
+      ("C-w l" #'evil-window-right))
 
-         (/bindings/define-key evil-normal-state-map "Y" "y$")
+    (/bindings/define-keys evil-motion-state-map
+      ("j" #'evil-next-visual-line)
+      ("k" #'evil-previous-visual-line))
 
-         (require-package 'evil-collection)
-         (setq evil-collection-company-use-tng nil)
-         (evil-collection-init))
+    (/bindings/define-key evil-normal-state-map "Y" "y$"))
 
   (provide 'config-bindings-evil)
 #+END_SRC
@@ -1244,10 +1367,33 @@ Since it is my most used package it makes total sense that is has it's own file.
 
 Some eyecandy is good.
 
-Color theme config.
+Color theme config and font config.
 
 #+BEGIN_SRC emacs-lisp :tangle config/config-eyecandy.el
   (load-theme 'manoj-dark t)
+
+  (cond
+   ((member "DejaVu Sans Mono" (font-family-list))
+    (add-to-list 'initial-frame-alist '(font . "DejaVu Sans Mono-14"))
+    (add-to-list 'default-frame-alist '(font . "DejaVu Sans Mono-14")))
+   ((member "Terminus" (font-family-list))
+    (add-to-list 'initial-frame-alist '(font . "Terminus-16"))
+    (add-to-list 'default-frame-alist '(font . "Terminus-16"))))
+
+  ;; make comments grey
+  (set-face-foreground 'font-lock-comment-face "dimgray")
+  (set-face-foreground 'font-lock-comment-delimiter-face "dimgray")
+
+  ;; disable the bigger scale on bold fonts
+  (set-face-attribute 'font-lock-function-name-face nil :height 1.0)
+
+  ;; change the mouse color
+  (set-mouse-color "black")
+
+  ;; increase, decrease and adjust font size
+  (global-set-key (kbd "C-+") 'text-scale-increase)
+  (global-set-key (kbd "C--") 'text-scale-decrease)
+  (global-set-key (kbd "C-0") 'text-scale-adjust)
 #+END_SRC
 
 Also there is some mode to display stuff in the modeline that are very useful.
@@ -1259,11 +1405,12 @@ Also there is some mode to display stuff in the modeline that are very useful.
   (size-indication-mode t)
 #+END_SRC
 
-Here is the configuration regarding the preferred folding method.
+Here is the configuration regarding the folding method.
 
 #+BEGIN_SRC emacs-lisp :tangle config/config-eyecandy.el
-  (require-package 'origami)
-  (global-origami-mode)
+  (require-package 'vimish-fold)
+  (require 'vimish-fold)
+  (vimish-fold-global-mode t)
 #+END_SRC
 
 The =diminish= package hides minor modes from the modeline.
@@ -1292,6 +1439,8 @@ The =diminish= package hides minor modes from the modeline.
   (after 'undo-tree (diminish 'undo-tree-mode))
   (after 'which-key (diminish 'which-key-mode))
   (after 'yasnippet (diminish 'yas-minor-mode))
+  (after 'evil-org (diminish 'evil-org-mode))
+  (after 'evil-vimish-fold (diminish 'evil-vimish-fold-mode))
 #+END_SRC
 
 Configure the preferred modeline package. I could edit the default modeline,
@@ -1303,18 +1452,6 @@ lightweight.
   ;; (setq sml/theme 'dark)
   ;; (setq sml/no-confirm-load-theme t)
   ;; (sml/setup)
-#+END_SRC
-
-=prettify-symbols-mode= makes some keywords into their correspondent unicode
-characters. For exemple, alpha becomes α, lambda becomes λ and etc...
-
-#+BEGIN_SRC emacs-lisp :tangle config/config-eyecandy.el
-  (when (fboundp 'global-prettify-symbols-mode)
-    (global-prettify-symbols-mode)
-    (add-hook 'js2-mode-hook
-              (lambda ()
-                (push '("function" . 955) prettify-symbols-alist)
-                (push '("return" . 8592) prettify-symbols-alist))))
 #+END_SRC
 
 These are some eye candy packages. If you're interested in any of them just look
@@ -1342,12 +1479,6 @@ them up on your favorite search engine.
   (require-package 'eval-sexp-fu)
   (require 'eval-sexp-fu)
   (eval-sexp-fu-flash-mode)
-
-  (add-hook 'find-file-hook #'hl-line-mode)
-
-  (if (fboundp #'display-line-numbers-mode)
-      (add-hook 'find-file-hook #'display-line-numbers-mode)
-    (add-hook 'find-file-hook 'linum-mode))
 
   (provide 'config-eyecandy)
 #+END_SRC
@@ -1422,6 +1553,7 @@ code snippets.
 
   (require-package 'popwin)
   (require 'popwin)
+  (push '(compilation-mode :noselect t) popwin:special-display-config)
   (popwin-mode)
 
   (require-package 'restart-emacs)
@@ -1430,6 +1562,9 @@ code snippets.
 #+END_SRC
 
 ** =eshell=
+   :PROPERTIES:
+   :CUSTOM_ID: cfg-eshell
+   :END:
 
 =eshell= is the Emacs shell, a shell written in Emacs Lisp. It is great to
 execute commands while on Emacs. I like it better than =ansi-term= or =term=,
@@ -1557,6 +1692,9 @@ directory and renames the =eshell= buffer to =*eshell: directory*= and sends an
 #+END_SRC
 
 ** Version Control System
+   :PROPERTIES:
+   :CUSTOM_ID: cfg-vcs
+   :END:
 
 Configuration regarding the VCS. It is based on =magit=, one of the best Emacs
 packages and a reason a lot of people stick to it (of course, if they use git).
@@ -1598,6 +1736,9 @@ packages and a reason a lot of people stick to it (of course, if they use git).
 #+END_SRC
 
 ** Flycheck
+   :PROPERTIES:
+   :CUSTOM_ID: cfg-flycheck
+   :END:
 
 This is a syntax checking package for Emacs. It is a pretty simple
 configuration. I added some bindings to help out with =evil-mode= and I like to
@@ -1642,6 +1783,9 @@ have it always on.
 #+END_SRC
 
 ** Auxiliary modes
+   :PROPERTIES:
+   :CUSTOM_ID: cfg-aux-modes
+   :END:
 
 Some major modes that are not installed by default.
 
@@ -1658,13 +1802,16 @@ Some major modes that are not installed by default.
 #+END_SRC
 
 ** Company
+   :PROPERTIES:
+   :CUSTOM_ID: cfg-company
+   :END:
 
 This is the auto-completion engine I use. Configuration pretty straight forward.
 
 #+BEGIN_SRC emacs-lisp :tangle config/config-company.el
   (require-package 'company)
 
-  (setq company-idle-delay 0.2)
+  (setq company-idle-delay 0.5)
   (setq company-minimum-prefix-length 1)
   (setq company-show-numbers t)
   (setq company-tooltip-limit 20)
@@ -1707,6 +1854,9 @@ This is to stop the conflict between =company= and =yasnippet=.
 #+END_SRC
 
 ** Yasnippet
+   :PROPERTIES:
+   :CUSTOM_ID: cfg-yasnippet
+   :END:
 
 And this is my snippet package. The configuration is even smaller.
 
@@ -1714,20 +1864,27 @@ And this is my snippet package. The configuration is even smaller.
   (/boot/delayed-init
    (require-package 'yasnippet)
 
+   (after 'yasnippet
+     (require-package 'yasnippet-snippets)
+     (require-package 'yasnippet-classic-snippets))
+
    (require 'yasnippet)
 
    (setq yas-fallback-behavior 'return-nil)
    (setq yas-also-auto-indent-first-line t)
-   (setq yas-prompt-functions '(yas/ido-prompt yas/completing-prompt))
+   (setq yas-prompt-functions '(yas-ido-prompt yas-completing-prompt))
+
+   (yas-global-mode t)
 
    (yas-load-directory (concat user-emacs-directory "snippets")))
-
-   (yas-global-mode)
 
   (provide 'config-yasnippet)
 #+END_SRC
 
 ** Projectile
+   :PROPERTIES:
+   :CUSTOM_ID: cfg-projectile
+   :END:
 
 This package is amazing at dealing with projects.
 

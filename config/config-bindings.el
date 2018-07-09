@@ -1,6 +1,9 @@
+
 (require-package 'which-key)
 (setq which-key-idle-delay 0.2)
 (setq which-key-min-display-lines 3)
+(setq which-key-max-description-length 20)
+(setq which-key-max-display-columns 6)
 (which-key-mode)
 
 (defmacro /bindings/define-prefix-keys (keymap prefix &rest body)
@@ -29,15 +32,18 @@
      (,sequence ,binding ,description)))
 
 ;; escape minibuffer
-(define-key minibuffer-local-map [escape] '/utils/minibuffer-keyboard-quit)
-(define-key minibuffer-local-ns-map [escape] '/utils/minibuffer-keyboard-quit)
-(define-key minibuffer-local-completion-map [escape] '/utils/minibuffer-keyboard-quit)
-(define-key minibuffer-local-must-match-map [escape] '/utils/minibuffer-keyboard-quit)
-(define-key minibuffer-local-isearch-map [escape] '/utils/minibuffer-keyboard-quit)
+;; (define-key minibuffer-local-map [escape] '/util/minibuffer-keyboard-quit)
+;; (define-key minibuffer-local-ns-map [escape] '/util/minibuffer-keyboard-quit)
+;; (define-key minibuffer-local-completion-map [escape] '/util/minibuffer-keyboard-quit)
+;; (define-key minibuffer-local-must-match-map [escape] '/util/minibuffer-keyboard-quit)
+;; (define-key minibuffer-local-isearch-map [escape] '/util/minibuffer-keyboard-quit)
 
-(define-key minibuffer-local-map (kbd "C-w") 'backward-kill-word)
+;; (define-key minibuffer-local-map (kbd "C-w") 'backward-kill-word)
 
-(global-set-key (kbd "C-c d") #'dired-sidebar-toggle)
+(global-set-key (kbd "C-S-n") '/util/insert-line-below)
+(global-set-key (kbd "C-S-o") '/util/insert-line-above)
+
+(global-set-key (kbd "C-c d") #'dired-sidebar-toggle-sidebar)
 
 (after "expand-region-autoloads"
   (global-set-key (kbd "C-=") 'er/expand-region))
@@ -52,49 +58,57 @@
   (define-key compilation-mode-map (kbd "k") 'compilation-previous-error))
 
 (after 'helm
+  (require 'helm-config)
+  (global-set-key (kbd "C-c h") #'helm-command-prefix)
   (global-unset-key (kbd "C-x c"))
-  (global-set-key (kbd "C-x h") #'helm-command-prefix)
   (global-set-key (kbd "C-h a") #'helm-apropos)
   (global-set-key (kbd "C-x b") #'helm-buffers-list)
   (global-set-key (kbd "C-x C-b") #'helm-mini)
   (global-set-key (kbd "C-x C-f") #'helm-find-files)
   (global-set-key (kbd "C-x r b") #'helm-bookmarks)
-  (global-set-key (kbd "C-p") #'helm-projectile)
+  (global-set-key (kbd "C-S-p") #'helm-projectile-switch-project)
+  (define-key evil-normal-state-map (kbd "C-p") #'helm-projectile)
   (global-set-key (kbd "M-x") #'helm-M-x)
   (global-set-key (kbd "M-y") #'helm-show-kill-ring)
   (global-set-key (kbd "M-:") #'helm-eval-expression-with-eldoc)
   (define-key helm-map (kbd "<tab>") #'helm-execute-persistent-action)
-  (define-key helm-map (kbd "C-z") #'helm-select-action))
+  (define-key helm-map (kbd "C-z") #'helm-select-action)
 
-(global-set-key (kbd "M-!") 'eshell-command)
-(global-set-key (kbd "C-!") '/eshell/new-window)
+  (after "helm-ag-autoloads"
+    (global-set-key (kbd "C-c h g") #'helm-do-ag))
 
-(after 'evil
-  (define-key evil-normal-state-map (kbd "!") '/eshell/new-window)
-  (define-key evil-visual-state-map (kbd "!") '/eshell/new-window)
-  (define-key evil-motion-state-map (kbd "!") '/eshell/new-window))
+  (after "helm-swoop-autoloads"
+    (global-set-key (kbd "C-c h S") #'helm-swoop)))
 
-(/bindings/define-keys (current-global-map)
-  ("C-c c" #'org-capture)
-  ("C-c a" #'org-agenda)
-  ("C-c l" #'org-store-link)
-  ("C-c s" #'/utils/goto-scratch-buffer)
-  ("C-c e" #'/utils/eval-and-replace)
-  ("C-c t" #'/eshell/new-split))
+  (global-set-key (kbd "M-!") 'eshell-command)
+  (global-set-key (kbd "C-!") '/eshell/new-window)
 
-(/bindings/define-keys (current-global-map)
-  ("C-x c" #'calculator)
-  ("C-x C" #'calendar)
-  ("C-x C-k" #'kill-this-buffer)
-  ("C-x p" #'proced))
+  (after 'evil
+    (define-key evil-normal-state-map (kbd "!") '/eshell/new-window)
+    (define-key evil-visual-state-map (kbd "!") '/eshell/new-window)
+    (define-key evil-motion-state-map (kbd "!") '/eshell/new-window))
 
-(/bindings/define-keys (current-global-map)
-  ("C-s"   #'isearch-forward-regexp)
-  ("C-M-s" #'isearch-forward)
-  ("C-r"   #'isearch-backward-regexp)
-  ("C-M-r" #'isearch-backward))
+  (/bindings/define-keys (current-global-map)
+    ("C-c c" #'org-capture)
+    ("C-c a" #'org-agenda)
+    ("C-c l" #'org-store-link)
+    ("C-c s" #'/util/goto-scratch-buffer)
+    ("C-c e" #'/util/eval-and-replace)
+    ("C-c t" #'/eshell/new-split))
 
-(global-set-key (kbd "<M-f7>") (bind (profiler-start 'cpu+mem)))
-(global-set-key (kbd "<M-f6>") (bind (profiler-report) (profiler-stop)))
+  (/bindings/define-keys (current-global-map)
+    ("C-x c" #'calculator)
+    ("C-x C" #'calendar)
+    ("C-x C-k" #'kill-this-buffer)
+    ("C-x p" #'proced))
 
-(provide 'config-bindings)
+  (/bindings/define-keys (current-global-map)
+    ("C-s"   #'isearch-forward-regexp)
+    ("C-M-s" #'isearch-forward)
+    ("C-r"   #'isearch-backward-regexp)
+    ("C-M-r" #'isearch-backward))
+
+  (global-set-key (kbd "<M-f7>") (bind (profiler-start 'cpu+mem)))
+  (global-set-key (kbd "<M-f6>") (bind (profiler-report) (profiler-stop)))
+
+  (provide 'config-bindings)
