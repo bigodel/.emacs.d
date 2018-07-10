@@ -6,9 +6,7 @@
     "Set of things to execute whenever on a git commit. Because I
 have a template that starts with a comment, it makes sense to go
 down a line at start."
-    (next-line)
-    (when (bound-and-true-p evil-mode)
-      (evil-insert)))
+    (next-line))
 
   (add-hook 'git-commit-mode-hook '/vcs/git-commit-hook)
 

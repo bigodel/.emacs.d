@@ -10,7 +10,8 @@
   "List of major modes that should default to Emacs state.")
 
 (defvar dotemacs-evil/emacs-state-minor-modes
-  '(magit-blame-mode)
+  '(git-commit-mode
+    magit-blame-mode)
   "List of minor modes that when active should switch to Emacs state.")
 
 (defvar dotemacs-evil/emacs-insert-mode nil
