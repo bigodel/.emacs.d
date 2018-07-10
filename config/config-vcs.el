@@ -14,10 +14,12 @@
   (setq magit-ediff-dwim-show-on-hunks t)
   (setq magit-display-buffer-function #'magit-display-buffer-fullcolumn-most-v1)
 
-  (after 'magit
-    (require-package 'magit-todos)
-    (add-hook 'prog-mode-hook 'hl-todos-mode)
-    (magit-todos-mode t)))
+  (require-package 'magit-todos)
+  (add-hook 'prog-mode-hook 'hl-todo-mode)
+  (setq magit-todos-fontify-org nil)
+  (when (executable-find "rg")
+    (setq magit-todos-scanner 'magit-todos--scan-with-rg))
+  (magit-todos-mode t))
 
 (/boot/lazy-major-mode "^\\.gitignore$" gitignore-mode)
 (/boot/lazy-major-mode "^\\.gitattributes$" gitattributes-mode)

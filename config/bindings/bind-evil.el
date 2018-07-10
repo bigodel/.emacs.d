@@ -12,7 +12,7 @@
     (/bindings/define-key evil-normal-state-map "C-S-a" #'evil-numbers/dec-at-pt))
 
   (after 'company
-    (/bindings/define-key evil-insert-state-map "C-TAB" #'company-complete))
+    (/bindings/define-key evil-insert-state-map "<C-tab>" #'company-complete))
 
   (/bindings/define-keys evil-normal-state-map
     ("C-b" #'evil-scroll-up)
@@ -24,6 +24,7 @@
       ("C-w j" #'evil-window-down)
       ("C-w h" #'evil-window-up)
       ("C-w l" #'evil-window-right)))
+
   (/bindings/define-keys evil-normal-state-map
     ("C-w h" #'evil-window-left)
     ("C-w j" #'evil-window-down)

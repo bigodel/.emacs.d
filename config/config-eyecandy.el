@@ -35,7 +35,7 @@
 
 (require-package 'diminish)
 (diminish 'visual-line-mode)
-(after 'whitespace-mode (diminish 'global-whitespace-mode))
+(diminish 'global-whitespace-mode)
 (after 'aggressive-indent (diminish 'aggressive-indent-mode))
 (after 'auto-complete (diminish 'auto-complete-mode))
 (after 'autorevert (diminish #'auto-revert-mode))

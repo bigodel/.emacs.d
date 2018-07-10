@@ -80,35 +80,38 @@
   (after "helm-swoop-autoloads"
     (global-set-key (kbd "C-c h S") #'helm-swoop)))
 
-  (global-set-key (kbd "M-!") 'eshell-command)
-  (global-set-key (kbd "C-!") '/eshell/new-window)
+(global-set-key (kbd "M-!") 'eshell-command)
+(global-set-key (kbd "C-!") '/eshell/new-window)
 
-  (after 'evil
-    (define-key evil-normal-state-map (kbd "!") '/eshell/new-window)
-    (define-key evil-visual-state-map (kbd "!") '/eshell/new-window)
-    (define-key evil-motion-state-map (kbd "!") '/eshell/new-window))
+(after 'magit
+  (global-set-key (kbd "C-x g") 'magit-status))
 
-  (/bindings/define-keys (current-global-map)
-    ("C-c c" #'org-capture)
-    ("C-c a" #'org-agenda)
-    ("C-c l" #'org-store-link)
-    ("C-c s" #'/util/goto-scratch-buffer)
-    ("C-c e" #'/util/eval-and-replace)
-    ("C-c t" #'/eshell/new-split))
+(after 'evil
+  (define-key evil-normal-state-map (kbd "!") '/eshell/new-window)
+  (define-key evil-visual-state-map (kbd "!") '/eshell/new-window)
+  (define-key evil-motion-state-map (kbd "!") '/eshell/new-window))
 
-  (/bindings/define-keys (current-global-map)
-    ("C-x c" #'calculator)
-    ("C-x C" #'calendar)
-    ("C-x C-k" #'kill-this-buffer)
-    ("C-x p" #'proced))
+(/bindings/define-keys (current-global-map)
+  ("C-c c" #'org-capture)
+  ("C-c a" #'org-agenda)
+  ("C-c l" #'org-store-link)
+  ("C-c s" #'/util/goto-scratch-buffer)
+  ("C-c e" #'/util/eval-and-replace)
+  ("C-c t" #'/eshell/new-split))
 
-  (/bindings/define-keys (current-global-map)
-    ("C-s"   #'isearch-forward-regexp)
-    ("C-M-s" #'isearch-forward)
-    ("C-r"   #'isearch-backward-regexp)
-    ("C-M-r" #'isearch-backward))
+(/bindings/define-keys (current-global-map)
+  ("C-x c" #'calculator)
+  ("C-x C" #'calendar)
+  ("C-x C-k" #'kill-this-buffer)
+  ("C-x p" #'proced))
 
-  (global-set-key (kbd "<M-f7>") (bind (profiler-start 'cpu+mem)))
-  (global-set-key (kbd "<M-f6>") (bind (profiler-report) (profiler-stop)))
+(/bindings/define-keys (current-global-map)
+  ("C-s"   #'isearch-forward-regexp)
+  ("C-M-s" #'isearch-forward)
+  ("C-r"   #'isearch-backward-regexp)
+  ("C-M-r" #'isearch-backward))
 
-  (provide 'config-bindings)
+(global-set-key (kbd "<M-f7>") (bind (profiler-start 'cpu+mem)))
+(global-set-key (kbd "<M-f6>") (bind (profiler-report) (profiler-stop)))
+
+(provide 'config-bindings)

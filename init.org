@@ -1007,7 +1007,8 @@ packages to help integrate =evil= into the most modes possible.
 
   (after 'magit
     (require-package 'evil-magit)
-    (require 'evil-magit))
+    (require 'evil-magit)
+    (evil-magit-init))
 
   (after 'org
     (require-package 'evil-org)
@@ -1276,38 +1277,41 @@ mistype =C-x C-c= with the default prefix.
     (after "helm-swoop-autoloads"
       (global-set-key (kbd "C-c h S") #'helm-swoop)))
 
-    (global-set-key (kbd "M-!") 'eshell-command)
-    (global-set-key (kbd "C-!") '/eshell/new-window)
+  (global-set-key (kbd "M-!") 'eshell-command)
+  (global-set-key (kbd "C-!") '/eshell/new-window)
 
-    (after 'evil
-      (define-key evil-normal-state-map (kbd "!") '/eshell/new-window)
-      (define-key evil-visual-state-map (kbd "!") '/eshell/new-window)
-      (define-key evil-motion-state-map (kbd "!") '/eshell/new-window))
+  (after 'magit
+    (global-set-key (kbd "C-x g") 'magit-status))
 
-    (/bindings/define-keys (current-global-map)
-      ("C-c c" #'org-capture)
-      ("C-c a" #'org-agenda)
-      ("C-c l" #'org-store-link)
-      ("C-c s" #'/util/goto-scratch-buffer)
-      ("C-c e" #'/util/eval-and-replace)
-      ("C-c t" #'/eshell/new-split))
+  (after 'evil
+    (define-key evil-normal-state-map (kbd "!") '/eshell/new-window)
+    (define-key evil-visual-state-map (kbd "!") '/eshell/new-window)
+    (define-key evil-motion-state-map (kbd "!") '/eshell/new-window))
 
-    (/bindings/define-keys (current-global-map)
-      ("C-x c" #'calculator)
-      ("C-x C" #'calendar)
-      ("C-x C-k" #'kill-this-buffer)
-      ("C-x p" #'proced))
+  (/bindings/define-keys (current-global-map)
+    ("C-c c" #'org-capture)
+    ("C-c a" #'org-agenda)
+    ("C-c l" #'org-store-link)
+    ("C-c s" #'/util/goto-scratch-buffer)
+    ("C-c e" #'/util/eval-and-replace)
+    ("C-c t" #'/eshell/new-split))
 
-    (/bindings/define-keys (current-global-map)
-      ("C-s"   #'isearch-forward-regexp)
-      ("C-M-s" #'isearch-forward)
-      ("C-r"   #'isearch-backward-regexp)
-      ("C-M-r" #'isearch-backward))
+  (/bindings/define-keys (current-global-map)
+    ("C-x c" #'calculator)
+    ("C-x C" #'calendar)
+    ("C-x C-k" #'kill-this-buffer)
+    ("C-x p" #'proced))
 
-    (global-set-key (kbd "<M-f7>") (bind (profiler-start 'cpu+mem)))
-    (global-set-key (kbd "<M-f6>") (bind (profiler-report) (profiler-stop)))
+  (/bindings/define-keys (current-global-map)
+    ("C-s"   #'isearch-forward-regexp)
+    ("C-M-s" #'isearch-forward)
+    ("C-r"   #'isearch-backward-regexp)
+    ("C-M-r" #'isearch-backward))
 
-    (provide 'config-bindings)
+  (global-set-key (kbd "<M-f7>") (bind (profiler-start 'cpu+mem)))
+  (global-set-key (kbd "<M-f6>") (bind (profiler-report) (profiler-stop)))
+
+  (provide 'config-bindings)
 #+END_SRC
 
 Some packages have specific bindings and/or too much bindings to be on the
@@ -1331,7 +1335,7 @@ Since it is my most used package it makes total sense that is has it's own file.
       (/bindings/define-key evil-normal-state-map "C-S-a" #'evil-numbers/dec-at-pt))
 
     (after 'company
-      (/bindings/define-key evil-insert-state-map "C-TAB" #'company-complete))
+      (/bindings/define-key evil-insert-state-map "<C-tab>" #'company-complete))
 
     (/bindings/define-keys evil-normal-state-map
       ("C-b" #'evil-scroll-up)
@@ -1343,6 +1347,7 @@ Since it is my most used package it makes total sense that is has it's own file.
         ("C-w j" #'evil-window-down)
         ("C-w h" #'evil-window-up)
         ("C-w l" #'evil-window-right)))
+
     (/bindings/define-keys evil-normal-state-map
       ("C-w h" #'evil-window-left)
       ("C-w j" #'evil-window-down)
@@ -1416,7 +1421,7 @@ The =diminish= package hides minor modes from the modeline.
 #+BEGIN_SRC emacs-lisp :tangle config/config-eyecandy.el
   (require-package 'diminish)
   (diminish 'visual-line-mode)
-  (after 'whitespace-mode (diminish 'global-whitespace-mode))
+  (diminish 'global-whitespace-mode)
   (after 'aggressive-indent (diminish 'aggressive-indent-mode))
   (after 'auto-complete (diminish 'auto-complete-mode))
   (after 'autorevert (diminish #'auto-revert-mode))
@@ -1704,10 +1709,12 @@ packages and a reason a lot of people stick to it (of course, if they use git).
     (setq magit-ediff-dwim-show-on-hunks t)
     (setq magit-display-buffer-function #'magit-display-buffer-fullcolumn-most-v1)
 
-    (after 'magit
-      (require-package 'magit-todos)
-      (add-hook 'prog-mode-hook 'hl-todos-mode)
-      (magit-todos-mode t)))
+    (require-package 'magit-todos)
+    (add-hook 'prog-mode-hook 'hl-todo-mode)
+    (setq magit-todos-fontify-org nil)
+    (when (executable-find "rg")
+      (setq magit-todos-scanner 'magit-todos--scan-with-rg))
+    (magit-todos-mode t))
 
   (/boot/lazy-major-mode "^\\.gitignore$" gitignore-mode)
   (/boot/lazy-major-mode "^\\.gitattributes$" gitattributes-mode)
@@ -1798,7 +1805,6 @@ This is the auto-completion engine I use. Configuration pretty straight forward.
 
   (setq company-idle-delay 0.5)
   (setq company-minimum-prefix-length 1)
-  (setq company-show-numbers t)
   (setq company-tooltip-limit 20)
 
   (setq company-dabbrev-downcase nil)

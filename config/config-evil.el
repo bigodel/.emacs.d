@@ -81,7 +81,8 @@
 
 (after 'magit
   (require-package 'evil-magit)
-  (require 'evil-magit))
+  (require 'evil-magit)
+  (evil-magit-init))
 
 (after 'org
   (require-package 'evil-org)
