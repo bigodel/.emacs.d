@@ -7,8 +7,6 @@
 
 * TODO
 
-** TODO Add Magit-todos and hl-todo
-** TODO Add flycheck
 ** TODO Add org config
 
 
@@ -529,13 +527,13 @@ information, visit [[https://www.emacswiki.org/emacs/WhiteSpace#toc1][this]] pag
 
 #+BEGIN_SRC emacs-lisp :tangle config/config-core.el
   (require 'whitespace)
-  (setq whitespace-display-mappings
-        '((space-mark 32 [183])
-          (newline-mark 10 [182 10])
-          (tab-mark 9 [9655 9] [92 9])
-          ))
 
-  (setq whitespace-style '(face trailing spaces space-mark newlines tab-mark))
+  ;; (setq whitespace-display-mappings
+  ;;       '((space-mark 32 [183])
+  ;;         (newline-mark 10 [182 10])
+  ;;         (tab-mark 9 [9655 9] [92 9])))
+
+  (setq whitespace-style '(face trailing newlines tabs))
 
   (set-face-attribute 'whitespace-space nil
                       :background nil
@@ -633,7 +631,7 @@ every time it loads.
 
   ;; fringe
   (when (display-graphic-p)
-    (fringe-mode '(0 . 0)))
+    (fringe-mode '(8 . 0)))
 
   ;; ediff
   (setq ediff-split-window-function 'split-window-horizontally) ;; side-by-side diffs
@@ -660,7 +658,7 @@ every time it loads.
   (setq backup-directory-alist `((".*" . ,(expand-file-name (concat dotemacs-cache-directory "backups/")))))
   (setq backup-by-copying t)
   (setq version-control t)
-  (setq kept-old-versions 0)
+  (setq kept-old-versions 2)
   (setq kept-new-versions 20)
   (setq delete-old-versions t)
 
@@ -1418,6 +1416,7 @@ The =diminish= package hides minor modes from the modeline.
 #+BEGIN_SRC emacs-lisp :tangle config/config-eyecandy.el
   (require-package 'diminish)
   (diminish 'visual-line-mode)
+  (after 'whitespace-mode (diminish 'global-whitespace-mode))
   (after 'aggressive-indent (diminish 'aggressive-indent-mode))
   (after 'auto-complete (diminish 'auto-complete-mode))
   (after 'autorevert (diminish #'auto-revert-mode))
@@ -1475,10 +1474,6 @@ them up on your favorite search engine.
 
   (require-package 'page-break-lines)
   (global-page-break-lines-mode)
-
-  (require-package 'eval-sexp-fu)
-  (require 'eval-sexp-fu)
-  (eval-sexp-fu-flash-mode)
 
   (provide 'config-eyecandy)
 #+END_SRC
@@ -1543,20 +1538,14 @@ package to indent, you want it or not, your code.
   (add-hook 'lisp-mode-hook #'aggressive-indent-mode)
 #+END_SRC
 
-=paradox= is a better packages list. =popwin= is used to better manage pop-up
-windows. =restart-emacs= makes it easier to restart your config and load new
-code snippets.
+=popwin= is used to better manage pop-up windows. =restart-emacs= makes it
+easier to restart your config and load new code snippets.
 
 #+BEGIN_SRC emacs-lisp :tangle config/config-misc.el
-  (setq paradox-execute-asynchronously t)
-  (require-package 'paradox)
-
   (require-package 'popwin)
   (require 'popwin)
   (push '(compilation-mode :noselect t) popwin:special-display-config)
   (popwin-mode)
-
-  (require-package 'restart-emacs)
 
   (provide 'config-misc)
 #+END_SRC
@@ -1715,17 +1704,18 @@ packages and a reason a lot of people stick to it (of course, if they use git).
     (setq magit-ediff-dwim-show-on-hunks t)
     (setq magit-display-buffer-function #'magit-display-buffer-fullcolumn-most-v1)
 
-    (after 'eshell
-           (require-package 'pcmpl-git)
-           (require 'pcmpl-git)))
+    (after 'magit
+      (require-package 'magit-todos)
+      (add-hook 'prog-mode-hook 'hl-todos-mode)
+      (magit-todos-mode t)))
 
   (/boot/lazy-major-mode "^\\.gitignore$" gitignore-mode)
   (/boot/lazy-major-mode "^\\.gitattributes$" gitattributes-mode)
 
   (after [evil diff-mode]
-         (evil-define-key 'normal diff-mode diff-mode-map
-           "j" #'diff-hunk-next
-           "k" #'diff-hunk-prev))
+    (evil-define-key 'normal diff-mode diff-mode-map
+      "j" #'diff-hunk-next
+      "k" #'diff-hunk-prev))
   (after [evil vc-annotate]
     (evil-define-key 'normal vc-annotate-mode-map
       (kbd "M-p") #'vc-annotate-prev-revision
@@ -1753,11 +1743,6 @@ have it always on.
          (flycheck-add-mode 'javascript-eslint 'web-mode))
 
   (add-hook 'after-init-hook #'global-flycheck-mode)
-
-  (when (display-graphic-p)
-    (require-package 'flycheck-pos-tip)
-    (setq flycheck-pos-tip-timeout -1)
-    (flycheck-pos-tip-mode))
 
   (after [evil flycheck]
     (evil-define-key 'normal flycheck-error-list-mode-map

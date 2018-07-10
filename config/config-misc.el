@@ -30,14 +30,9 @@
 (add-hook 'emacs-lisp-mode-hook #'aggressive-indent-mode)
 (add-hook 'lisp-mode-hook #'aggressive-indent-mode)
 
-(setq paradox-execute-asynchronously t)
-(require-package 'paradox)
-
 (require-package 'popwin)
 (require 'popwin)
 (push '(compilation-mode :noselect t) popwin:special-display-config)
 (popwin-mode)
-
-(require-package 'restart-emacs)
 
 (provide 'config-misc)

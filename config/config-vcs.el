@@ -14,17 +14,18 @@
   (setq magit-ediff-dwim-show-on-hunks t)
   (setq magit-display-buffer-function #'magit-display-buffer-fullcolumn-most-v1)
 
-  (after 'eshell
-         (require-package 'pcmpl-git)
-         (require 'pcmpl-git)))
+  (after 'magit
+    (require-package 'magit-todos)
+    (add-hook 'prog-mode-hook 'hl-todos-mode)
+    (magit-todos-mode t)))
 
 (/boot/lazy-major-mode "^\\.gitignore$" gitignore-mode)
 (/boot/lazy-major-mode "^\\.gitattributes$" gitattributes-mode)
 
 (after [evil diff-mode]
-       (evil-define-key 'normal diff-mode diff-mode-map
-         "j" #'diff-hunk-next
-         "k" #'diff-hunk-prev))
+  (evil-define-key 'normal diff-mode diff-mode-map
+    "j" #'diff-hunk-next
+    "k" #'diff-hunk-prev))
 (after [evil vc-annotate]
   (evil-define-key 'normal vc-annotate-mode-map
     (kbd "M-p") #'vc-annotate-prev-revision

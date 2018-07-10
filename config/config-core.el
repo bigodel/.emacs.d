@@ -57,13 +57,13 @@
 (add-hook 'minibuffer-exit-hook #'/core/minibuffer-exit-hook)
 
 (require 'whitespace)
-(setq whitespace-display-mappings
-      '((space-mark 32 [183])
-        (newline-mark 10 [182 10])
-        (tab-mark 9 [9655 9] [92 9])
-        ))
 
-(setq whitespace-style '(face trailing spaces space-mark newlines tab-mark))
+;; (setq whitespace-display-mappings
+;;       '((space-mark 32 [183])
+;;         (newline-mark 10 [182 10])
+;;         (tab-mark 9 [9655 9] [92 9])))
+
+(setq whitespace-style '(face trailing newlines tabs))
 
 (set-face-attribute 'whitespace-space nil
                     :background nil
@@ -142,7 +142,7 @@
 
 ;; fringe
 (when (display-graphic-p)
-  (fringe-mode '(0 . 0)))
+  (fringe-mode '(8 . 0)))
 
 ;; ediff
 (setq ediff-split-window-function 'split-window-horizontally) ;; side-by-side diffs
@@ -169,7 +169,7 @@
 (setq backup-directory-alist `((".*" . ,(expand-file-name (concat dotemacs-cache-directory "backups/")))))
 (setq backup-by-copying t)
 (setq version-control t)
-(setq kept-old-versions 0)
+(setq kept-old-versions 2)
 (setq kept-new-versions 20)
 (setq delete-old-versions t)
 

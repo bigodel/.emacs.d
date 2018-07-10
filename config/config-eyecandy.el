@@ -35,6 +35,7 @@
 
 (require-package 'diminish)
 (diminish 'visual-line-mode)
+(after 'whitespace-mode (diminish 'global-whitespace-mode))
 (after 'aggressive-indent (diminish 'aggressive-indent-mode))
 (after 'auto-complete (diminish 'auto-complete-mode))
 (after 'autorevert (diminish #'auto-revert-mode))
@@ -81,9 +82,5 @@
 
 (require-package 'page-break-lines)
 (global-page-break-lines-mode)
-
-(require-package 'eval-sexp-fu)
-(require 'eval-sexp-fu)
-(eval-sexp-fu-flash-mode)
 
 (provide 'config-eyecandy)
