@@ -916,8 +916,7 @@ contradictory isn't it?) because =evil= is awesome but ain't perfect yet.
     "List of major modes that should default to Emacs state.")
 
   (defvar dotemacs-evil/emacs-state-minor-modes
-    '(git-commit-mode
-      magit-blame-mode)
+    '(magit-blame-mode)
     "List of minor modes that when active should switch to Emacs state.")
 
   (defvar dotemacs-evil/emacs-insert-mode nil
@@ -1416,12 +1415,33 @@ Here is the configuration regarding the folding method.
   (vimish-fold-global-mode t)
 #+END_SRC
 
-The =diminish= package hides minor modes from the modeline.
+The =delight= package hides minor modes from the modeline.
 
 #+BEGIN_SRC emacs-lisp :tangle config/config-eyecandy.el
-  (require-package 'diminish)
+  ;; (require-package 'delight)
+
+  ;; (delight '((auto-fill-mode nil t)
+  ;;            (auto-revert-mode nil autorevert)
+  ;;            (abbrev-mode nil abbrev)
+  ;;            (whitespace-mode nil whitespace)
+  ;;            (helm-mode nil helm-mode)
+  ;;            (flyspell-mode nil flyspell)
+  ;;            (projectile-mode nil projectil)
+  ;;            (yas-minor-mode nil yasnippet)
+  ;;            (undo-tree-mode nil undo-tree)
+  ;;            (which-key-mode nil which-key)
+  ;;            (company-mode nil company)
+  ;;            (aggressive-indent-mode nil aggressive-indent)
+  ;;            (evil-org-mode nil evil-org)
+  ;;            (evil-vimish-fold-mode nil evil-vimish-fold)
+  ;;            ))
+
+  ;; (delight 'server-buffer-clients nil 'server)
+  ;; (delight 'auto-fill-function nil t)
+
   (diminish 'visual-line-mode)
-  (diminish 'global-whitespace-mode)
+  (after 'whitespace (diminish 'global-whitespace-mode))
+  (after 'whitespace (diminish 'whitespace-mode))
   (after 'aggressive-indent (diminish 'aggressive-indent-mode))
   (after 'auto-complete (diminish 'auto-complete-mode))
   (after 'autorevert (diminish #'auto-revert-mode))
@@ -1697,6 +1717,16 @@ packages and a reason a lot of people stick to it (of course, if they use git).
   (setq vc-make-backup-files t)
 
   (when (executable-find "git")
+    (defun /vcs/git-commit-hook ()
+      "Set of things to execute whenever on a git commit. Because I
+  have a template that starts with a comment, it makes sense to go
+  down a line at start."
+      (next-line)
+      (when (bound-and-true-p evil-mode)
+        (evil-insert)))
+
+    (add-hook 'git-commit-mode-hook '/vcs/git-commit-hook)
+
     (require-package 'magit)
 
     (defun /vcs/magit-post-display-buffer-hook()
@@ -1704,7 +1734,7 @@ packages and a reason a lot of people stick to it (of course, if they use git).
           (delete-other-windows)))
     (add-hook 'magit-post-display-buffer-hook #'/vcs/magit-post-display-buffer-hook)
 
-    (setq magit-section-show-child-count t)
+    (setq magit-section-show-child-couno t)
     (setq magit-diff-arguments '("--histogram"))
     (setq magit-ediff-dwim-show-on-hunks t)
     (setq magit-display-buffer-function #'magit-display-buffer-fullcolumn-most-v1)

@@ -2,6 +2,16 @@
 (setq vc-make-backup-files t)
 
 (when (executable-find "git")
+  (defun /vcs/git-commit-hook ()
+    "Set of things to execute whenever on a git commit. Because I
+have a template that starts with a comment, it makes sense to go
+down a line at start."
+    (next-line)
+    (when (bound-and-true-p evil-mode)
+      (evil-insert)))
+
+  (add-hook 'git-commit-mode-hook '/vcs/git-commit-hook)
+
   (require-package 'magit)
 
   (defun /vcs/magit-post-display-buffer-hook()
@@ -9,7 +19,7 @@
         (delete-other-windows)))
   (add-hook 'magit-post-display-buffer-hook #'/vcs/magit-post-display-buffer-hook)
 
-  (setq magit-section-show-child-count t)
+  (setq magit-section-show-child-couno t)
   (setq magit-diff-arguments '("--histogram"))
   (setq magit-ediff-dwim-show-on-hunks t)
   (setq magit-display-buffer-function #'magit-display-buffer-fullcolumn-most-v1)
