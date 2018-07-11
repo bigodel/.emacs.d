@@ -284,7 +284,7 @@ mentioned paths with =~/.emacs.d/=.
 :PROPERTIES:
 :CUSTOM_ID: core
 :END:
-** Load at boot
+** TODO Load at boot
 :PROPERTIES:
 :CUSTOM_ID: core-boot
 :END:
@@ -426,6 +426,7 @@ modes]]. The second one is self explanatory.
 
 This is the section where configuration actually takes place.
 
+** TODO Boot
 ** Core
 :PROPERTIES:
 :CUSTOM_ID: cfg-core
@@ -604,8 +605,7 @@ every time it loads.
         (format "%s\\|%s"
                 vc-ignore-dir-regexp
                 tramp-file-name-regexp))
-  ;; TODO: review this
-  ;;(eval-after-load 'tramp '(setenv "SHELL" "/bin/bash"))
+  ;; (eval-after-load 'tramp '(setenv "SHELL" "/bin/bash"))
 
   ;; comint
   (after 'comint
@@ -1370,6 +1370,8 @@ Since it is my most used package it makes total sense that is has it's own file.
 :PROPERTIES:
 :CUSTOM_ID: cfg-eyecandy
 :END:
+
+*** TODO Modeline config
 
 Some eyecandy is good.
 

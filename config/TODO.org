@@ -1,4 +1,4 @@
-* Organize the dir tree as follows
+* TODO Organize the dir tree as follows
 
 #+BEGIN_SRC sh
 bindings/

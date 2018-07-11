@@ -115,8 +115,7 @@
       (format "%s\\|%s"
               vc-ignore-dir-regexp
               tramp-file-name-regexp))
-;; TODO: review this
-;;(eval-after-load 'tramp '(setenv "SHELL" "/bin/bash"))
+;; (eval-after-load 'tramp '(setenv "SHELL" "/bin/bash"))
 
 ;; comint
 (after 'comint
