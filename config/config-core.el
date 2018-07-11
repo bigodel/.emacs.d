@@ -63,11 +63,11 @@
 ;;         (newline-mark 10 [182 10])
 ;;         (tab-mark 9 [9655 9] [92 9])))
 
-(setq whitespace-style '(face trailing newlines tabs))
+(setq whitespace-style '(face trailing tabs lines-tail))
 
-(set-face-attribute 'whitespace-space nil
-                    :background nil
-                    :foreground "black")
+;; (set-face-attribute 'whitespace-space nil
+;;                     :background nil
+;;                     :foreground "black")
 
 (set-face-attribute 'whitespace-trailing nil
                     :background "gray15")

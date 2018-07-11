@@ -533,11 +533,11 @@ information, visit [[https://www.emacswiki.org/emacs/WhiteSpace#toc1][this]] pag
   ;;         (newline-mark 10 [182 10])
   ;;         (tab-mark 9 [9655 9] [92 9])))
 
-  (setq whitespace-style '(face trailing newlines tabs))
+  (setq whitespace-style '(face trailing tabs lines-tail))
 
-  (set-face-attribute 'whitespace-space nil
-                      :background nil
-                      :foreground "black")
+  ;; (set-face-attribute 'whitespace-space nil
+  ;;                     :background nil
+  ;;                     :foreground "black")
 
   (set-face-attribute 'whitespace-trailing nil
                       :background "gray15")
@@ -1047,7 +1047,7 @@ I also use [[https://github.com/emacs-evil/evil-collection][=evil-collection=]],
   (after 'evil
     (require-package 'evil-collection)
     (setq evil-collection-setup-minibuffer t)
-    (setq evil-collection-company-use-tng nil)
+    (setq evil-collection-company-use-tng t)
     (evil-collection-init))
 
   (defadvice evil-ex-search-next (after dotemacs activate)
@@ -1281,7 +1281,8 @@ mistype =C-x C-c= with the default prefix.
   (global-set-key (kbd "C-!") '/eshell/new-window)
 
   (after 'magit
-    (global-set-key (kbd "C-x g") 'magit-status))
+    (global-set-key (kbd "C-x g") 'magit-status)
+    (global-set-key (kbd "C-x M-g") 'magit-dispatch-popup))
 
   (after 'evil
     (define-key evil-normal-state-map (kbd "!") '/eshell/new-window)
@@ -1334,8 +1335,10 @@ Since it is my most used package it makes total sense that is has it's own file.
       (/bindings/define-key evil-normal-state-map "C-a" #'evil-numbers/inc-at-pt)
       (/bindings/define-key evil-normal-state-map "C-S-a" #'evil-numbers/dec-at-pt))
 
-    (after 'company
-      (/bindings/define-key evil-insert-state-map "<C-tab>" #'company-complete))
+    (after "company-autoloads"
+      (/bindings/define-keys evil-insert-state-map
+        ("C-n" #'company-complete)
+        ("TAB" #'company-indent-or-complete-common)))
 
     (/bindings/define-keys evil-normal-state-map
       ("C-b" #'evil-scroll-up)
@@ -1818,6 +1821,7 @@ Some major modes that are not installed by default.
   (/boot/lazy-major-mode "\\.vim$" vimrc-mode)
   (/boot/lazy-major-mode "\\.lua$" lua-mode)
   (/boot/lazy-major-mode "\\.csv$" csv-mode)
+  (/boot/lazy-major-mode "\\.?cron\\(tab\\)?\\'" crontab-mode)
 
   (provide 'config-auxiliary-modes)
 #+END_SRC
@@ -1835,6 +1839,7 @@ This is the auto-completion engine I use. Configuration pretty straight forward.
   (setq company-idle-delay 0.5)
   (setq company-minimum-prefix-length 1)
   (setq company-tooltip-limit 20)
+  (setq company-auto-complete t)
 
   (setq company-dabbrev-downcase nil)
   (setq company-dabbrev-ignore-case t)
@@ -1863,8 +1868,6 @@ This is to stop the conflict between =company= and =yasnippet=.
 
 #+BEGIN_SRC emacs-lisp :tangle config/config-company.el
   (after 'company
-    (define-key company-active-map (kbd "<backtab>") #'company-select-previous)
-    (define-key company-active-map (kbd "<tab>") #'company-select-next)
     (after "yasnippet-autoloads"
       (define-key company-active-map (kbd "<tab>")
         (bind (when (null (yas-expand))

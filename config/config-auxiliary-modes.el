@@ -6,5 +6,6 @@
 (/boot/lazy-major-mode "\\.vim$" vimrc-mode)
 (/boot/lazy-major-mode "\\.lua$" lua-mode)
 (/boot/lazy-major-mode "\\.csv$" csv-mode)
+(/boot/lazy-major-mode "\\.?cron\\(tab\\)?\\'" crontab-mode)
 
 (provide 'config-auxiliary-modes)

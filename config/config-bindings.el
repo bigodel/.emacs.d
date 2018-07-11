@@ -84,7 +84,8 @@
 (global-set-key (kbd "C-!") '/eshell/new-window)
 
 (after 'magit
-  (global-set-key (kbd "C-x g") 'magit-status))
+  (global-set-key (kbd "C-x g") 'magit-status)
+  (global-set-key (kbd "C-x M-g") 'magit-dispatch-popup))
 
 (after 'evil
   (define-key evil-normal-state-map (kbd "!") '/eshell/new-window)

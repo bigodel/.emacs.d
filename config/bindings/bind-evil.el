@@ -11,8 +11,10 @@
     (/bindings/define-key evil-normal-state-map "C-a" #'evil-numbers/inc-at-pt)
     (/bindings/define-key evil-normal-state-map "C-S-a" #'evil-numbers/dec-at-pt))
 
-  (after 'company
-    (/bindings/define-key evil-insert-state-map "<C-tab>" #'company-complete))
+  (after "company-autoloads"
+    (/bindings/define-keys evil-insert-state-map
+      ("C-n" #'company-complete)
+      ("TAB" #'company-indent-or-complete-common)))
 
   (/bindings/define-keys evil-normal-state-map
     ("C-b" #'evil-scroll-up)

@@ -1,0 +1,31 @@
+* Organize the dir tree as follows
+
+#+BEGIN_SRC sh
+bindings/
+    bind-global.el
+    bind-evil.el
+    ...
+    bind-company.el
+config/
+    init-boot.el
+    init-core.el
+    init-util.el
+    init-evil.el
+    init-company.el
+    init-eshell.el
+    init-helm.el
+    init-misc.el
+    init-eyecandy.el
+    ...
+    init-projectile.el
+langs/
+    lang-haskell.el
+    lang-python.el
+    lang-c.el
+    lang-web.el
+    lang-html.el
+    lang-css.el
+    lang-latex.el
+    ...
+    lang-lisp.el
+#+END_SRC

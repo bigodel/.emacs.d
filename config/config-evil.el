@@ -117,7 +117,7 @@
 (after 'evil
   (require-package 'evil-collection)
   (setq evil-collection-setup-minibuffer t)
-  (setq evil-collection-company-use-tng nil)
+  (setq evil-collection-company-use-tng t)
   (evil-collection-init))
 
 (defadvice evil-ex-search-next (after dotemacs activate)

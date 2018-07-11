@@ -4,6 +4,7 @@
 (setq company-idle-delay 0.5)
 (setq company-minimum-prefix-length 1)
 (setq company-tooltip-limit 20)
+(setq company-auto-complete t)
 
 (setq company-dabbrev-downcase nil)
 (setq company-dabbrev-ignore-case t)
@@ -28,8 +29,6 @@
          company-backends)))
 
 (after 'company
-  (define-key company-active-map (kbd "<backtab>") #'company-select-previous)
-  (define-key company-active-map (kbd "<tab>") #'company-select-next)
   (after "yasnippet-autoloads"
     (define-key company-active-map (kbd "<tab>")
       (bind (when (null (yas-expand))
