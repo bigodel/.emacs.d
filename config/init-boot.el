@@ -37,8 +37,6 @@
       ad-do-it
     (/boot/measure-load feature ad-do-it)))
 
-(add-to-list 'auto-mode-alist '("^\\*Load Times\\*$" . org-mode))
-
 (defmacro bind (&rest commands)
   "Convenience macro which creates a lambda interactive command."
   `(lambda (arg)

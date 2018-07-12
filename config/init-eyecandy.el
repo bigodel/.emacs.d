@@ -1,11 +1,16 @@
 
-(require-package doom-themes)
+(require-package 'doom-themes)
 (require 'doom-themes)
 
-(setq doom-themes-enable-bold t
-      doom-themes-enable-italic t)
+(setq doom-themes-enable-bold t)
+(setq doom-themes-enable-italic t)
 
 (load-theme 'doom-molokai t)
+
+;; change fringe background and foreground color
+(set-face-attribute 'fringe nil
+                    :background (face-background 'default)
+                    :foreground (face-foreground 'default))
 
 ;; make comments grey
 ;; (set-face-foreground 'font-lock-comment-face "dimgray")
@@ -86,9 +91,7 @@
 (after 'evil-org (diminish 'evil-org-mode))
 (after 'evil-vimish-fold (diminish 'evil-vimish-fold-mode))
 
-(require-package 'doom-modeline)
-(require 'doom-modeline)
-(doom-modeline-init)
+
 
 (when (fboundp 'global-prettify-symbols-mode)
   (global-prettify-symbols-mode))

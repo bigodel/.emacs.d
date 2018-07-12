@@ -141,7 +141,7 @@
 
 ;; fringe
 (when (display-graphic-p)
-  (fringe-mode '(8 . 0)))
+  (fringe-mode '(8 . 8)))
 
 ;; ediff
 (setq ediff-split-window-function 'split-window-horizontally) ;; side-by-side diffs
@@ -236,6 +236,7 @@ and if neither, we use the current indent-tabs-mode"
 (setq inhibit-startup-message t)
 (setq initial-scratch-message nil)
 
+(setq visual-line-fringe-indicators '(left-curly-arrow right-curly-arrow))
 (global-visual-line-mode)
 (xterm-mouse-mode t)
 (which-function-mode t)

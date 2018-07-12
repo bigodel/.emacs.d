@@ -32,11 +32,16 @@
      (,sequence ,binding ,description)))
 
 ;; escape minibuffer
-;; (define-key minibuffer-local-map [escape] '/util/minibuffer-keyboard-quit)
-;; (define-key minibuffer-local-ns-map [escape] '/util/minibuffer-keyboard-quit)
-;; (define-key minibuffer-local-completion-map [escape] '/util/minibuffer-keyboard-quit)
-;; (define-key minibuffer-local-must-match-map [escape] '/util/minibuffer-keyboard-quit)
-;; (define-key minibuffer-local-isearch-map [escape] '/util/minibuffer-keyboard-quit)
+;; (define-key minibuffer-local-map [escape]
+;;   '/util/minibuffer-keyboard-quit)
+;; (define-key minibuffer-local-ns-map [escape]
+;;   '/util/minibuffer-keyboard-quit)
+;; (define-key minibuffer-local-completion-map [escape]
+;;   '/util/minibuffer-keyboard-quit)
+;; (define-key minibuffer-local-must-match-map [escape]
+;;   '/util/minibuffer-keyboard-quit)
+;; (define-key minibuffer-local-isearch-map [escape]
+;;   '/util/minibuffer-keyboard-quit)
 
 ;; (define-key minibuffer-local-map (kbd "C-w") 'backward-kill-word)
 
@@ -66,7 +71,6 @@
   (global-set-key (kbd "C-x C-b") #'helm-mini)
   (global-set-key (kbd "C-x C-f") #'helm-find-files)
   (global-set-key (kbd "C-x r b") #'helm-bookmarks)
-  (global-set-key (kbd "C-S-p") #'helm-projectile-switch-project)
   (define-key evil-normal-state-map (kbd "C-p") #'helm-projectile)
   (global-set-key (kbd "M-x") #'helm-M-x)
   (global-set-key (kbd "M-y") #'helm-show-kill-ring)
@@ -94,6 +98,9 @@
 (after 'magit
   (global-set-key (kbd "C-x g") 'magit-status)
   (global-set-key (kbd "C-x M-g") 'magit-dispatch-popup))
+
+(after 'projectile
+  (global-set-key (kbd "C-S-p") #'projectile-switch-project))
 
 (after 'evil
   (define-key evil-normal-state-map (kbd "!") '/eshell/new-window)

@@ -9,6 +9,8 @@
 
 ** TODO Add org config
 
+** TODO Modeline configuration
+
 
 * Introduction
 :PROPERTIES:
@@ -207,7 +209,8 @@ all of the bars are disabled if they're enabled.
   (lexical-let ((emacs-start-time (current-time)))
     (add-hook 'emacs-startup-hook
               (lambda ()
-                (let ((elapsed (float-time (time-subtract (current-time) emacs-start-time))))
+                (let ((elapsed (float-time
+                                (time-subtract (current-time) emacs-start-time))))
                   (message "[ Emacs initialized in %.3fs ]" elapsed)))))
 
   (let ((gc-cons-threshold (* 256 1024 1024))
@@ -236,7 +239,8 @@ my Emacs setup, like completion engine, which could either be =helm=, =ido= or
 
   (defvar dotemacs-globally-ignored-directories
     '("elpa" ".cache" "target" "dist" "node_modules" ".git" ".hg" ".svn" ".idea")
-    "A set of default directories to ignore for anything that involves searching.")
+    "A set of default directories to ignore for anything that
+    involves searching.")
 #+END_SRC
 
 Here is where we set the default repositories from where Emacs should fetch
@@ -268,7 +272,8 @@ and =~/.myemacsc/config/= instead of the above mentioned paths with
   (when (file-exists-p custom-file)
     (load custom-file))
 
-  (cl-loop for file in (reverse (directory-files-recursively config-directory "\\.el$"))
+  (cl-loop for file in (reverse (directory-files-recursively
+                                 config-directory "\\.el$"))
            do (condition-case ex
                   (load (file-name-sans-extension file))
                 ('error (with-current-buffer "*scratch*"
@@ -288,7 +293,7 @@ This is the section where configuration actually takes place.
 
 ** Boot
 :PROPERTIES:
-:CUSTOM_ID: core-boot
+:CUSTOM_ID: cfg-boot
 :END:
 
 We also load the common lisp libraries here.
@@ -341,8 +346,6 @@ to show the load times of packages loaded with =require= or =load=.
     (if (memq feature features)
         ad-do-it
       (/boot/measure-load feature ad-do-it)))
-
-  (add-to-list 'auto-mode-alist '("^\\*Load Times\\*$" . org-mode))
 
   (defmacro bind (&rest commands)
     "Convenience macro which creates a lambda interactive command."
@@ -616,7 +619,7 @@ every time it loads.
 
   ;; fringe
   (when (display-graphic-p)
-    (fringe-mode '(8 . 0)))
+    (fringe-mode '(8 . 8)))
 
   ;; ediff
   (setq ediff-split-window-function 'split-window-horizontally) ;; side-by-side diffs
@@ -729,6 +732,7 @@ start-up.
 Some modes that I like to have by default.
 
 #+BEGIN_SRC emacs-lisp :tangle config/init-core.el
+  (setq visual-line-fringe-indicators '(left-curly-arrow right-curly-arrow))
   (global-visual-line-mode)
   (xterm-mouse-mode t)
   (which-function-mode t)
@@ -1057,11 +1061,13 @@ People often think helm is just something like [[https://www.emacswiki.org/emacs
 completion in a vertical layout instead of an horizontal one, it is not,
 helm is much more powerful than that.
 
-  - Helm is able to complete multiple lists dispatched in different sources against a pattern.
+  - Helm is able to complete multiple lists dispatched in different sources
+    against a pattern.
 
   - Helm allows executing an unlimited number of actions on candidates.
 
-  - Helm allows marking candidates to execute chosen action against this set of candidates.
+  - Helm allows marking candidates to execute chosen action against this set of
+    candidates.
 #+END_QUOTE
 
 #+BEGIN_SRC emacs-lisp :tangle config/init-helm.el
@@ -1201,11 +1207,16 @@ buffer with =evil= activated.
 
 #+BEGIN_SRC emacs-lisp :tangle config/init-bindings.el
   ;; escape minibuffer
-  ;; (define-key minibuffer-local-map [escape] '/util/minibuffer-keyboard-quit)
-  ;; (define-key minibuffer-local-ns-map [escape] '/util/minibuffer-keyboard-quit)
-  ;; (define-key minibuffer-local-completion-map [escape] '/util/minibuffer-keyboard-quit)
-  ;; (define-key minibuffer-local-must-match-map [escape] '/util/minibuffer-keyboard-quit)
-  ;; (define-key minibuffer-local-isearch-map [escape] '/util/minibuffer-keyboard-quit)
+  ;; (define-key minibuffer-local-map [escape]
+  ;;   '/util/minibuffer-keyboard-quit)
+  ;; (define-key minibuffer-local-ns-map [escape]
+  ;;   '/util/minibuffer-keyboard-quit)
+  ;; (define-key minibuffer-local-completion-map [escape]
+  ;;   '/util/minibuffer-keyboard-quit)
+  ;; (define-key minibuffer-local-must-match-map [escape]
+  ;;   '/util/minibuffer-keyboard-quit)
+  ;; (define-key minibuffer-local-isearch-map [escape]
+  ;;   '/util/minibuffer-keyboard-quit)
 
   ;; (define-key minibuffer-local-map (kbd "C-w") 'backward-kill-word)
 #+END_SRC
@@ -1249,7 +1260,6 @@ default.
     (global-set-key (kbd "C-x C-b") #'helm-mini)
     (global-set-key (kbd "C-x C-f") #'helm-find-files)
     (global-set-key (kbd "C-x r b") #'helm-bookmarks)
-    (global-set-key (kbd "C-S-p") #'helm-projectile-switch-project)
     (define-key evil-normal-state-map (kbd "C-p") #'helm-projectile)
     (global-set-key (kbd "M-x") #'helm-M-x)
     (global-set-key (kbd "M-y") #'helm-show-kill-ring)
@@ -1289,6 +1299,9 @@ snippet.
     (global-set-key (kbd "C-x g") 'magit-status)
     (global-set-key (kbd "C-x M-g") 'magit-dispatch-popup))
 
+  (after 'projectile
+    (global-set-key (kbd "C-S-p") #'projectile-switch-project))
+
   (after 'evil
     (define-key evil-normal-state-map (kbd "!") '/eshell/new-window)
     (define-key evil-visual-state-map (kbd "!") '/eshell/new-window)
@@ -1324,6 +1337,9 @@ Some packages have specific bindings and/or too much bindings to be on the
 =config/init-bindings.el= file, so they have their own.
 
 *** Evil bindings
+    :PROPERTIES:
+    :CUSTOM_ID: cfg-bindings-evil
+    :END:
 
 Since it is my most used package it makes total sense that is has it's own file.
 
@@ -1376,20 +1392,23 @@ Since it is my most used package it makes total sense that is has it's own file.
 :CUSTOM_ID: cfg-eyecandy
 :END:
 
-*** TODO Modeline config
-
 Some eyecandy is good.
 
 Color theme config and font config.
 
 #+BEGIN_SRC emacs-lisp :tangle config/init-eyecandy.el
-  (require-package doom-themes)
+  (require-package 'doom-themes)
   (require 'doom-themes)
 
-  (setq doom-themes-enable-bold t
-        doom-themes-enable-italic t)
+  (setq doom-themes-enable-bold t)
+  (setq doom-themes-enable-italic t)
 
   (load-theme 'doom-molokai t)
+
+  ;; change fringe background and foreground color
+  (set-face-attribute 'fringe nil
+                      :background (face-background 'default)
+                      :foreground (face-foreground 'default))
 
   ;; make comments grey
   ;; (set-face-foreground 'font-lock-comment-face "dimgray")
@@ -1483,15 +1502,9 @@ The =delight= package hides minor modes from the modeline.
   (after 'evil-vimish-fold (diminish 'evil-vimish-fold-mode))
 #+END_SRC
 
-Configure the preferred modeline package. I'm currently using the
-=doom-modeline= just because it is pretty awesome, very pretty and quite light
-(not as light as something like =smart-mode-line=, but still lighter than
-=spaceline=).
+Configuration regarding the modeline. I just use a tailored default modeline.
 
 #+BEGIN_SRC emacs-lisp :tangle config/init-eyecandy.el
-  (require-package 'doom-modeline)
-  (require 'doom-modeline)
-  (doom-modeline-init)
 #+END_SRC
 
 =prettify-symbols= replaces ASCII characters with a unicode representation of
@@ -1650,24 +1663,27 @@ This is the prompt function for =eshell= (usually called =$PS1= on =bash= or
 #+BEGIN_SRC emacs-lisp :tangle config/init-eshell.el
   (setq eshell-prompt-function
         (lambda ()
-          (concat (propertize (abbreviate-file-name (eshell/pwd)) 'face 'eshell-prompt)
-                  (when (and dotemacs-eshell/prompt-git-info
-                           (fboundp #'vc-git-branches))
-                    (let ((branch (car (vc-git-branches))))
-                      (when branch
-                        (concat
-                         (propertize " [" 'face 'font-lock-keyword-face)
-                         (propertize branch 'face 'font-lock-function-name-face)
-                         (let* ((status (shell-command-to-string "git status --porcelain"))
-                                (parts (split-string status "\n" t " "))
-                                (states (mapcar #'string-to-char parts))
-                                (added (count-if (lambda (char) (= char ?A)) states))
-                                (modified (count-if (lambda (char) (= char ?M)) states))
-                                (deleted (count-if (lambda (char) (= char ?D)) states)))
-                           (when (> (+ added modified deleted) 0)
-                             (propertize (format " +%d ~%d -%d" added modified deleted) 'face 'font-lock-comment-face)))
-                         (propertize "]" 'face 'font-lock-keyword-face)))))
-                  (propertize " $ " 'face 'font-lock-constant-face))))
+          (concat
+           (propertize (abbreviate-file-name (eshell/pwd)) 'face 'eshell-prompt)
+           (when (and dotemacs-eshell/prompt-git-info
+                      (fboundp #'vc-git-branches))
+             (let ((branch (car (vc-git-branches))))
+               (when branch
+                 (concat
+                  (propertize " [" 'face 'font-lock-keyword-face)
+                  (propertize branch 'face 'font-lock-function-name-face)
+                  (let* ((status (shell-command-to-string "git status --porcelain"))
+                         (parts (split-string status "\n" t " "))
+                         (states (mapcar #'string-to-char parts))
+                         (added (count-if (lambda (char) (= char ?A)) states))
+                         (modified (count-if (lambda (char) (= char ?M)) states))
+                         (deleted (count-if (lambda (char) (= char ?D)) states)))
+                    (when (> (+ added modified deleted) 0)
+                      (propertize
+                       (format " +%d ~%d -%d" added modified deleted)
+                       'face 'font-lock-comment-face)))
+                  (propertize "]" 'face 'font-lock-keyword-face)))))
+           (propertize " $ " 'face 'font-lock-constant-face))))
 #+END_SRC
 
 If you have fortune installed, show a fortune every time =eshell= is opened.
@@ -1675,7 +1691,9 @@ If you have fortune installed, show a fortune every time =eshell= is opened.
 #+BEGIN_SRC emacs-lisp :tangle config/init-eshell.el
   (when (executable-find "fortune")
     (defadvice eshell (before dotemacs activate)
-      (setq eshell-banner-message (concat (shell-command-to-string "fortune") "\n"))))
+      (setq eshell-banner-message
+            (concat (shell-command-to-string "fortune") "\n"))
+      "Display a little `fortune' at `eshell' startup."))
 #+END_SRC
 
 Functions defined as =eshell/name-of-function= are functions executed on
@@ -1685,7 +1703,8 @@ Functions defined as =eshell/name-of-function= are functions executed on
   (defun eshell/ff (&rest args)
     "Opens a file in emacs."
     (when (not (null args))
-      (mapc #'find-file (mapcar #'expand-file-name (eshell-flatten-list (reverse args))))))
+      (mapc #'find-file (mapcar #'expand-file-name
+                                (eshell-flatten-list (reverse args))))))
 
   (defun eshell/h ()
     "Quickly run a previous command."
@@ -1931,14 +1950,17 @@ This package is amazing at dealing with projects.
 #+BEGIN_SRC emacs-lisp :tangle config/init-projectile.el
   (require-package 'projectile)
 
-  (setq projectile-cache-file (concat dotemacs-cache-directory "projectile.cache"))
-  (setq projectile-known-projects-file (concat dotemacs-cache-directory "projectile-bookmarks.eld"))
+  (setq projectile-cache-file (concat
+                               dotemacs-cache-directory "projectile.cache"))
+  (setq projectile-known-projects-file
+        (concat dotemacs-cache-directory "projectile-bookmarks.eld"))
   (setq projectile-indexing-method 'alien)
   (setq projectile-enable-caching t)
   (setq projectile-completion-system 'helm)
 
   (after 'helm-projectile
-    (add-to-list 'helm-projectile-sources-list 'helm-source-projectile-recentf-list))
+    (add-to-list 'helm-projectile-sources-list
+                 'helm-source-projectile-recentf-list))
 
   (projectile-mode)
 
@@ -1949,11 +1971,15 @@ This package is amazing at dealing with projects.
    ((executable-find "ag")
     (setq projectile-generic-command
           (concat "ag -0 -l --nocolor"
-                  (mapconcat #'identity (cons "" projectile-globally-ignored-directories) " --ignore-dir="))))
+                  (mapconcat #'identity 
+                             (cons "" projectile-globally-ignored-directories) 
+                             " --ignore-dir="))))
    ((executable-find "ack")
     (setq projectile-generic-command
           (concat "ack -f --print0"
-                  (mapconcat #'identity (cons "" projectile-globally-ignored-directories) " --ignore-dir=")))))
+                  (mapconcat #'identity
+                             (cons "" projectile-globally-ignored-directories)
+                             " --ignore-dir=")))))
 
   (provide 'init-projectile)
 #+END_SRC
