@@ -1,5 +1,18 @@
 
-(load-theme 'manoj-dark t)
+(require-package doom-themes)
+(require 'doom-themes)
+
+(setq doom-themes-enable-bold t
+      doom-themes-enable-italic t)
+
+(load-theme 'doom-molokai t)
+
+;; make comments grey
+;; (set-face-foreground 'font-lock-comment-face "dimgray")
+;; (set-face-foreground 'font-lock-comment-delimiter-face "dimgray")
+
+;; disable the bigger scale on bold fonts
+;; (set-face-attribute 'font-lock-function-name-face nil :height 1.0)
 
 (cond
  ((member "DejaVu Sans Mono" (font-family-list))
@@ -8,13 +21,6 @@
  ((member "Terminus" (font-family-list))
   (add-to-list 'initial-frame-alist '(font . "Terminus-16"))
   (add-to-list 'default-frame-alist '(font . "Terminus-16"))))
-
-;; make comments grey
-(set-face-foreground 'font-lock-comment-face "dimgray")
-(set-face-foreground 'font-lock-comment-delimiter-face "dimgray")
-
-;; disable the bigger scale on bold fonts
-(set-face-attribute 'font-lock-function-name-face nil :height 1.0)
 
 ;; change the mouse color
 (set-mouse-color "black")
@@ -26,7 +32,6 @@
 
 (line-number-mode t)
 (column-number-mode t)
-(display-time-mode t)
 (size-indication-mode t)
 
 (require-package 'vimish-fold)
@@ -81,10 +86,12 @@
 (after 'evil-org (diminish 'evil-org-mode))
 (after 'evil-vimish-fold (diminish 'evil-vimish-fold-mode))
 
-;; (require-package 'smart-mode-line)
-;; (setq sml/theme 'dark)
-;; (setq sml/no-confirm-load-theme t)
-;; (sml/setup)
+(require-package 'doom-modeline)
+(require 'doom-modeline)
+(doom-modeline-init)
+
+(when (fboundp 'global-prettify-symbols-mode)
+  (global-prettify-symbols-mode))
 
 (/boot/delayed-init
  (require-package 'color-identifiers-mode)

@@ -1383,7 +1383,20 @@ Some eyecandy is good.
 Color theme config and font config.
 
 #+BEGIN_SRC emacs-lisp :tangle config/init-eyecandy.el
-  (load-theme 'manoj-dark t)
+  (require-package doom-themes)
+  (require 'doom-themes)
+
+  (setq doom-themes-enable-bold t
+        doom-themes-enable-italic t)
+
+  (load-theme 'doom-molokai t)
+
+  ;; make comments grey
+  ;; (set-face-foreground 'font-lock-comment-face "dimgray")
+  ;; (set-face-foreground 'font-lock-comment-delimiter-face "dimgray")
+
+  ;; disable the bigger scale on bold fonts
+  ;; (set-face-attribute 'font-lock-function-name-face nil :height 1.0)
 
   (cond
    ((member "DejaVu Sans Mono" (font-family-list))
@@ -1392,13 +1405,6 @@ Color theme config and font config.
    ((member "Terminus" (font-family-list))
     (add-to-list 'initial-frame-alist '(font . "Terminus-16"))
     (add-to-list 'default-frame-alist '(font . "Terminus-16"))))
-
-  ;; make comments grey
-  (set-face-foreground 'font-lock-comment-face "dimgray")
-  (set-face-foreground 'font-lock-comment-delimiter-face "dimgray")
-
-  ;; disable the bigger scale on bold fonts
-  (set-face-attribute 'font-lock-function-name-face nil :height 1.0)
 
   ;; change the mouse color
   (set-mouse-color "black")
@@ -1414,7 +1420,6 @@ Also there is some mode to display stuff in the modeline that are very useful.
 #+BEGIN_SRC emacs-lisp :tangle config/init-eyecandy.el
   (line-number-mode t)
   (column-number-mode t)
-  (display-time-mode t)
   (size-indication-mode t)
 #+END_SRC
 
@@ -1478,21 +1483,40 @@ The =delight= package hides minor modes from the modeline.
   (after 'evil-vimish-fold (diminish 'evil-vimish-fold-mode))
 #+END_SRC
 
-Configure the preferred modeline package. I could edit the default modeline,
-but =smart-mode-line=, my preferred modeline, is very simple already and very
-lightweight.
+Configure the preferred modeline package. I'm currently using the
+=doom-modeline= just because it is pretty awesome, very pretty and quite light
+(not as light as something like =smart-mode-line=, but still lighter than
+=spaceline=).
 
 #+BEGIN_SRC emacs-lisp :tangle config/init-eyecandy.el
-  ;; (require-package 'smart-mode-line)
-  ;; (setq sml/theme 'dark)
-  ;; (setq sml/no-confirm-load-theme t)
-  ;; (sml/setup)
+  (require-package 'doom-modeline)
+  (require 'doom-modeline)
+  (doom-modeline-init)
+#+END_SRC
+
+=prettify-symbols= replaces ASCII characters with a unicode representation of
+them. For example, on Lisp dialects, the word "/lambda/" is replaced by the
+actual greek letter /λ/. It is also possible to add your own mappings like so:
+
+/Ps.: This is not going to be tangled/
+
+#+BEGIN_SRC emacs-lisp :tangle no
+(add-hook 'emacs-lisp-mode-hook
+          (lambda ()
+            (push '(">=" . ?≥) prettify-symbols-alist)
+            (push '("<=" . 2264) prettify-symbols-alist)))
+
+;; you can use either the ?char or the char code; for example, ?≥ is the same as
+;; 2265
 #+END_SRC
 
 These are some eye candy packages. If you're interested in any of them just look
 them up on your favorite search engine.
 
 #+BEGIN_SRC emacs-lisp :tangle config/init-eyecandy.el
+  (when (fboundp 'global-prettify-symbols-mode)
+    (global-prettify-symbols-mode))
+
   (/boot/delayed-init
    (require-package 'color-identifiers-mode)
    (global-color-identifiers-mode)
@@ -1728,13 +1752,10 @@ packages and a reason a lot of people stick to it (of course, if they use git).
   (setq vc-make-backup-files t)
 
   (when (executable-find "git")
-    (defun /vcs/git-commit-hook ()
-      "Set of things to execute whenever on a git commit. Because I
-  have a template that starts with a comment, it makes sense to go
-  down a line at start."
-      (next-line))
-
-    (add-hook 'git-commit-mode-hook '/vcs/git-commit-hook)
+    (add-hook 'git-commit-mode-hook
+              (lambda ()
+                (interactive)
+                (next-line)))
 
     (require-package 'magit)
 
