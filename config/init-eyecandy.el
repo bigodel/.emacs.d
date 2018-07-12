@@ -104,4 +104,4 @@
 (require-package 'page-break-lines)
 (global-page-break-lines-mode)
 
-(provide 'config-eyecandy)
+(provide 'init-eyecandy)

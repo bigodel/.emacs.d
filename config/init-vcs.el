@@ -12,15 +12,10 @@ down a line at start."
 
   (require-package 'magit)
 
-  (defun /vcs/magit-post-display-buffer-hook()
-    (if (string-match "*magit:" (buffer-name))
-        (delete-other-windows)))
-  (add-hook 'magit-post-display-buffer-hook #'/vcs/magit-post-display-buffer-hook)
-
   (setq magit-section-show-child-couno t)
   (setq magit-diff-arguments '("--histogram"))
   (setq magit-ediff-dwim-show-on-hunks t)
-  (setq magit-display-buffer-function #'magit-display-buffer-fullcolumn-most-v1)
+  (setq magit-display-buffer-function #'magit-display-buffer-traditional)
 
   (require-package 'magit-todos)
   (add-hook 'prog-mode-hook 'hl-todo-mode)
@@ -42,4 +37,4 @@ down a line at start."
     (kbd "M-n") #'vc-annotate-next-revision
     "l" #'vc-annotate-show-log-revision-at-line))
 
-(provide 'config-vcs)
+(provide 'init-vcs)

@@ -28,4 +28,4 @@
 
 (advice-add #'next-error-find-buffer :around #'/flycheck/advice/next-error-find-buffer)
 
-(provide 'config-flycheck)
+(provide 'init-flycheck)

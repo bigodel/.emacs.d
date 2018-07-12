@@ -251,4 +251,4 @@ and if neither, we use the current indent-tabs-mode"
     (fundamental-mode)))
 (add-hook 'find-file-hook #'/core/find-file-hook)
 
-(provide 'config-core)
+(provide 'init-core)

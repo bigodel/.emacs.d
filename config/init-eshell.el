@@ -85,4 +85,4 @@
     (insert (concat "ls"))
     (eshell-send-input)))
 
-(provide 'config-eshell)
+(provide 'init-eshell)

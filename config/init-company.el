@@ -1,10 +1,10 @@
 
 (require-package 'company)
 
-(setq company-idle-delay 0.5)
+(setq company-idle-delay 0.2)
 (setq company-minimum-prefix-length 1)
 (setq company-tooltip-limit 20)
-(setq company-auto-complete t)
+(setq company-auto-complete 'company-explicit-action-p)
 
 (setq company-dabbrev-downcase nil)
 (setq company-dabbrev-ignore-case t)
@@ -28,10 +28,4 @@
                      '(:with company-yasnippet))))
          company-backends)))
 
-(after 'company
-  (after "yasnippet-autoloads"
-    (define-key company-active-map (kbd "<tab>")
-      (bind (when (null (yas-expand))
-              (company-select-next))))))
-
-(provide 'config-company)
+(provide 'init-company)

@@ -164,7 +164,7 @@ order so that any functions defined will be available in child nodes.
 :END:
 
 Other important part (but not necessarily the heart) of the setup are the
-bindings, which are mostly kept on the =config/config-bindings.el=. Some
+bindings, which are mostly kept on the =config/init-bindings.el=. Some
 packages and modes have too much bindings, so they have their own specific
 bindings file under the =config/bindings= directory. Because of this, things
 like =use-package= aren't particularly useful here because it doesn't add much
@@ -212,7 +212,6 @@ all of the bars are disabled if they're enabled.
 
   (let ((gc-cons-threshold (* 256 1024 1024))
         (file-name-handler-alist nil)
-        (core-directory (concat user-emacs-directory "core/"))
         (config-directory (concat user-emacs-directory "config/")))
 
     (when (fboundp 'tool-bar-mode) (tool-bar-mode -1))
@@ -258,12 +257,12 @@ This is where we load all of our configuration files stored in
 the elisp files in =~/.emacs.d/config=.
 
 Note that if the variable =user-emacs-directory= is changed to, let's say,
-=~/.myemacs=, this configuration file will look for elisp files in
-=~/.myemacs/=, =~/.myemacscore/core-= and =~/.myemacs/config/= instead of the above
-mentioned paths with =~/.emacs.d/=.
+=~/.myemacs=, this configuration file will look for elisp files in =~/.myemacs/=
+and =~/.myemacsc/config/= instead of the above mentioned paths with
+=~/.emacs.d/=.
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
-  (load (concat core-directory "core-boot"))
+  (load (concat config-directory "init-boot"))
 
   (setq custom-file (concat user-emacs-directory "custom.el"))
   (when (file-exists-p custom-file)
@@ -280,33 +279,27 @@ mentioned paths with =~/.emacs.d/=.
 #+END_SRC
 
 
-* Core
+* Config
 :PROPERTIES:
-:CUSTOM_ID: core
+:CUSTOM_ID: cfg
 :END:
-** TODO Load at boot
+
+This is the section where configuration actually takes place.
+
+** Boot
 :PROPERTIES:
 :CUSTOM_ID: core-boot
 :END:
 
 We also load the common lisp libraries here.
 
-#+BEGIN_SRC emacs-lisp :tangle core/core-boot.el
+#+BEGIN_SRC emacs-lisp :tangle config/init-boot.el
   (eval-when-compile (require 'cl))
 #+END_SRC
 
 Load any manually installed packages on the =elisp/= directory.
 
-#+BEGIN_SRC emacs-lisp :tangle core/core-boot.el
-  (defun /core/create-non-existent-directory ()
-    "When trying to access non-exising directories, ask to create them."
-    (let ((parent-directory (file-name-directory buffer-file-name)))
-      (when (and (not (file-exists-p parent-directory))
-                 (y-or-n-p
-                  (format "Directory `%s' does not exist! Create it?"
-                          parent-directory)))
-        (make-directory parent-directory t))))
-
+#+BEGIN_SRC emacs-lisp :tangle config/init-boot.el
   (let ((base (concat user-emacs-directory "elisp/")))
     (when (and (not (file-exists-p base))
                (y-or-n-p
@@ -323,7 +316,7 @@ This handy macro creates a new buffer with the name =*Load Times*= and shows a
 moderately detailed information about the load time of TARGET. It is used here
 to show the load times of packages loaded with =require= or =load=.
 
-#+BEGIN_SRC emacs-lisp :tangle core/core-boot.el
+#+BEGIN_SRC emacs-lisp :tangle config/init-boot.el
   (defmacro /boot/measure-load (target &rest body)
     (declare (indent defun))
     `(let ((elapsed)
@@ -349,6 +342,8 @@ to show the load times of packages loaded with =require= or =load=.
         ad-do-it
       (/boot/measure-load feature ad-do-it)))
 
+  (add-to-list 'auto-mode-alist '("^\\*Load Times\\*$" . org-mode))
+
   (defmacro bind (&rest commands)
     "Convenience macro which creates a lambda interactive command."
     `(lambda (arg)
@@ -358,7 +353,7 @@ to show the load times of packages loaded with =require= or =load=.
 
 Here are the macros mentioned on the [[#intro][introduction]] section.
 
-#+BEGIN_SRC emacs-lisp :tangle core/core-boot.el
+#+BEGIN_SRC emacs-lisp :tangle config/init-boot.el
   (defun require-package (package)
     "Ensures that PACKAGE is installed."
     (unless (or (package-installed-p package)
@@ -396,10 +391,9 @@ Here are the macros mentioned on the [[#intro][introduction]] section.
       `(with-eval-after-load ,feature ,@body))))
 #+END_SRC
 
-The first macro is to lazily install a major mode like described in [[#lazy-major-modes][Lazy major
-modes]]. The second one is self explanatory.
+This macro is to lazily install a major mode like described in [[#lazy-major-modes][Lazy major modes]].
 
-#+BEGIN_SRC emacs-lisp :tangle core/core-boot.el
+#+BEGIN_SRC emacs-lisp :tangle config/init-boot.el
   (defmacro /boot/lazy-major-mode (pattern mode)
     "Defines a new major-mode matched by PATTERN, installs MODE if
   necessary, and activates it."
@@ -415,18 +409,9 @@ modes]]. The second one is self explanatory.
       nil
       (lambda () ,@body)))
 
-  (provide 'core-boot) ;;; core-boot.el ends here
+  (provide 'init-boot)
 #+END_SRC
 
-
-* Config
-:PROPERTIES:
-:CUSTOM_ID: cfg
-:END:
-
-This is the section where configuration actually takes place.
-
-** TODO Boot
 ** Core
 :PROPERTIES:
 :CUSTOM_ID: cfg-core
@@ -437,7 +422,7 @@ some default Emacs config.
 
 First we create a variable for the coding system, which is UTF-8 by default.
 
-#+BEGIN_SRC emacs-lisp :tangle config/config-core.el
+#+BEGIN_SRC emacs-lisp :tangle config/init-core.el
   (defvar dotemacs-core/default-coding-system 'utf-8
     "The default coding system to use.")
 #+END_SRC
@@ -445,7 +430,7 @@ First we create a variable for the coding system, which is UTF-8 by default.
 This setting sets the default location for the Emacs socket to be in and then
 initializes the server if it is not already running.
 
-#+BEGIN_SRC emacs-lisp :tangle config/config-core.el
+#+BEGIN_SRC emacs-lisp :tangle config/init-core.el
   (defvar dotemacs-core/server-directory
     (format "%s/emacs%d/" (or (getenv "TMPDIR") "/tmp") (user-uid))
     "The storage location for the socket file used to connect to the daemon.")
@@ -459,7 +444,7 @@ initializes the server if it is not already running.
 This function is to create a ask to create a directory if trying to access a
 non-existing directory.
 
-#+BEGIN_SRC emacs-lisp :tangle config/config-core.el
+#+BEGIN_SRC emacs-lisp :tangle config/init-core.el
   (defun /core/create-non-existent-directory ()
     "When trying to access non-exising directories, ask to create them."
     (let ((parent-directory (file-name-directory buffer-file-name)))
@@ -474,7 +459,7 @@ non-existing directory.
 
 Some personal information.
 
-#+BEGIN_SRC emacs-lisp :tangle config/config-core.el
+#+BEGIN_SRC emacs-lisp :tangle config/init-core.el
   (setq user-full-name "João Pedro de Amorim Paula")
   (setq user-mail-address "jpedrodeamorim@gmail.com")
 #+END_SRC
@@ -485,7 +470,7 @@ previously visited the same file. =savehist-mode= save the minibuffer history in
 the file defined by =savehist-file=. And =recentf= displays recently visited
 files (excluding some temporary files we don't want to revisit).
 
-#+BEGIN_SRC emacs-lisp :tangle config/config-core.el
+#+BEGIN_SRC emacs-lisp :tangle config/init-core.el
   ;; move cursor to the last position upon open
   (require 'saveplace)
   (setq save-place-file (concat dotemacs-cache-directory "places"))
@@ -513,7 +498,7 @@ files (excluding some temporary files we don't want to revisit).
 These configurations are regarding garbage collection on Emacs. I mostly took it
 from [[http://bling.github.io/blog/2016/01/18/why-are-you-changing-gc-cons-threshold/][this]] post.
 
-#+BEGIN_SRC emacs-lisp :tangle config/config-core.el
+#+BEGIN_SRC emacs-lisp :tangle config/init-core.el
   ;; gc
   (defun /core/minibuffer-setup-hook ()
     (setq gc-cons-threshold most-positive-fixnum))
@@ -526,7 +511,7 @@ from [[http://bling.github.io/blog/2016/01/18/why-are-you-changing-gc-cons-thres
 By default Emacs has =whitespace-mode=. It is used to show whitespace. For more
 information, visit [[https://www.emacswiki.org/emacs/WhiteSpace#toc1][this]] page. The configuration I got mostly from [[http://ergoemacs.org/emacs/whitespace-mode.html][here]].
 
-#+BEGIN_SRC emacs-lisp :tangle config/config-core.el
+#+BEGIN_SRC emacs-lisp :tangle config/init-core.el
   (require 'whitespace)
 
   ;; (setq whitespace-display-mappings
@@ -554,7 +539,7 @@ candidates, =M-/= cycles the candidates. =hippie-expand= is basically
 It has an info page =C-h F hippie-expand= in case you want to know more, and the
 [[https://www.emacswiki.org/emacs/HippieExpand][EmacsWiki page]] has a bunch of configurations for different modes.
 
-#+BEGIN_SRC emacs-lisp :tangle config/config-core.el
+#+BEGIN_SRC emacs-lisp :tangle config/init-core.el
   (setq hippie-expand-try-functions-list '(try-expand-dabbrev
                                            try-expand-dabbrev-all-buffers
                                            try-expand-dabbrev-from-kill
@@ -578,7 +563,7 @@ recommend you look the default documentation about it on Emacs first. It is also
 in this portion that I have added a hook to reload tangle and compile Emacs
 every time it loads.
 
-#+BEGIN_SRC emacs-lisp :tangle config/config-core.el
+#+BEGIN_SRC emacs-lisp :tangle config/init-core.el
   (add-hook 'after-save-hook '/util/tangle-init)
 
   ;; pcomplete
@@ -693,7 +678,7 @@ every time it loads.
 Change the "yes or no" prompt to "y-or-n", set the coding system based on the
 custom variable we defined above and set some variables value.
 
-#+BEGIN_SRC emacs-lisp :tangle config/config-core.el
+#+BEGIN_SRC emacs-lisp :tangle config/init-core.el
   (defalias 'yes-or-no-p 'y-or-n-p)
 
   (let ((coding 'utf-8))
@@ -716,7 +701,7 @@ custom variable we defined above and set some variables value.
 
 These are some configurations regarding indentation.
 
-#+BEGIN_SRC emacs-lisp :tangle config/config-core.el
+#+BEGIN_SRC emacs-lisp :tangle config/init-core.el
   (setq-default indent-tabs-mode nil) ;; spaces instead of tabs
   (setq-default tab-width 4)
 
@@ -734,7 +719,7 @@ These are some configurations regarding indentation.
 Do not show the initial default splash screen and do not show any message on
 start-up.
 
-#+BEGIN_SRC emacs-lisp :tangle config/config-core.el
+#+BEGIN_SRC emacs-lisp :tangle config/init-core.el
   (setq inhibit-splash-screen t)
   (setq inhibit-startup-echo-area-message t)
   (setq inhibit-startup-message t)
@@ -743,7 +728,7 @@ start-up.
 
 Some modes that I like to have by default.
 
-#+BEGIN_SRC emacs-lisp :tangle config/config-core.el
+#+BEGIN_SRC emacs-lisp :tangle config/init-core.el
   (global-visual-line-mode)
   (xterm-mouse-mode t)
   (which-function-mode t)
@@ -759,7 +744,7 @@ Some modes that I like to have by default.
       (fundamental-mode)))
   (add-hook 'find-file-hook #'/core/find-file-hook)
 
-  (provide 'config-core)
+  (provide 'init-core)
 #+END_SRC
 
 ** Util
@@ -770,7 +755,7 @@ Some modes that I like to have by default.
 Some useful functions. They are pretty much self documented, so there ain't much
 more I could say about it.
 
-#+BEGIN_SRC emacs-lisp :tangle config/config-util.el
+#+BEGIN_SRC emacs-lisp :tangle config/init-util.el
   (defun /util/window-killer ()
     "Closes the window, and deletes the buffer if it's the last window open."
     (interactive)
@@ -891,7 +876,7 @@ more I could say about it.
         (org-babel-tangle)
         (byte-compile-file (concat user-emacs-directory "init.el")))))
 
-  (provide 'config-util)
+  (provide 'init-util)
 #+END_SRC
 
 ** Evil
@@ -904,7 +889,7 @@ Probably my most used packages, by far.
 Here we set some variables of things that should not start as =evil-mode= (kinda
 contradictory isn't it?) because =evil= is awesome but ain't perfect yet.
 
-#+BEGIN_SRC emacs-lisp :tangle config/config-evil.el
+#+BEGIN_SRC emacs-lisp :tangle config/init-evil.el
   (defvar dotemacs-evil/emacs-state-hooks
     '(org-log-buffer-setup-hook
       org-capture-mode-hook)
@@ -926,7 +911,7 @@ contradictory isn't it?) because =evil= is awesome but ain't perfect yet.
 
 Some variable configuration for =evil= to feel more like (n)vim.
 
-#+BEGIN_SRC emacs-lisp :tangle config/config-evil.el
+#+BEGIN_SRC emacs-lisp :tangle config/init-evil.el
   (setq evil-search-module 'evil-search)
   (setq evil-magic 'very-magic)
   (setq evil-shift-width 4)
@@ -941,7 +926,7 @@ Some variable configuration for =evil= to feel more like (n)vim.
 I usually know in what =evil= state I'm in by the cursor color because of the
 configuration.
 
-#+BEGIN_SRC emacs-lisp :tangle config/config-evil.el
+#+BEGIN_SRC emacs-lisp :tangle config/init-evil.el
   (setq evil-emacs-state-cursor '("red" box))
   (setq evil-motion-state-cursor '("white" box))
   (setq evil-normal-state-cursor '("magenta" box))
@@ -955,7 +940,7 @@ Here is where I actually start =evil= after setting some more variables and
 hooks. Also in this code snippet is where all of the lists of default states for
 some modes set above are actually set with a common lisp loop.
 
-#+BEGIN_SRC emacs-lisp :tangle config/config-evil.el
+#+BEGIN_SRC emacs-lisp :tangle config/init-evil.el
   (add-hook 'evil-jumps-post-jump-hook #'recenter)
 
   (require-package 'evil)
@@ -995,7 +980,7 @@ some modes set above are actually set with a common lisp loop.
 Here is the configuration for the comment package. And some more additional
 packages to help integrate =evil= into the most modes possible.
 
-#+BEGIN_SRC emacs-lisp :tangle config/config-evil.el
+#+BEGIN_SRC emacs-lisp :tangle config/init-evil.el
   (require-package 'evil-surround)
   (global-evil-surround-mode t)
 
@@ -1039,11 +1024,11 @@ packages to help integrate =evil= into the most modes possible.
 
     (require-package 'evil-terminal-cursor-changer)
     (evil-terminal-cursor-changer-activate)
-#+END_SRC 
+#+END_SRC
 
 I also use [[https://github.com/emacs-evil/evil-collection][=evil-collection=]], a set of keybindings for =evil-mode=.
 
-#+BEGIN_SRC emacs-lisp :tangle config/config-evil.el
+#+BEGIN_SRC emacs-lisp :tangle config/init-evil.el
   (after 'evil
     (require-package 'evil-collection)
     (setq evil-collection-setup-minibuffer t)
@@ -1056,7 +1041,7 @@ I also use [[https://github.com/emacs-evil/evil-collection][=evil-collection=]],
   (defadvice evil-ex-search-previous (after dotemacs activate)
     (recenter))
 
-  (provide 'config-evil)
+  (provide 'init-evil)
 #+END_SRC
 
 ** Helm
@@ -1079,7 +1064,7 @@ helm is much more powerful than that.
   - Helm allows marking candidates to execute chosen action against this set of candidates.
 #+END_QUOTE
 
-#+BEGIN_SRC emacs-lisp :tangle config/config-helm.el
+#+BEGIN_SRC emacs-lisp :tangle config/init-helm.el
   (require-package 'helm)
 
   (setq helm-bookmark-show-location t)
@@ -1103,7 +1088,7 @@ helm is much more powerful than that.
 Helm also has a lot of other packages to integrate it to other packages and
 parts of Emacs that the default package doesn't cover. Here are some of those.
 
-#+BEGIN_SRC emacs-lisp :tangle config/config-helm.el
+#+BEGIN_SRC emacs-lisp :tangle config/init-helm.el
   (after 'helm
     (require-package 'helm-descbinds)
 
@@ -1147,14 +1132,14 @@ Start =helm= with the default =find-file= and =M-x= functions to be
 =helm='s alternatives. And also start =helm= on idle time
 (=delayed-init=).
 
-#+BEGIN_SRC emacs-lisp :tangle config/config-helm.el
+#+BEGIN_SRC emacs-lisp :tangle config/init-helm.el
   (/boot/delayed-init
    (progn
      (global-set-key [remap execute-extended-command] #'helm-M-x)
      (global-set-key [remap find-file] #'helm-find-files)
      (helm-mode t)))
 
-  (provide 'config-helm)
+  (provide 'init-helm)
 #+END_SRC
 
 ** Bindings
@@ -1170,7 +1155,7 @@ prefix key and stay idle for more than 0.2s without pressing another key,
 =which-key= will show you every possible binding with its related function
 starting with the prefix you pressed.
 
-#+BEGIN_SRC emacs-lisp :tangle config/config-bindings.el
+#+BEGIN_SRC emacs-lisp :tangle config/init-bindings.el
   (require-package 'which-key)
   (setq which-key-idle-delay 0.2)
   (setq which-key-min-display-lines 3)
@@ -1181,7 +1166,7 @@ starting with the prefix you pressed.
 
 These macros are to help me remap keys.
 
-#+BEGIN_SRC emacs-lisp :tangle config/config-bindings.el
+#+BEGIN_SRC emacs-lisp :tangle config/init-bindings.el
   (defmacro /bindings/define-prefix-keys (keymap prefix &rest body)
     (declare (indent defun))
     `(progn
@@ -1214,7 +1199,7 @@ commented because I have =evil-collection-setup-minibuffer= activated
 by default, which makes the minibuffer behave like a normal emacs
 buffer with =evil= activated.
 
-#+BEGIN_SRC emacs-lisp :tangle config/config-bindings.el
+#+BEGIN_SRC emacs-lisp :tangle config/init-bindings.el
   ;; escape minibuffer
   ;; (define-key minibuffer-local-map [escape] '/util/minibuffer-keyboard-quit)
   ;; (define-key minibuffer-local-ns-map [escape] '/util/minibuffer-keyboard-quit)
@@ -1229,7 +1214,7 @@ First I map =C-S-n= to create a new below where the point is, and
 =C-S-o= to create one above. The rest is just more configuration
 regarding a bunch of packages and modes.
 
-#+BEGIN_SRC emacs-lisp :tangle config/config-bindings.el
+#+BEGIN_SRC emacs-lisp :tangle config/init-bindings.el
   (global-set-key (kbd "C-S-n") '/util/insert-line-below)
   (global-set-key (kbd "C-S-o") '/util/insert-line-above)
 
@@ -1248,12 +1233,13 @@ regarding a bunch of packages and modes.
     (define-key compilation-mode-map (kbd "k") 'compilation-previous-error))
 #+END_SRC
 
-I like using =helm= to pretty much anything I can, so I set most of
-the common variables as =helm= commands. I also find it useful to
-remap the =helm-command-prefix= to =C-c h=, because it is easy to
-mistype =C-x C-c= with the default prefix.
+I like using =helm= to pretty much anything I can, so I set most of the common
+variables as =helm= commands. I also find it useful to remap the
+=helm-command-prefix= to =C-c h=, because it is easy to mistype =C-x C-c= with
+the default prefix. I also map =M-!= and =C-!= to use =eshell= instead of the
+default.
 
-#+BEGIN_SRC emacs-lisp :tangle config/config-bindings.el
+#+BEGIN_SRC emacs-lisp :tangle config/init-bindings.el
   (after 'helm
     (require 'helm-config)
     (global-set-key (kbd "C-c h") #'helm-command-prefix)
@@ -1279,6 +1265,25 @@ mistype =C-x C-c= with the default prefix.
 
   (global-set-key (kbd "M-!") 'eshell-command)
   (global-set-key (kbd "C-!") '/eshell/new-window)
+#+END_SRC
+
+These bindings are mostly regarding third party packages, that's why most of
+them are wrapped in a =after=. This first one is worth explaining; when using
+=company=, if you are on the completion pop-up and hit the tab key, it will
+first look for a snippet from =yasnippet= and if there is none it will use the
+current selection as the Completion. For example, if you type =def= on any
+=elisp= mode, it will have tons of completion candidates, but it is also a
+snippet for =defun=, so if you hit tab, it will actually trigger the =defun=
+snippet.
+
+#+BEGIN_SRC emacs-lisp :tangle config/init-bindings.el
+  (after 'company
+    (after "yasnippet-autoloads"
+      (define-key company-active-map (kbd "<tab>")
+        (bind (when (null (yas-expand))
+                (company-complete-selection))))))
+
+  (define-key company-active-map (kbd "RET") 'company-complete-selection) 
 
   (after 'magit
     (global-set-key (kbd "C-x g") 'magit-status)
@@ -1312,11 +1317,11 @@ mistype =C-x C-c= with the default prefix.
   (global-set-key (kbd "<M-f7>") (bind (profiler-start 'cpu+mem)))
   (global-set-key (kbd "<M-f6>") (bind (profiler-report) (profiler-stop)))
 
-  (provide 'config-bindings)
+  (provide 'init-bindings)
 #+END_SRC
 
 Some packages have specific bindings and/or too much bindings to be on the
-=config/config-bindings.el= file, so they have their own.
+=config/init-bindings.el= file, so they have their own.
 
 *** Evil bindings
 
@@ -1363,7 +1368,7 @@ Since it is my most used package it makes total sense that is has it's own file.
 
     (/bindings/define-key evil-normal-state-map "Y" "y$"))
 
-  (provide 'config-bindings-evil)
+  (provide 'init-bindings-evil)
 #+END_SRC
 
 ** Eyecandy
@@ -1377,7 +1382,7 @@ Some eyecandy is good.
 
 Color theme config and font config.
 
-#+BEGIN_SRC emacs-lisp :tangle config/config-eyecandy.el
+#+BEGIN_SRC emacs-lisp :tangle config/init-eyecandy.el
   (load-theme 'manoj-dark t)
 
   (cond
@@ -1406,7 +1411,7 @@ Color theme config and font config.
 
 Also there is some mode to display stuff in the modeline that are very useful.
 
-#+BEGIN_SRC emacs-lisp :tangle config/config-eyecandy.el
+#+BEGIN_SRC emacs-lisp :tangle config/init-eyecandy.el
   (line-number-mode t)
   (column-number-mode t)
   (display-time-mode t)
@@ -1415,7 +1420,7 @@ Also there is some mode to display stuff in the modeline that are very useful.
 
 Here is the configuration regarding the folding method.
 
-#+BEGIN_SRC emacs-lisp :tangle config/config-eyecandy.el
+#+BEGIN_SRC emacs-lisp :tangle config/init-eyecandy.el
   (require-package 'vimish-fold)
   (require 'vimish-fold)
   (vimish-fold-global-mode t)
@@ -1423,7 +1428,7 @@ Here is the configuration regarding the folding method.
 
 The =delight= package hides minor modes from the modeline.
 
-#+BEGIN_SRC emacs-lisp :tangle config/config-eyecandy.el
+#+BEGIN_SRC emacs-lisp :tangle config/init-eyecandy.el
   ;; (require-package 'delight)
 
   ;; (delight '((auto-fill-mode nil t)
@@ -1477,7 +1482,7 @@ Configure the preferred modeline package. I could edit the default modeline,
 but =smart-mode-line=, my preferred modeline, is very simple already and very
 lightweight.
 
-#+BEGIN_SRC emacs-lisp :tangle config/config-eyecandy.el
+#+BEGIN_SRC emacs-lisp :tangle config/init-eyecandy.el
   ;; (require-package 'smart-mode-line)
   ;; (setq sml/theme 'dark)
   ;; (setq sml/no-confirm-load-theme t)
@@ -1487,7 +1492,7 @@ lightweight.
 These are some eye candy packages. If you're interested in any of them just look
 them up on your favorite search engine.
 
-#+BEGIN_SRC emacs-lisp :tangle config/config-eyecandy.el
+#+BEGIN_SRC emacs-lisp :tangle config/init-eyecandy.el
   (/boot/delayed-init
    (require-package 'color-identifiers-mode)
    (global-color-identifiers-mode)
@@ -1506,7 +1511,7 @@ them up on your favorite search engine.
   (require-package 'page-break-lines)
   (global-page-break-lines-mode)
 
-  (provide 'config-eyecandy)
+  (provide 'init-eyecandy)
 #+END_SRC
 
 ** Misc
@@ -1518,7 +1523,7 @@ This section is some miscellaneous stuff.
 
 A sidebar with dired.
 
-#+BEGIN_SRC emacs-lisp :tangle config/config-misc.el
+#+BEGIN_SRC emacs-lisp :tangle config/init-misc.el
   (require-package 'dired-sidebar)
   (setq dired-sidebar-should-follow-file t)
   (setq dired-sidebar-follow-file-idle-delay 0.2)
@@ -1526,7 +1531,7 @@ A sidebar with dired.
 
 A tree to visualize modifications on the file and go back to previous states.
 
-#+BEGIN_SRC emacs-lisp :tangle config/config-misc.el
+#+BEGIN_SRC emacs-lisp :tangle config/init-misc.el
   (require-package 'undo-tree)
   (setq undo-tree-auto-save-history t)
   (setq undo-tree-enable-undo-in-region nil)
@@ -1540,7 +1545,7 @@ A tree to visualize modifications on the file and go back to previous states.
 Jump to definition on Emacs. It doesn't need TAGS file or anything like this, it
 only uses =ag= or =grep= or =ripgrep= or =rg=.
 
-#+BEGIN_SRC emacs-lisp :tangle config/config-misc.el
+#+BEGIN_SRC emacs-lisp :tangle config/init-misc.el
   (require-package 'dumb-jump)
   (after [evil dumb-jump]
          (defadvice dumb-jump-go (before dotemacs activate)
@@ -1549,7 +1554,7 @@ only uses =ag= or =grep= or =ripgrep= or =rg=.
 
 =ag= is a very fast code searching tool.
 
-#+BEGIN_SRC emacs-lisp :tangle config/config-misc.el
+#+BEGIN_SRC emacs-lisp :tangle config/init-misc.el
   (when (executable-find "ag")
     (require-package 'ag)
     (setq ag-highlight-search t)
@@ -1560,7 +1565,7 @@ only uses =ag= or =grep= or =ripgrep= or =rg=.
 =expand-region= let's you keep expanding the selection. =aggressive-indent= is a
 package to indent, you want it or not, your code.
 
-#+BEGIN_SRC emacs-lisp :tangle config/config-misc.el
+#+BEGIN_SRC emacs-lisp :tangle config/init-misc.el
   (require-package 'expand-region)
 
   (require-package 'aggressive-indent)
@@ -1572,13 +1577,13 @@ package to indent, you want it or not, your code.
 =popwin= is used to better manage pop-up windows. =restart-emacs= makes it
 easier to restart your config and load new code snippets.
 
-#+BEGIN_SRC emacs-lisp :tangle config/config-misc.el
+#+BEGIN_SRC emacs-lisp :tangle config/init-misc.el
   (require-package 'popwin)
   (require 'popwin)
   (push '(compilation-mode :noselect t) popwin:special-display-config)
   (popwin-mode)
 
-  (provide 'config-misc)
+  (provide 'init-misc)
 #+END_SRC
 
 ** =eshell=
@@ -1591,7 +1596,7 @@ execute commands while on Emacs. I like it better than =ansi-term= or =term=,
 but I don't use it as my main shell (and it is not intended to, even though some
 people do).
 
-#+BEGIN_SRC emacs-lisp :tangle config/config-eshell.el
+#+BEGIN_SRC emacs-lisp :tangle config/init-eshell.el
   (defvar dotemacs-eshell/prompt-git-info
     (executable-find "git"))
 
@@ -1602,7 +1607,7 @@ people do).
 
 Some variable configuration.
 
-#+BEGIN_SRC emacs-lisp :tangle config/config-eshell.el
+#+BEGIN_SRC emacs-lisp :tangle config/init-eshell.el
   (setq eshell-directory-name (concat dotemacs-cache-directory "eshell"))
   (setq eshell-buffer-maximum-lines 20000)
   (setq eshell-scroll-to-bottom-on-input 'this)
@@ -1618,7 +1623,7 @@ Some variable configuration.
 This is the prompt function for =eshell= (usually called =$PS1= on =bash= or
 =zsh=).
 
-#+BEGIN_SRC emacs-lisp :tangle config/config-eshell.el
+#+BEGIN_SRC emacs-lisp :tangle config/init-eshell.el
   (setq eshell-prompt-function
         (lambda ()
           (concat (propertize (abbreviate-file-name (eshell/pwd)) 'face 'eshell-prompt)
@@ -1643,7 +1648,7 @@ This is the prompt function for =eshell= (usually called =$PS1= on =bash= or
 
 If you have fortune installed, show a fortune every time =eshell= is opened.
 
-#+BEGIN_SRC emacs-lisp :tangle config/config-eshell.el
+#+BEGIN_SRC emacs-lisp :tangle config/init-eshell.el
   (when (executable-find "fortune")
     (defadvice eshell (before dotemacs activate)
       (setq eshell-banner-message (concat (shell-command-to-string "fortune") "\n"))))
@@ -1652,7 +1657,7 @@ If you have fortune installed, show a fortune every time =eshell= is opened.
 Functions defined as =eshell/name-of-function= are functions executed on
 =eshell= whenever you type =name-of-function= and press Enter.
 
-#+BEGIN_SRC emacs-lisp :tangle config/config-eshell.el
+#+BEGIN_SRC emacs-lisp :tangle config/init-eshell.el
   (defun eshell/ff (&rest args)
     "Opens a file in emacs."
     (when (not (null args))
@@ -1675,7 +1680,7 @@ Functions defined as =eshell/name-of-function= are functions executed on
 After =em-term= is loaded, add the new visual commands to the list of visual
 commands. Also, when on =eshell=, =gst= opens up =magit=.
 
-#+BEGIN_SRC emacs-lisp :tangle config/config-eshell.el
+#+BEGIN_SRC emacs-lisp :tangle config/init-eshell.el
   (after 'em-term
          (dolist (cmd dotemacs-eshell/visual-commands)
            (add-to-list 'eshell-visual-commands cmd)))
@@ -1689,7 +1694,7 @@ on the lower half of the window. It also =cd='s into the current working
 directory and renames the =eshell= buffer to =*eshell: directory*= and sends an
 =ls= as output as soon as it starts.
 
-#+BEGIN_SRC emacs-lisp :tangle config/config-eshell.el
+#+BEGIN_SRC emacs-lisp :tangle config/init-eshell.el
   (defun /eshell/new-window ()
     "Opens up a new shell in the directory associated with the
     current buffer's file. The eshell is renamed to match that
@@ -1708,7 +1713,7 @@ directory and renames the =eshell= buffer to =*eshell: directory*= and sends an
       (insert (concat "ls"))
       (eshell-send-input)))
 
-  (provide 'config-eshell)
+  (provide 'init-eshell)
 #+END_SRC
 
 ** Version Control System
@@ -1719,7 +1724,7 @@ directory and renames the =eshell= buffer to =*eshell: directory*= and sends an
 Configuration regarding the VCS. It is based on =magit=, one of the best Emacs
 packages and a reason a lot of people stick to it (of course, if they use git).
 
-#+BEGIN_SRC emacs-lisp :tangle config/config-vcs.el
+#+BEGIN_SRC emacs-lisp :tangle config/init-vcs.el
   (setq vc-make-backup-files t)
 
   (when (executable-find "git")
@@ -1733,15 +1738,10 @@ packages and a reason a lot of people stick to it (of course, if they use git).
 
     (require-package 'magit)
 
-    (defun /vcs/magit-post-display-buffer-hook()
-      (if (string-match "*magit:" (buffer-name))
-          (delete-other-windows)))
-    (add-hook 'magit-post-display-buffer-hook #'/vcs/magit-post-display-buffer-hook)
-
     (setq magit-section-show-child-couno t)
     (setq magit-diff-arguments '("--histogram"))
     (setq magit-ediff-dwim-show-on-hunks t)
-    (setq magit-display-buffer-function #'magit-display-buffer-fullcolumn-most-v1)
+    (setq magit-display-buffer-function #'magit-display-buffer-traditional)
 
     (require-package 'magit-todos)
     (add-hook 'prog-mode-hook 'hl-todo-mode)
@@ -1763,7 +1763,7 @@ packages and a reason a lot of people stick to it (of course, if they use git).
       (kbd "M-n") #'vc-annotate-next-revision
       "l" #'vc-annotate-show-log-revision-at-line))
 
-  (provide 'config-vcs)
+  (provide 'init-vcs)
 #+END_SRC
 
 ** Flycheck
@@ -1775,7 +1775,7 @@ This is a syntax checking package for Emacs. It is a pretty simple
 configuration. I added some bindings to help out with =evil-mode= and I like to
 have it always on.
 
-#+BEGIN_SRC emacs-lisp :tangle config/config-flycheck.el
+#+BEGIN_SRC emacs-lisp :tangle config/init-flycheck.el
   (require-package 'flycheck)
 
   (setq flycheck-standard-error-navigation t)
@@ -1805,7 +1805,7 @@ have it always on.
 
   (advice-add #'next-error-find-buffer :around #'/flycheck/advice/next-error-find-buffer)
 
-  (provide 'config-flycheck)
+  (provide 'init-flycheck)
 #+END_SRC
 
 ** Auxiliary modes
@@ -1815,7 +1815,7 @@ have it always on.
 
 Some major modes that are not installed by default.
 
-#+BEGIN_SRC emacs-lisp :tangle config/config-auxiliary-modes.el
+#+BEGIN_SRC emacs-lisp :tangle config/init-auxiliary-modes.el
   (/boot/lazy-major-mode "\\.\\(md\\|markdown\\)$" markdown-mode)
   (/boot/lazy-major-mode "\\.toml$" toml-mode)
   (/boot/lazy-major-mode "\\.yaml$" yaml-mode)
@@ -1825,7 +1825,7 @@ Some major modes that are not installed by default.
   (/boot/lazy-major-mode "\\.csv$" csv-mode)
   (/boot/lazy-major-mode "\\.?cron\\(tab\\)?\\'" crontab-mode)
 
-  (provide 'config-auxiliary-modes)
+  (provide 'init-auxiliary-modes)
 #+END_SRC
 
 ** Company
@@ -1835,13 +1835,13 @@ Some major modes that are not installed by default.
 
 This is the auto-completion engine I use. Configuration pretty straight forward.
 
-#+BEGIN_SRC emacs-lisp :tangle config/config-company.el
+#+BEGIN_SRC emacs-lisp :tangle config/init-company.el
   (require-package 'company)
 
-  (setq company-idle-delay 0.5)
+  (setq company-idle-delay 0.2)
   (setq company-minimum-prefix-length 1)
   (setq company-tooltip-limit 20)
-  (setq company-auto-complete t)
+  (setq company-auto-complete 'company-explicit-action-p)
 
   (setq company-dabbrev-downcase nil)
   (setq company-dabbrev-ignore-case t)
@@ -1868,14 +1868,8 @@ This is the auto-completion engine I use. Configuration pretty straight forward.
 
 This is to stop the conflict between =company= and =yasnippet=.
 
-#+BEGIN_SRC emacs-lisp :tangle config/config-company.el
-  (after 'company
-    (after "yasnippet-autoloads"
-      (define-key company-active-map (kbd "<tab>")
-        (bind (when (null (yas-expand))
-                (company-select-next))))))
-
-  (provide 'config-company)
+#+BEGIN_SRC emacs-lisp :tangle config/init-company.el
+  (provide 'init-company)
 #+END_SRC
 
 ** Yasnippet
@@ -1885,7 +1879,7 @@ This is to stop the conflict between =company= and =yasnippet=.
 
 And this is my snippet package. The configuration is even smaller.
 
-#+BEGIN_SRC emacs-lisp :tangle config/config-yasnippet.el
+#+BEGIN_SRC emacs-lisp :tangle config/init-yasnippet.el
   (/boot/delayed-init
    (require-package 'yasnippet)
 
@@ -1903,7 +1897,7 @@ And this is my snippet package. The configuration is even smaller.
 
    (yas-load-directory (concat user-emacs-directory "snippets")))
 
-  (provide 'config-yasnippet)
+  (provide 'init-yasnippet)
 #+END_SRC
 
 ** Projectile
@@ -1913,7 +1907,7 @@ And this is my snippet package. The configuration is even smaller.
 
 This package is amazing at dealing with projects.
 
-#+BEGIN_SRC emacs-lisp :tangle config/config-projectile.el
+#+BEGIN_SRC emacs-lisp :tangle config/init-projectile.el
   (require-package 'projectile)
 
   (setq projectile-cache-file (concat dotemacs-cache-directory "projectile.cache"))
@@ -1940,5 +1934,5 @@ This package is amazing at dealing with projects.
           (concat "ack -f --print0"
                   (mapconcat #'identity (cons "" projectile-globally-ignored-directories) " --ignore-dir=")))))
 
-  (provide 'config-projectile)
+  (provide 'init-projectile)
 #+END_SRC

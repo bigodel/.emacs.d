@@ -62,4 +62,4 @@
    (global-set-key [remap find-file] #'helm-find-files)
    (helm-mode t)))
 
-(provide 'config-helm)
+(provide 'init-helm)

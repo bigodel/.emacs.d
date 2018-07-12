@@ -16,4 +16,4 @@
 
  (yas-load-directory (concat user-emacs-directory "snippets")))
 
-(provide 'config-yasnippet)
+(provide 'init-yasnippet)

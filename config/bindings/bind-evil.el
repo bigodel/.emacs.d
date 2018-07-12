@@ -39,4 +39,4 @@
 
   (/bindings/define-key evil-normal-state-map "Y" "y$"))
 
-(provide 'config-bindings-evil)
+(provide 'init-bindings-evil)

@@ -35,4 +35,4 @@
 (push '(compilation-mode :noselect t) popwin:special-display-config)
 (popwin-mode)
 
-(provide 'config-misc)
+(provide 'init-misc)

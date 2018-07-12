@@ -8,4 +8,4 @@
 (/boot/lazy-major-mode "\\.csv$" csv-mode)
 (/boot/lazy-major-mode "\\.?cron\\(tab\\)?\\'" crontab-mode)
 
-(provide 'config-auxiliary-modes)
+(provide 'init-auxiliary-modes)

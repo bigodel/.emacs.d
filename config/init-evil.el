@@ -126,4 +126,4 @@
 (defadvice evil-ex-search-previous (after dotemacs activate)
   (recenter))
 
-(provide 'config-evil)
+(provide 'init-evil)

@@ -119,4 +119,4 @@ tangled, and the tangled file is compiled."
       (org-babel-tangle)
       (byte-compile-file (concat user-emacs-directory "init.el")))))
 
-(provide 'config-util)
+(provide 'init-util)

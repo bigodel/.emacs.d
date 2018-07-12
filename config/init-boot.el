@@ -1,15 +1,6 @@
 
 (eval-when-compile (require 'cl))
 
-(defun /core/create-non-existent-directory ()
-  "When trying to access non-exising directories, ask to create them."
-  (let ((parent-directory (file-name-directory buffer-file-name)))
-    (when (and (not (file-exists-p parent-directory))
-               (y-or-n-p
-                (format "Directory `%s' does not exist! Create it?"
-                        parent-directory)))
-      (make-directory parent-directory t))))
-
 (let ((base (concat user-emacs-directory "elisp/")))
   (when (and (not (file-exists-p base))
              (y-or-n-p
@@ -45,6 +36,8 @@
   (if (memq feature features)
       ad-do-it
     (/boot/measure-load feature ad-do-it)))
+
+(add-to-list 'auto-mode-alist '("^\\*Load Times\\*$" . org-mode))
 
 (defmacro bind (&rest commands)
   "Convenience macro which creates a lambda interactive command."
@@ -103,4 +96,4 @@ necessary, and activates it."
     nil
     (lambda () ,@body)))
 
-(provide 'core-boot) ;;; core-boot.el ends here
+(provide 'init-boot)

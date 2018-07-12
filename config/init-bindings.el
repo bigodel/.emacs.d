@@ -83,6 +83,14 @@
 (global-set-key (kbd "M-!") 'eshell-command)
 (global-set-key (kbd "C-!") '/eshell/new-window)
 
+(after 'company
+  (after "yasnippet-autoloads"
+    (define-key company-active-map (kbd "<tab>")
+      (bind (when (null (yas-expand))
+              (company-complete-selection))))))
+
+(define-key company-active-map (kbd "RET") 'company-complete-selection) 
+
 (after 'magit
   (global-set-key (kbd "C-x g") 'magit-status)
   (global-set-key (kbd "C-x M-g") 'magit-dispatch-popup))
@@ -115,4 +123,4 @@
 (global-set-key (kbd "<M-f7>") (bind (profiler-start 'cpu+mem)))
 (global-set-key (kbd "<M-f6>") (bind (profiler-report) (profiler-stop)))
 
-(provide 'config-bindings)
+(provide 'init-bindings)
