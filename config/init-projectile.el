@@ -22,8 +22,8 @@
  ((executable-find "ag")
   (setq projectile-generic-command
         (concat "ag -0 -l --nocolor"
-                (mapconcat #'identity 
-                           (cons "" projectile-globally-ignored-directories) 
+                (mapconcat #'identity
+                           (cons "" projectile-globally-ignored-directories)
                            " --ignore-dir="))))
  ((executable-find "ack")
   (setq projectile-generic-command

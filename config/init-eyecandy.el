@@ -16,19 +16,14 @@
 ;; (set-face-foreground 'font-lock-comment-face "dimgray")
 ;; (set-face-foreground 'font-lock-comment-delimiter-face "dimgray")
 
-;; disable the bigger scale on bold fonts
+;; disable the bigger scale on bold function fonts
 ;; (set-face-attribute 'font-lock-function-name-face nil :height 1.0)
 
 (cond
  ((member "DejaVu Sans Mono" (font-family-list))
-  (add-to-list 'initial-frame-alist '(font . "DejaVu Sans Mono-14"))
   (add-to-list 'default-frame-alist '(font . "DejaVu Sans Mono-14")))
  ((member "Terminus" (font-family-list))
-  (add-to-list 'initial-frame-alist '(font . "Terminus-16"))
   (add-to-list 'default-frame-alist '(font . "Terminus-16"))))
-
-;; change the mouse color
-(set-mouse-color "black")
 
 ;; increase, decrease and adjust font size
 (global-set-key (kbd "C-+") 'text-scale-increase)

@@ -93,7 +93,7 @@
       (bind (when (null (yas-expand))
               (company-complete-selection))))))
 
-(define-key company-active-map (kbd "RET") 'company-complete-selection) 
+(define-key company-active-map (kbd "RET") 'company-complete-selection)
 
 (after 'magit
   (global-set-key (kbd "C-x g") 'magit-status)

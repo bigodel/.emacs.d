@@ -30,7 +30,7 @@ peoples' configs.
 :END:
 
 This configuration is almost a full copy of Bailey Ling's config, availabe in
-[[https://github.com/bling/dotemacs][this link]]. I highly recommend you check out his config first, even though ours
+[[https://github.com/bling/dotemacs][this link]]. I highly recommend you check out his config first, even though mine
 do not differ much. I also recommend you to check out [[https://github.com/purcell/emacs.d][Steve Purcell's]] config. If
 none of those two are your cup of tea, there is a compilation of [[https://github.com/caisah/emacs.dz][awesome emacs
 configs]] to help you get started (or restarted) on you journey to create the
@@ -42,7 +42,7 @@ literate programming Emacs' configuration files are one huge Org file that
 tangles all of the code blocks into a single =init.el=. This can get pretty
 messy pretty quick (in my opinion), so I prefer to keep a bunch of files
 separate, each with their own context. For example, since =helm= is [[https://tuhdo.github.io/helm-intro.html][A Package in
-a league of its own]] it makes sense to have a =config/helm-cfg.el=.
+a league of its own]] it makes sense to have a =config/init-helm.el=.
 
 You might not want to simply copy and paste this into your configuration, I
 recommend you get used to the defaults of Emacs (I'm using [[https://github.com/emacs-evil/evil][evil-mode]]) and
@@ -55,12 +55,12 @@ buffer and use the command =M-x eval buffer= to see what that code might do
 without making the change permanent.
 
 If you're viewing the Org file, you can open source code blocks (those are the
-ones in =BEGIN_SRC=) in a separate buffer by moving your point inside them and
-typing =C-c '= which calls the function =org-edit-special=. This opens another
-buffer in =emacs-lisp-mode=, so you can use =M-x eval-buffer= to load the
-changes. If you want to explore how functions work, use =M-x edebug-defun= to
-set up debugging for that function, and then call it. You can learn more about
-=edebug= in the [[http://www.gnu.org/software/emacs/manual/html_node/elisp/Edebug.html][Emacs Lisp manual]].
+ones in =#+BEGIN_SRC=) in a separate buffer by moving your point inside them and
+typing =C-c ' (org-edit-special)=. This opens another buffer in
+=emacs-lisp-mode=, so you can use =M-x eval-buffer= to load the changes. If you
+want to explore how functions work, use =M-x edebug-defun= to set up debugging
+for that function, and then call it. You can learn more about =edebug= in the
+[[http://www.gnu.org/software/emacs/manual/html_node/elisp/Edebug.html][Emacs Lisp manual]].
 
 ** Tools
 :PROPERTIES:
@@ -75,13 +75,13 @@ The heart of this setup lies in 3 snippets of elisp/common lisp code.
 :END:
 
 The first is a wrapper on the =require= Emacs function (you can learn more about
-it with =C-h f RET require=. It checks if the package is installed and if not
+it with =C-h f RET require=). It checks if the package is installed and if not
 install it, and then uses =require= to load its libraries. This was actually
 [[https://github.com/purcell/emacs.d][Purcell's]] idea, and copied from its config.
 
 #+BEGIN_SRC emacs-lisp :tangle no
   (defun require-package (package)
-    "Ensures that PACKAGE is installed."
+    "Ensures that PACKAGE is installed and execute `require' on it."
     (unless (or (package-installed-p package)
                 (require package nil 'noerror))
       (unless (assoc package package-archive-contents)
@@ -155,8 +155,8 @@ configuration for a new language, simply create =new-language.el= in
 order so that any functions defined will be available in child nodes.
 
 #+BEGIN_SRC emacs-lisp :tangle no
-  (cl-loop for file in (reverse
-                        (directory-files-recursively config-directory "\\.el$"))
+  (cl-loop for file in
+           (reverse (directory-files-recursively config-directory "\\.el$"))
            do (load file))
 #+END_SRC
 
@@ -1293,7 +1293,7 @@ snippet.
         (bind (when (null (yas-expand))
                 (company-complete-selection))))))
 
-  (define-key company-active-map (kbd "RET") 'company-complete-selection) 
+  (define-key company-active-map (kbd "RET") 'company-complete-selection)
 
   (after 'magit
     (global-set-key (kbd "C-x g") 'magit-status)
@@ -1414,19 +1414,14 @@ Color theme config and font config.
   ;; (set-face-foreground 'font-lock-comment-face "dimgray")
   ;; (set-face-foreground 'font-lock-comment-delimiter-face "dimgray")
 
-  ;; disable the bigger scale on bold fonts
+  ;; disable the bigger scale on bold function fonts
   ;; (set-face-attribute 'font-lock-function-name-face nil :height 1.0)
 
   (cond
    ((member "DejaVu Sans Mono" (font-family-list))
-    (add-to-list 'initial-frame-alist '(font . "DejaVu Sans Mono-14"))
     (add-to-list 'default-frame-alist '(font . "DejaVu Sans Mono-14")))
    ((member "Terminus" (font-family-list))
-    (add-to-list 'initial-frame-alist '(font . "Terminus-16"))
     (add-to-list 'default-frame-alist '(font . "Terminus-16"))))
-
-  ;; change the mouse color
-  (set-mouse-color "black")
 
   ;; increase, decrease and adjust font size
   (global-set-key (kbd "C-+") 'text-scale-increase)
@@ -1782,6 +1777,8 @@ packages and a reason a lot of people stick to it (of course, if they use git).
     (setq magit-diff-arguments '("--histogram"))
     (setq magit-ediff-dwim-show-on-hunks t)
     (setq magit-display-buffer-function #'magit-display-buffer-traditional)
+    
+    (add-hook 'magit-mode-hook 'hl-line-mode)
 
     (require-package 'magit-todos)
     (add-hook 'prog-mode-hook 'hl-todo-mode)
@@ -1971,8 +1968,8 @@ This package is amazing at dealing with projects.
    ((executable-find "ag")
     (setq projectile-generic-command
           (concat "ag -0 -l --nocolor"
-                  (mapconcat #'identity 
-                             (cons "" projectile-globally-ignored-directories) 
+                  (mapconcat #'identity
+                             (cons "" projectile-globally-ignored-directories)
                              " --ignore-dir="))))
    ((executable-find "ack")
     (setq projectile-generic-command
