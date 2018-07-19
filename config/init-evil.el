@@ -1,4 +1,3 @@
-
 (defvar dotemacs-evil/emacs-state-hooks
   '(org-log-buffer-setup-hook
     org-capture-mode-hook)

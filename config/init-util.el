@@ -1,4 +1,3 @@
-
 (defun /util/window-killer ()
   "Closes the window, and deletes the buffer if it's the last window open."
   (interactive)

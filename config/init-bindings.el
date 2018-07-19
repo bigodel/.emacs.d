@@ -1,4 +1,3 @@
-
 (require-package 'which-key)
 (setq which-key-idle-delay 0.2)
 (setq which-key-min-display-lines 3)
@@ -113,7 +112,7 @@
   ("C-c l" #'org-store-link)
   ("C-c s" #'/util/goto-scratch-buffer)
   ("C-c e" #'/util/eval-and-replace)
-  ("C-c t" #'/eshell/new-split))
+  ("C-c t" #'/eshell/new-window))
 
 (/bindings/define-keys (current-global-map)
   ("C-x c" #'calculator)

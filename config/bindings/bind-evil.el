@@ -1,4 +1,3 @@
-
 (after 'evil
   (/bindings/define-keys evil-normal-state-map ("g d" #'dumb-jump-go))
 

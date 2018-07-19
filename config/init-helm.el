@@ -1,4 +1,3 @@
-
 (require-package 'helm)
 
 (setq helm-bookmark-show-location t)

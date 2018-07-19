@@ -5,13 +5,6 @@
 #+PROPERTY: header-args :tangle yes
 #+OPTIONS: toc:t
 
-* TODO
-
-** TODO Add org config
-
-** TODO Modeline configuration
-
-
 * Introduction
 :PROPERTIES:
 :CUSTOM_ID: intro
@@ -732,8 +725,7 @@ start-up.
 Some modes that I like to have by default.
 
 #+BEGIN_SRC emacs-lisp :tangle config/init-core.el
-  (setq visual-line-fringe-indicators '(left-curly-arrow right-curly-arrow))
-  (global-visual-line-mode)
+  (setq-default truncate-lines t)
   (xterm-mouse-mode t)
   (which-function-mode t)
   (blink-cursor-mode -1)
@@ -1313,7 +1305,7 @@ snippet.
     ("C-c l" #'org-store-link)
     ("C-c s" #'/util/goto-scratch-buffer)
     ("C-c e" #'/util/eval-and-replace)
-    ("C-c t" #'/eshell/new-split))
+    ("C-c t" #'/eshell/new-window))
 
   (/bindings/define-keys (current-global-map)
     ("C-x c" #'calculator)
@@ -1403,7 +1395,7 @@ Color theme config and font config.
   (setq doom-themes-enable-bold t)
   (setq doom-themes-enable-italic t)
 
-  (load-theme 'doom-molokai t)
+  (load-theme 'manoj-dark t)
 
   ;; change fringe background and foreground color
   (set-face-attribute 'fringe nil
@@ -1411,17 +1403,14 @@ Color theme config and font config.
                       :foreground (face-foreground 'default))
 
   ;; make comments grey
-  ;; (set-face-foreground 'font-lock-comment-face "dimgray")
-  ;; (set-face-foreground 'font-lock-comment-delimiter-face "dimgray")
+  (set-face-foreground 'font-lock-comment-face "dimgray")
+  (set-face-foreground 'font-lock-comment-delimiter-face "dimgray")
 
   ;; disable the bigger scale on bold function fonts
-  ;; (set-face-attribute 'font-lock-function-name-face nil :height 1.0)
+  (set-face-attribute 'font-lock-function-name-face nil :height 1.0)
 
-  (cond
-   ((member "DejaVu Sans Mono" (font-family-list))
-    (add-to-list 'default-frame-alist '(font . "DejaVu Sans Mono-14")))
-   ((member "Terminus" (font-family-list))
-    (add-to-list 'default-frame-alist '(font . "Terminus-16"))))
+  ;; (add-to-list 'default-frame-alist '(font . "Terminus-16"))
+  (add-to-list 'default-frame-alist '(font . "DejaVu Sans Mono-14"))
 
   ;; increase, decrease and adjust font size
   (global-set-key (kbd "C-+") 'text-scale-increase)
@@ -1495,11 +1484,6 @@ The =delight= package hides minor modes from the modeline.
   (after 'yasnippet (diminish 'yas-minor-mode))
   (after 'evil-org (diminish 'evil-org-mode))
   (after 'evil-vimish-fold (diminish 'evil-vimish-fold-mode))
-#+END_SRC
-
-Configuration regarding the modeline. I just use a tailored default modeline.
-
-#+BEGIN_SRC emacs-lisp :tangle config/init-eyecandy.el
 #+END_SRC
 
 =prettify-symbols= replaces ASCII characters with a unicode representation of
@@ -1875,7 +1859,7 @@ This is the auto-completion engine I use. Configuration pretty straight forward.
 #+BEGIN_SRC emacs-lisp :tangle config/init-company.el
   (require-package 'company)
 
-  (setq company-idle-delay 0.2)
+  (setq company-idle-delay 0.3)
   (setq company-minimum-prefix-length 1)
   (setq company-tooltip-limit 20)
   (setq company-auto-complete 'company-explicit-action-p)
@@ -1947,20 +1931,31 @@ This package is amazing at dealing with projects.
 #+BEGIN_SRC emacs-lisp :tangle config/init-projectile.el
   (require-package 'projectile)
 
-  (setq projectile-cache-file (concat
-                               dotemacs-cache-directory "projectile.cache"))
+  (setq projectile-cache-file
+        (concat dotemacs-cache-directory "projectile.cache"))
   (setq projectile-known-projects-file
         (concat dotemacs-cache-directory "projectile-bookmarks.eld"))
   (setq projectile-indexing-method 'alien)
   (setq projectile-enable-caching t)
   (setq projectile-completion-system 'helm)
+#+END_SRC
 
+[[#cfg-helm][Helm]] also integrates very well with Projectile, making it one of the most useful
+combos of my configuration.
+
+#+BEGIN_SRC emacs-lisp :tangle config/init-projectile.el
   (after 'helm-projectile
     (add-to-list 'helm-projectile-sources-list
                  'helm-source-projectile-recentf-list))
 
   (projectile-mode)
+#+END_SRC
 
+Here we add the globally ignored directories that we store in a variable to the
+projectile ignored directories. Also, pass as an argument to the searchers the
+ignored directories.
+
+#+BEGIN_SRC emacs-lisp :tangle config/init-projectile.el
   (dolist (dir dotemacs-globally-ignored-directories)
     (add-to-list 'projectile-globally-ignored-directories dir))
 
@@ -1979,4 +1974,94 @@ This package is amazing at dealing with projects.
                              " --ignore-dir=")))))
 
   (provide 'init-projectile)
+#+END_SRC
+
+** Org
+
+I use =org-mode= a lot (my whole configuration file is written in =org-mode=).
+It is capable of storing notes, taking care of TODOs, being your agenda, store
+contacts (all of that with sync capacities), evaluating LaTeX code, automatic
+blog posting, etc...
+
+Here we set some default variables. And create the default org directory if it
+is not already created.
+
+#+BEGIN_SRC emacs-lisp :tangle config/init-org.el
+  (after 'org
+    (setq org-directory "~/docs/org")
+
+    (defvar dotemacs-org/journal-file (concat org-directory "/journal.org")
+      "The path to the file where you want to make journal entries.")
+
+    (defvar dotemacs-org/inbox-file (concat org-directory "/inbox.org")
+      "The path to the file where to capture notes.")
+
+    (unless (file-exists-p org-directory)
+      (make-directory org-directory))
+
+    (setq org-default-notes-file (expand-file-name dotemacs-org/inbox-file))
+    (setq org-log-done t)
+    (setq org-log-into-drawer t)
+
+    (setq org-startup-indented t)
+    (setq org-indent-indentation-per-level 2)
+    (setq org-src-fontify-natively t)
+#+END_SRC
+
+Org is also a great way o handling TODO's, here we set some configuration and
+variables to work with TODO's better. The =org-agenda-files= is set to be the
+same as the =org-directory=. The =org-capture-templates= are the how to display
+each entry of the possible TODO entries in the agenda (to learn more about the
+agenda, visit [[https://orgmode.org/manual/Agenda-views.html#Agenda-views][the org manual on the agenda section]]). After that there are some
+variables to help with TODO's.
+
+#+BEGIN_SRC emacs-lisp :tangle config/init-org.el
+    (setq org-agenda-files `(,org-directory))
+    (setq org-capture-templates
+          '(("t" "Todo" entry
+             (file+headline (expand-file-name dotemacs-org/inbox-file) "INBOX")
+             "* TODO %?\n%U\n%a\n")
+            ("n" "Note" entry
+             (file+headline (expand-file-name dotemacs-org/inbox-file) "NOTES")
+             "* %? :NOTE:\n%U\n%a\n")
+            ("m" "Meeting" entry
+             (file (expand-file-name dotemacs-org/inbox-file))
+             "* MEETING %? :MEETING:\n%U")
+            ("j" "Journal" entry
+             (file+datetree (expand-file-name dotemacs-org/journal-file))
+             "* %U\n** %?")))
+
+    (setq org-use-fast-todo-selection t)
+    (setq org-treat-S-cursor-todo-selection-as-state-change nil)
+    (setq org-todo-keywords
+          '((sequence "TODO(t)" "NEXT(n@)" "|" "DONE(d@)")
+            (sequence "WAITING(w@/!)" "|" "CANCELLED(c@/!)")))
+#+END_SRC
+
+This first variable defines what triggers an state change. After that there is
+some variables that you could look up on =C-h v=. The hook after the variables
+makes sure that all the inline images are redisplayed after the execution of an
+src block. Lastly, the [[https://github.com/astahlman/ob-async][=ob-async=]] package allows for async execution of src
+blocks if the block has =:async= in its header.
+
+#+BEGIN_SRC emacs-lisp :tangle config/init-org.el
+    (setq org-todo-state-tags-triggers
+          ' (("CANCELLED" ("CANCELLED" . t))
+             ("WAITING" ("WAITING" . t))
+             ("TODO" ("WAITING") ("CANCELLED"))
+             ("NEXT" ("WAITING") ("CANCELLED"))
+             ("DONE" ("WAITING") ("CANCELLED"))))
+
+    (setq org-refile-targets '((nil :maxlevel . 9)
+                               (org-agenda-files :maxlevel . 9)))
+    (setq org-refile-use-outline-path 'file)
+    (setq org-outline-path-complete-in-steps nil)
+    (setq org-completion-use-ido t)
+
+    (add-hook 'org-babel-after-execute-hook #'org-redisplay-inline-images)
+
+    (require-package 'ob-async)
+    (require 'ob-async))
+
+  (provide 'config-org)
 #+END_SRC

@@ -1,4 +1,3 @@
-
 (defvar dotemacs-eshell/prompt-git-info
   (executable-find "git"))
 

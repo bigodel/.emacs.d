@@ -1,11 +1,10 @@
-
 (require-package 'doom-themes)
 (require 'doom-themes)
 
 (setq doom-themes-enable-bold t)
 (setq doom-themes-enable-italic t)
 
-(load-theme 'doom-molokai t)
+(load-theme 'manoj-dark t)
 
 ;; change fringe background and foreground color
 (set-face-attribute 'fringe nil
@@ -13,17 +12,14 @@
                     :foreground (face-foreground 'default))
 
 ;; make comments grey
-;; (set-face-foreground 'font-lock-comment-face "dimgray")
-;; (set-face-foreground 'font-lock-comment-delimiter-face "dimgray")
+(set-face-foreground 'font-lock-comment-face "dimgray")
+(set-face-foreground 'font-lock-comment-delimiter-face "dimgray")
 
 ;; disable the bigger scale on bold function fonts
-;; (set-face-attribute 'font-lock-function-name-face nil :height 1.0)
+(set-face-attribute 'font-lock-function-name-face nil :height 1.0)
 
-(cond
- ((member "DejaVu Sans Mono" (font-family-list))
-  (add-to-list 'default-frame-alist '(font . "DejaVu Sans Mono-14")))
- ((member "Terminus" (font-family-list))
-  (add-to-list 'default-frame-alist '(font . "Terminus-16"))))
+;; (add-to-list 'default-frame-alist '(font . "Terminus-16"))
+(add-to-list 'default-frame-alist '(font . "DejaVu Sans Mono-14"))
 
 ;; increase, decrease and adjust font size
 (global-set-key (kbd "C-+") 'text-scale-increase)
@@ -85,8 +81,6 @@
 (after 'yasnippet (diminish 'yas-minor-mode))
 (after 'evil-org (diminish 'evil-org-mode))
 (after 'evil-vimish-fold (diminish 'evil-vimish-fold-mode))
-
-
 
 (when (fboundp 'global-prettify-symbols-mode)
   (global-prettify-symbols-mode))

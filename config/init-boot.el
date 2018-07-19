@@ -1,4 +1,3 @@
-
 (eval-when-compile (require 'cl))
 
 (let ((base (concat user-emacs-directory "elisp/")))

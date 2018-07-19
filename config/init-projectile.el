@@ -1,8 +1,7 @@
-
 (require-package 'projectile)
 
-(setq projectile-cache-file (concat
-                             dotemacs-cache-directory "projectile.cache"))
+(setq projectile-cache-file
+      (concat dotemacs-cache-directory "projectile.cache"))
 (setq projectile-known-projects-file
       (concat dotemacs-cache-directory "projectile-bookmarks.eld"))
 (setq projectile-indexing-method 'alien)

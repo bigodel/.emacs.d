@@ -1,4 +1,3 @@
-
 (setq vc-make-backup-files t)
 
 (when (executable-find "git")
@@ -13,7 +12,7 @@
   (setq magit-diff-arguments '("--histogram"))
   (setq magit-ediff-dwim-show-on-hunks t)
   (setq magit-display-buffer-function #'magit-display-buffer-traditional)
-  
+
   (add-hook 'magit-mode-hook 'hl-line-mode)
 
   (require-package 'magit-todos)

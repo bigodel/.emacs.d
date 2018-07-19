@@ -1,4 +1,3 @@
-
 (defvar dotemacs-core/default-coding-system 'utf-8
   "The default coding system to use.")
 
@@ -236,8 +235,7 @@ and if neither, we use the current indent-tabs-mode"
 (setq inhibit-startup-message t)
 (setq initial-scratch-message nil)
 
-(setq visual-line-fringe-indicators '(left-curly-arrow right-curly-arrow))
-(global-visual-line-mode)
+(setq-default truncate-lines t)
 (xterm-mouse-mode t)
 (which-function-mode t)
 (blink-cursor-mode -1)

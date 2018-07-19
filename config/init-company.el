@@ -1,7 +1,6 @@
-
 (require-package 'company)
 
-(setq company-idle-delay 0.2)
+(setq company-idle-delay 0.3)
 (setq company-minimum-prefix-length 1)
 (setq company-tooltip-limit 20)
 (setq company-auto-complete 'company-explicit-action-p)
