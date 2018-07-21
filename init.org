@@ -196,15 +196,17 @@ be installed.
 This is the main configuration file, the one that ties all of the others
 together.
 
-I start by requiring some common lisp libraries and then setting up a lexical
-variable to store the start-up time for Emacs, and then display it in the
-minibuffer when Emacs loads.
+I start by enabling automatic debugging on errors and then requiring some common
+lisp libraries and then setting up a lexical variable to store the start-up time
+for Emacs, and then display it in the minibuffer when Emacs loads.
 
 The next code block sets the garbage collector threshold and the =core= and
 =config= directories, where our configuration files are going to be. Right after
 all of the bars are disabled if they're enabled.
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
+  (setq debug-on-error t)
+
   (eval-when-compile (require 'cl))
 
   (lexical-let ((emacs-start-time (current-time)))
@@ -1452,6 +1454,7 @@ Since it is my most used package it makes total sense that is has it's own file.
 
     (after "company-autoloads"
       (/bindings/define-keys evil-insert-state-map
+        ("SPC" ":noh")
         ("C-n" #'company-complete)
         ("TAB" #'company-indent-or-complete-common)))
 

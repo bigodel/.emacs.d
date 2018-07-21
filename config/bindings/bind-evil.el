@@ -12,6 +12,7 @@
 
   (after "company-autoloads"
     (/bindings/define-keys evil-insert-state-map
+      ("SPC" ":noh")
       ("C-n" #'company-complete)
       ("TAB" #'company-indent-or-complete-common)))
 
