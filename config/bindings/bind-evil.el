@@ -12,11 +12,11 @@
 
   (after "company-autoloads"
     (/bindings/define-keys evil-insert-state-map
-      ("SPC" ":noh")
       ("C-n" #'company-complete)
       ("TAB" #'company-indent-or-complete-common)))
 
   (/bindings/define-keys evil-normal-state-map
+    ("SPC" ":noh")
     ("C-b" #'evil-scroll-up)
     ("C-f" #'evil-scroll-down))
 
