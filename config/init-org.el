@@ -57,4 +57,4 @@
   (require-package 'ob-async)
   (require 'ob-async))
 
-(provide 'config-org)
+(provide 'init-org)

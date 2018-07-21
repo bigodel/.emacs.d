@@ -73,13 +73,21 @@ install it, and then uses =require= to load its libraries. This was actually
 [[https://github.com/purcell/emacs.d][Purcell's]] idea, and copied from its config.
 
 #+BEGIN_SRC emacs-lisp :tangle no
-  (defun require-package (package)
-    "Ensures that PACKAGE is installed and execute `require' on it."
-    (unless (or (package-installed-p package)
-                (require package nil 'noerror))
-      (unless (assoc package package-archive-contents)
-        (package-refresh-contents))
-      (package-install package)))
+  (defun require-package (package &optional min-version no-refresh)
+    "Install given PACKAGE, optionally requiring MIN-VERSION.
+  If NO-REFRESH is non-nil, the available package lists will not be
+  re-downloaded in order to locate PACKAGE."
+    (if (or (package-installed-p package min-version)
+            (require package nil 'noerror))
+        t
+      (if (or (assoc package package-archive-contents) no-refresh)
+          (if (boundp 'package-selected-packages)
+              ;; Record this as a package the user installed explicitly
+              (package-install package nil)
+            (package-install package))
+        (progn
+          (package-refresh-contents)
+          (require-package package min-version t)))))
 #+END_SRC
 
 *** =after=
@@ -350,14 +358,33 @@ to show the load times of packages loaded with =require= or =load=.
 Here are the macros mentioned on the [[#intro][introduction]] section.
 
 #+BEGIN_SRC emacs-lisp :tangle config/init-boot.el
-  (defun require-package (package)
-    "Ensures that PACKAGE is installed."
-    (unless (or (package-installed-p package)
-                (require package nil 'noerror))
-      (unless (assoc package package-archive-contents)
-        (package-refresh-contents))
-      (package-install package)))
+  (defun require-package (package &optional min-version no-refresh)
+    "Install given PACKAGE, optionally requiring MIN-VERSION.
+  If NO-REFRESH is non-nil, the available package lists will not be
+  re-downloaded in order to locate PACKAGE."
+    (if (or (package-installed-p package min-version)
+            (require package nil 'noerror))
+        t
+      (if (or (assoc package package-archive-contents) no-refresh)
+          (if (boundp 'package-selected-packages)
+              ;; Record this as a package the user installed explicitly
+              (package-install package nil)
+            (package-install package))
+        (progn
+          (package-refresh-contents)
+          (require-package package min-version t)))))
 
+  (defun maybe-require-package (package &optional min-version no-refresh)
+    "Try to install PACKAGE, and return non-nil if successful.
+  In the event of failure, return nil and print a warning message.
+  Optionally require MIN-VERSION.  If NO-REFRESH is non-nil, the
+  available package lists will not be re-downloaded in order to
+  locate PACKAGE."
+    (condition-case err
+        (require-package package min-version no-refresh)
+      (error
+       (message "Couldn't install optional package `%s': %S" package err)
+       nil)))
   (unless (fboundp 'with-eval-after-load)
     (defmacro with-eval-after-load (file &rest body)
       (declare (indent 1))
@@ -395,7 +422,7 @@ This macro is to lazily install a major mode like described in [[#lazy-major-mod
   necessary, and activates it."
     `(add-to-list 'auto-mode-alist
                   '(,pattern . (lambda ()
-                                 (require-package (quote ,mode))
+                                 (require-package ,mode)
                                  (,mode)))))
 
   (defmacro /boot/delayed-init (&rest body)
@@ -524,6 +551,8 @@ information, visit [[https://www.emacswiki.org/emacs/WhiteSpace#toc1][this]] pag
   (set-face-attribute 'whitespace-trailing nil
                       :background "gray15")
 
+  (add-hook 'after-save-hook 'whitespace-cleanup)
+
   (global-whitespace-mode t)
 #+END_SRC
 
@@ -550,6 +579,23 @@ It has an info page =C-h F hippie-expand= in case you want to know more, and the
   (global-set-key (kbd "M-/") 'hippie-expand)
 
   (setq save-abbrevs 'silently)
+#+END_SRC
+
+Auto-fill mode wraps the line whenever it reaches the value of =fill-column=. So
+here we activate it and also set the =fill-column= value. The =fill-column= is
+also used by =fill-paragraph=. I also created a little function to auto fill
+comments on programming modes, but not auto fill the code itself.
+
+#+BEGIN_SRC emacs-lisp :tangle config/init-core.el
+  (setq-default fill-column 80)
+
+  (defun /core/comment-auto-fill ()
+     (setq-local comment-auto-fill-only-comments t)
+     (turn-on-auto-fill))
+
+  (add-hook 'prog-mode-hook '/core/comment-auto-fill)
+
+  (add-hook 'text-mode-hook 'turn-on-auto-fill)
 #+END_SRC
 
 Here we configure the behavior of some default Emacs functions. If you'd like to
@@ -743,6 +789,39 @@ Some modes that I like to have by default.
   (provide 'init-core)
 #+END_SRC
 
+** Languages
+
+Here is where I store configuration for specific languages.
+
+*** Haskell
+
+I work a lot with Haskell, here is configuration regarding it.
+
+First we have to install the =haskell-mode=, since it doesn't come by default in
+Emacs. Then we set the =haskell-mode= to be the major mode for the =.ghci= file.
+
+#+BEGIN_SRC emacs-lisp :tangle config/langs/lang-haskell.el
+  (require-package 'haskell-mode)
+
+  (/boot/lazy-major-mode "\\.ghci\\'" 'haskell-mode)
+#+END_SRC
+
+[[https://github.com/commercialhaskell/intero][=intero=]] is a /"complete interactive development program for Haskell"/. It
+
+#+BEGIN_SRC emacs-lisp :tangle config/langs/lang-haskell.el
+  (when (maybe-require-package 'intero)
+    (after 'haskell-mode
+      (intero-global-mode)
+      (add-hook 'haskell-mode-hook 'subword-mode)
+      (add-hook 'haskell-mode-hook 'eldoc-mode))
+    (after 'haskell-cabal
+      (add-hook 'haskell-cabal-mode 'subword-mode)
+      (define-key haskell-cabal-mode-map (kbd "C-c C-l") 'intero-restart))
+    (after [intero flycheck]
+      (flycheck-add-next-checker 'intero
+                                 '(warning . haskell-hlint))))
+#+END_SRC
+
 ** Util
 :PROPERTIES:
 :CUSTOM_ID: cfg-util
@@ -917,6 +996,8 @@ Some variable configuration for =evil= to feel more like (n)vim.
   (setq evil-want-C-u-scroll t)
   (setq evil-want-fine-undo nil)
   (setq evil-want-integration nil)
+  ;; move evil tag to beginning of modeline
+  (setq evil-mode-line-format '(before . mode-line-front-space))
 #+END_SRC
 
 I usually know in what =evil= state I'm in by the cursor color because of the
@@ -934,7 +1015,9 @@ configuration.
 
 Here is where I actually start =evil= after setting some more variables and
 hooks. Also in this code snippet is where all of the lists of default states for
-some modes set above are actually set with a common lisp loop.
+some modes set above are actually set with a common lisp loop. I've also added,
+in the end of this code block, and advice to indent every time we use =o= or
+=O=.
 
 #+BEGIN_SRC emacs-lisp :tangle config/init-evil.el
   (add-hook 'evil-jumps-post-jump-hook #'recenter)
@@ -971,6 +1054,22 @@ some modes set above are actually set with a common lisp loop.
 
   (unless (display-graphic-p)
     (evil-esc-mode 1))
+
+  (defadvice evil-open-below (after dotemacs activate)
+    "When inserting a new line below with `o', also indent."
+    (evil-indent-line (point-at-bol) (point-at-eol)))
+
+  (defadvice evil-open-above (after dotemacs activate)
+    "When inserting a new line above with `O', also indent."
+    (evil-indent-line (point-at-bol) (point-at-eol)))
+
+  (defadvice evil-org-open-below (after dotemacs activate)
+    "When inserting a new line below with `o' in an org file, also indent."
+    (evil-indent-line (point-at-bol) (point-at-eol)))
+
+  (defadvice evil-org-open-above (after dotemacs activate)
+    "When inserting a new line below with `O' in an org file, also indent."
+    (evil-indent-line (point-at-bol) (point-at-eol)))
 #+END_SRC
 
 Here is the configuration for the comment package. And some more additional
@@ -1263,7 +1362,10 @@ default.
       (global-set-key (kbd "C-c h g") #'helm-do-ag))
 
     (after "helm-swoop-autoloads"
-      (global-set-key (kbd "C-c h S") #'helm-swoop)))
+      (global-set-key (kbd "C-c h S") #'helm-swoop))
+
+    (after "helm-tramp-autoloads"
+      (global-set-key (kbd "C-x t") #'helm-tramp)))
 
   (global-set-key (kbd "M-!") 'eshell-command)
   (global-set-key (kbd "C-!") '/eshell/new-window)
@@ -1389,26 +1491,30 @@ Some eyecandy is good.
 Color theme config and font config.
 
 #+BEGIN_SRC emacs-lisp :tangle config/init-eyecandy.el
-  (require-package 'doom-themes)
-  (require 'doom-themes)
+  (require-package 'solarized-theme)
+  (setq solarized-scale-org-headlines nil)
+  (setq x-underline-at-descent-line t)
+  (require 'solarized-theme)
 
-  (setq doom-themes-enable-bold t)
-  (setq doom-themes-enable-italic t)
+  (require-package 'monokai-theme)
 
-  (load-theme 'manoj-dark t)
+  (require-package 'gruvbox-theme)
 
   ;; change fringe background and foreground color
   (set-face-attribute 'fringe nil
                       :background (face-background 'default)
                       :foreground (face-foreground 'default))
 
-  ;; make comments grey
-  (set-face-foreground 'font-lock-comment-face "dimgray")
-  (set-face-foreground 'font-lock-comment-delimiter-face "dimgray")
+  (load-theme 'gruvbox-dark-hard t)
 
-  ;; disable the bigger scale on bold function fonts
-  (set-face-attribute 'font-lock-function-name-face nil :height 1.0)
+  ;; make comments grey (manoj-dark)
+  ;; (set-face-foreground 'font-lock-comment-face "dimgray")
+  ;; (set-face-foreground 'font-lock-comment-delimiter-face "dimgray")
 
+  ;; disable the bigger scale on bold function fonts (manoj-dark)
+  ;; (set-face-attribute 'font-lock-function-name-face nil :height 1.0)
+
+  ;; default font
   ;; (add-to-list 'default-frame-alist '(font . "Terminus-16"))
   (add-to-list 'default-frame-alist '(font . "DejaVu Sans Mono-14"))
 
@@ -1434,7 +1540,7 @@ Here is the configuration regarding the folding method.
   (vimish-fold-global-mode t)
 #+END_SRC
 
-The =delight= package hides minor modes from the modeline.
+The =diminish= package hides minor modes from the modeline.
 
 #+BEGIN_SRC emacs-lisp :tangle config/init-eyecandy.el
   ;; (require-package 'delight)
@@ -1445,7 +1551,7 @@ The =delight= package hides minor modes from the modeline.
   ;;            (whitespace-mode nil whitespace)
   ;;            (helm-mode nil helm-mode)
   ;;            (flyspell-mode nil flyspell)
-  ;;            (projectile-mode nil projectil)
+  ;;            (projectile-mode nil projectile)
   ;;            (yas-minor-mode nil yasnippet)
   ;;            (undo-tree-mode nil undo-tree)
   ;;            (which-key-mode nil which-key)
@@ -1453,24 +1559,31 @@ The =delight= package hides minor modes from the modeline.
   ;;            (aggressive-indent-mode nil aggressive-indent)
   ;;            (evil-org-mode nil evil-org)
   ;;            (evil-vimish-fold-mode nil evil-vimish-fold)
+  ;;            (eldoc-mode nil eldoc)
+  ;;            (highlight-symbol-mode nil hightlight-symbol)
   ;;            ))
 
   ;; (delight 'server-buffer-clients nil 'server)
   ;; (delight 'auto-fill-function nil t)
 
+  (require-package 'diminish)
+
   (diminish 'visual-line-mode)
-  (after 'whitespace (diminish 'global-whitespace-mode))
-  (after 'whitespace (diminish 'whitespace-mode))
+  (diminish 'auto-fill-function)
+  (after 'whitespace
+    (diminish 'global-whitespace-mode)
+    (diminish 'whitespace-mode))
+  (after 'org-indent (diminish 'org-indent-mode))
   (after 'aggressive-indent (diminish 'aggressive-indent-mode))
-  (after 'auto-complete (diminish 'auto-complete-mode))
-  (after 'autorevert (diminish #'auto-revert-mode))
+  (after 'autorevert (diminish 'auto-revert-mode))
+  (after 'subword (diminish 'subword-mode))
   (after 'color-identifiers-mode (diminish 'color-identifiers-mode))
   (after 'company (diminish 'company-mode))
-  (after 'counsel (diminish #'counsel-mode))
+  (after 'counsel (diminish 'counsel-mode))
   (after 'eldoc (diminish 'eldoc-mode))
   (after 'elisp-slime-nav (diminish 'elisp-slime-nav-mode))
-  (after 'evil-commentary (diminish 'evil-commentary-mode))
   (after 'flycheck (diminish 'flycheck-mode))
+  (after 'flyspell (diminish 'flyspell-mode))
   (after 'git-gutter+ (diminish 'git-gutter+-mode))
   (after 'helm-mode (diminish 'helm-mode))
   (after 'hideshow (diminish 'hs-minor-mode))
@@ -1484,6 +1597,7 @@ The =delight= package hides minor modes from the modeline.
   (after 'yasnippet (diminish 'yas-minor-mode))
   (after 'evil-org (diminish 'evil-org-mode))
   (after 'evil-vimish-fold (diminish 'evil-vimish-fold-mode))
+  (after "intero-autoloads" (diminish 'intero-mode))
 #+END_SRC
 
 =prettify-symbols= replaces ASCII characters with a unicode representation of
@@ -1761,7 +1875,7 @@ packages and a reason a lot of people stick to it (of course, if they use git).
     (setq magit-diff-arguments '("--histogram"))
     (setq magit-ediff-dwim-show-on-hunks t)
     (setq magit-display-buffer-function #'magit-display-buffer-traditional)
-    
+
     (add-hook 'magit-mode-hook 'hl-line-mode)
 
     (require-package 'magit-todos)
@@ -1771,8 +1885,8 @@ packages and a reason a lot of people stick to it (of course, if they use git).
       (setq magit-todos-scanner 'magit-todos--scan-with-rg))
     (magit-todos-mode t))
 
-  (/boot/lazy-major-mode "^\\.gitignore$" gitignore-mode)
-  (/boot/lazy-major-mode "^\\.gitattributes$" gitattributes-mode)
+  (/boot/lazy-major-mode "^\\.gitignore$" 'gitignore-mode)
+  (/boot/lazy-major-mode "^\\.gitattributes$" 'gitattributes-mode)
 
   (after [evil diff-mode]
     (evil-define-key 'normal diff-mode diff-mode-map
@@ -1829,6 +1943,16 @@ have it always on.
   (provide 'init-flycheck)
 #+END_SRC
 
+** Flyspell
+
+Flyspell highlights incorrect words as soon as they are completed or as soon as
+the [[https://www.emacswiki.org/emacs/TextCursor][TextCursor]] hits a new word.
+
+#+BEGIN_SRC emacs-lisp :tangle config/init-flyspell.el
+  (add-hook 'prog-mode-hook 'flyspell-prog-mode)
+  (add-hook 'text-mode-hook 'turn-on-flyspell)
+#+END_SRC
+
 ** Auxiliary modes
    :PROPERTIES:
    :CUSTOM_ID: cfg-aux-modes
@@ -1837,14 +1961,14 @@ have it always on.
 Some major modes that are not installed by default.
 
 #+BEGIN_SRC emacs-lisp :tangle config/init-auxiliary-modes.el
-  (/boot/lazy-major-mode "\\.\\(md\\|markdown\\)$" markdown-mode)
-  (/boot/lazy-major-mode "\\.toml$" toml-mode)
-  (/boot/lazy-major-mode "\\.yaml$" yaml-mode)
-  (/boot/lazy-major-mode "\\.json$" json-mode)
-  (/boot/lazy-major-mode "\\.vim$" vimrc-mode)
-  (/boot/lazy-major-mode "\\.lua$" lua-mode)
-  (/boot/lazy-major-mode "\\.csv$" csv-mode)
-  (/boot/lazy-major-mode "\\.?cron\\(tab\\)?\\'" crontab-mode)
+  (/boot/lazy-major-mode "\\.\\(md\\|markdown\\)$" 'markdown-mode)
+  (/boot/lazy-major-mode "\\.toml$" 'toml-mode)
+  (/boot/lazy-major-mode "\\.yaml$" 'yaml-mode)
+  (/boot/lazy-major-mode "\\.json$" 'json-mode)
+  (/boot/lazy-major-mode "\\.vim$" 'vimrc-mode)
+  (/boot/lazy-major-mode "\\.lua$" 'lua-mode)
+  (/boot/lazy-major-mode "\\.csv$" 'csv-mode)
+  (/boot/lazy-major-mode "\\.?cron\\(tab\\)?\\'" 'crontab-mode)
 
   (provide 'init-auxiliary-modes)
 #+END_SRC
@@ -2063,5 +2187,6 @@ blocks if the block has =:async= in its header.
     (require-package 'ob-async)
     (require 'ob-async))
 
-  (provide 'config-org)
+  (provide 'init-org)
 #+END_SRC
+

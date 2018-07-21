@@ -1,23 +1,27 @@
-(require-package 'doom-themes)
-(require 'doom-themes)
+(require-package 'solarized-theme)
+(setq solarized-scale-org-headlines nil)
+(setq x-underline-at-descent-line t)
+(require 'solarized-theme)
 
-(setq doom-themes-enable-bold t)
-(setq doom-themes-enable-italic t)
+(require-package 'monokai-theme)
 
-(load-theme 'manoj-dark t)
+(require-package 'gruvbox-theme)
 
 ;; change fringe background and foreground color
 (set-face-attribute 'fringe nil
                     :background (face-background 'default)
                     :foreground (face-foreground 'default))
 
-;; make comments grey
-(set-face-foreground 'font-lock-comment-face "dimgray")
-(set-face-foreground 'font-lock-comment-delimiter-face "dimgray")
+(load-theme 'gruvbox-dark-hard t)
 
-;; disable the bigger scale on bold function fonts
-(set-face-attribute 'font-lock-function-name-face nil :height 1.0)
+;; make comments grey (manoj-dark)
+;; (set-face-foreground 'font-lock-comment-face "dimgray")
+;; (set-face-foreground 'font-lock-comment-delimiter-face "dimgray")
 
+;; disable the bigger scale on bold function fonts (manoj-dark)
+;; (set-face-attribute 'font-lock-function-name-face nil :height 1.0)
+
+;; default font
 ;; (add-to-list 'default-frame-alist '(font . "Terminus-16"))
 (add-to-list 'default-frame-alist '(font . "DejaVu Sans Mono-14"))
 
@@ -42,7 +46,7 @@
 ;;            (whitespace-mode nil whitespace)
 ;;            (helm-mode nil helm-mode)
 ;;            (flyspell-mode nil flyspell)
-;;            (projectile-mode nil projectil)
+;;            (projectile-mode nil projectile)
 ;;            (yas-minor-mode nil yasnippet)
 ;;            (undo-tree-mode nil undo-tree)
 ;;            (which-key-mode nil which-key)
@@ -50,24 +54,31 @@
 ;;            (aggressive-indent-mode nil aggressive-indent)
 ;;            (evil-org-mode nil evil-org)
 ;;            (evil-vimish-fold-mode nil evil-vimish-fold)
+;;            (eldoc-mode nil eldoc)
+;;            (highlight-symbol-mode nil hightlight-symbol)
 ;;            ))
 
 ;; (delight 'server-buffer-clients nil 'server)
 ;; (delight 'auto-fill-function nil t)
 
+(require-package 'diminish)
+
 (diminish 'visual-line-mode)
-(after 'whitespace (diminish 'global-whitespace-mode))
-(after 'whitespace (diminish 'whitespace-mode))
+(diminish 'auto-fill-function)
+(after 'whitespace
+  (diminish 'global-whitespace-mode)
+  (diminish 'whitespace-mode))
+(after 'org-indent (diminish 'org-indent-mode))
 (after 'aggressive-indent (diminish 'aggressive-indent-mode))
-(after 'auto-complete (diminish 'auto-complete-mode))
-(after 'autorevert (diminish #'auto-revert-mode))
+(after 'autorevert (diminish 'auto-revert-mode))
+(after 'subword (diminish 'subword-mode))
 (after 'color-identifiers-mode (diminish 'color-identifiers-mode))
 (after 'company (diminish 'company-mode))
-(after 'counsel (diminish #'counsel-mode))
+(after 'counsel (diminish 'counsel-mode))
 (after 'eldoc (diminish 'eldoc-mode))
 (after 'elisp-slime-nav (diminish 'elisp-slime-nav-mode))
-(after 'evil-commentary (diminish 'evil-commentary-mode))
 (after 'flycheck (diminish 'flycheck-mode))
+(after 'flyspell (diminish 'flyspell-mode))
 (after 'git-gutter+ (diminish 'git-gutter+-mode))
 (after 'helm-mode (diminish 'helm-mode))
 (after 'hideshow (diminish 'hs-minor-mode))
@@ -81,6 +92,7 @@
 (after 'yasnippet (diminish 'yas-minor-mode))
 (after 'evil-org (diminish 'evil-org-mode))
 (after 'evil-vimish-fold (diminish 'evil-vimish-fold-mode))
+(after "intero-autoloads" (diminish 'intero-mode))
 
 (when (fboundp 'global-prettify-symbols-mode)
   (global-prettify-symbols-mode))

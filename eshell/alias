@@ -1,8 +1,0 @@
-alias nil  $*
-alias HOME  $*
-alias srcz source ~/.zsh/.zshrc
-alias .. cd ..
-alias srcx xrdb -load ~/.Xdefaults
-alias l ls -l
-alias la ls -la
-alias e exit

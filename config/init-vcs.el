@@ -22,8 +22,8 @@
     (setq magit-todos-scanner 'magit-todos--scan-with-rg))
   (magit-todos-mode t))
 
-(/boot/lazy-major-mode "^\\.gitignore$" gitignore-mode)
-(/boot/lazy-major-mode "^\\.gitattributes$" gitattributes-mode)
+(/boot/lazy-major-mode "^\\.gitignore$" 'gitignore-mode)
+(/boot/lazy-major-mode "^\\.gitattributes$" 'gitattributes-mode)
 
 (after [evil diff-mode]
   (evil-define-key 'normal diff-mode diff-mode-map

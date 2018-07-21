@@ -71,6 +71,8 @@
 (set-face-attribute 'whitespace-trailing nil
                     :background "gray15")
 
+(add-hook 'after-save-hook 'whitespace-cleanup)
+
 (global-whitespace-mode t)
 
 (setq hippie-expand-try-functions-list '(try-expand-dabbrev
@@ -87,6 +89,16 @@
 (global-set-key (kbd "M-/") 'hippie-expand)
 
 (setq save-abbrevs 'silently)
+
+(setq-default fill-column 80)
+
+(defun /core/comment-auto-fill ()
+   (setq-local comment-auto-fill-only-comments t)
+   (turn-on-auto-fill))
+
+(add-hook 'prog-mode-hook '/core/comment-auto-fill)
+
+(add-hook 'text-mode-hook 'turn-on-auto-fill)
 
 (add-hook 'after-save-hook '/util/tangle-init)
 

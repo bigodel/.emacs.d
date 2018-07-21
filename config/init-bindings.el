@@ -81,7 +81,10 @@
     (global-set-key (kbd "C-c h g") #'helm-do-ag))
 
   (after "helm-swoop-autoloads"
-    (global-set-key (kbd "C-c h S") #'helm-swoop)))
+    (global-set-key (kbd "C-c h S") #'helm-swoop))
+
+  (after "helm-tramp-autoloads"
+    (global-set-key (kbd "C-x t") #'helm-tramp)))
 
 (global-set-key (kbd "M-!") 'eshell-command)
 (global-set-key (kbd "C-!") '/eshell/new-window)
