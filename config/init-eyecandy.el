@@ -12,7 +12,7 @@
                     :background (face-background 'default)
                     :foreground (face-foreground 'default))
 
-(load-theme 'gruvbox-dark-hard t)
+(load-theme 'solarized-dark t)
 
 ;; make comments grey (manoj-dark)
 ;; (set-face-foreground 'font-lock-comment-face "dimgray")
