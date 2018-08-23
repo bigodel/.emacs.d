@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# contributor: Peter Urbak <peter@dragonwasrobot.com>
+# key: match
+# group: misc
+# name: match
+# --
+match $1 with
+  | $0 =>
+end

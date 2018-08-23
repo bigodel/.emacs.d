@@ -7,23 +7,29 @@
 
 (require-package 'gruvbox-theme)
 
+(load-theme 'manoj-dark t)
+
 ;; change fringe background and foreground color
 (set-face-attribute 'fringe nil
                     :background (face-background 'default)
                     :foreground (face-foreground 'default))
 
-(load-theme 'solarized-dark t)
-
 ;; make comments grey (manoj-dark)
-;; (set-face-foreground 'font-lock-comment-face "dimgray")
-;; (set-face-foreground 'font-lock-comment-delimiter-face "dimgray")
+(set-face-foreground 'font-lock-comment-face "dimgray")
+(set-face-foreground 'font-lock-comment-delimiter-face "dimgray")
 
 ;; disable the bigger scale on bold function fonts (manoj-dark)
-;; (set-face-attribute 'font-lock-function-name-face nil :height 1.0)
+(set-face-attribute 'font-lock-function-name-face nil :height 1.0)
+
+;; change line number color (manoj-dark)
+(after 'linum
+  (set-face-attribute 'linum nil :foreground "gold"))
+
+;; change mode-line's font size
+(set-face-attribute 'mode-line nil :height 1.0)
 
 ;; default font
-;; (add-to-list 'default-frame-alist '(font . "Terminus-16"))
-(add-to-list 'default-frame-alist '(font . "DejaVu Sans Mono-14"))
+(add-to-list 'default-frame-alist '(font . "Terminus-16"))
 
 ;; increase, decrease and adjust font size
 (global-set-key (kbd "C-+") 'text-scale-increase)
@@ -71,6 +77,7 @@
 (after 'org-indent (diminish 'org-indent-mode))
 (after 'aggressive-indent (diminish 'aggressive-indent-mode))
 (after 'autorevert (diminish 'auto-revert-mode))
+(after 'abbrev (diminish 'abbrev-mode))
 (after 'subword (diminish 'subword-mode))
 (after 'color-identifiers-mode (diminish 'color-identifiers-mode))
 (after 'company (diminish 'company-mode))

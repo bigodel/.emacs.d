@@ -33,10 +33,6 @@
     ("C-w k" #'evil-window-up)
     ("C-w l" #'evil-window-right))
 
-  (/bindings/define-keys evil-motion-state-map
-    ("j" #'evil-next-visual-line)
-    ("k" #'evil-previous-visual-line))
-
   (/bindings/define-key evil-normal-state-map "Y" "y$"))
 
 (provide 'init-bindings-evil)

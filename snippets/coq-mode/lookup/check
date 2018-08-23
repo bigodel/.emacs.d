@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# contributor: Peter Urbak <peter@dragonwasrobot.com>
+# key: C
+# group: lookup
+# name: Check
+# --
+Check $1.
+$0

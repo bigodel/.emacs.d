@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# contributor: Peter Urbak <peter@dragonwasrobot.com>
+# key: case
+# group: tactics
+# name: case
+# --
+case ${1:n} as [ | $1' ].$0

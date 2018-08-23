@@ -47,6 +47,8 @@
 (global-set-key (kbd "C-S-n") '/util/insert-line-below)
 (global-set-key (kbd "C-S-o") '/util/insert-line-above)
 
+(global-set-key (kbd "C-x C-/") '/util/find-file-as-root)
+
 (global-set-key (kbd "C-c d") #'dired-sidebar-toggle-sidebar)
 
 (after "expand-region-autoloads"
@@ -99,10 +101,14 @@
 
 (after 'magit
   (global-set-key (kbd "C-x g") 'magit-status)
-  (global-set-key (kbd "C-x M-g") 'magit-dispatch-popup))
+  (global-set-key (kbd "C-x M-g") 'magit-dispatch-popup)
 
-(after 'projectile
-  (global-set-key (kbd "C-S-p") #'projectile-switch-project))
+  (after 'magit-todos
+    (define-key magit-todos-section-map (kbd "j") 'evil-next-visual-line)
+    (define-key magit-todos-section-map (kbd "k") 'evil-next-visual-line)))
+
+  (after 'projectile
+    (global-set-key (kbd "C-S-p") #'projectile-switch-project))
 
 (after 'evil
   (define-key evil-normal-state-map (kbd "!") '/eshell/new-window)
@@ -122,12 +128,6 @@
   ("C-x C" #'calendar)
   ("C-x C-k" #'kill-this-buffer)
   ("C-x p" #'proced))
-
-(/bindings/define-keys (current-global-map)
-  ("C-s"   #'isearch-forward-regexp)
-  ("C-M-s" #'isearch-forward)
-  ("C-r"   #'isearch-backward-regexp)
-  ("C-M-r" #'isearch-backward))
 
 (global-set-key (kbd "<M-f7>") (bind (profiler-start 'cpu+mem)))
 (global-set-key (kbd "<M-f6>") (bind (profiler-report) (profiler-stop)))

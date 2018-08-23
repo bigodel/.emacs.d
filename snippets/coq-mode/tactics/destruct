@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# contributor: Peter Urbak <peter@dragonwasrobot.com>
+# key: des
+# group: tactics
+# name: destruct
+# --
+destruct $1 as [ $0 ].

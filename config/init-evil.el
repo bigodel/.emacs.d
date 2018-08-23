@@ -16,7 +16,7 @@
 (defvar dotemacs-evil/emacs-insert-mode nil
   "If non-nil, insert mode will act as Emacs state.")
 
-(setq evil-search-module 'evil-search)
+(setq evil-search-module 'isearch-regexp)
 (setq evil-magic 'very-magic)
 (setq evil-shift-width 4)
 (setq evil-regexp-search t)
@@ -25,6 +25,8 @@
 (setq evil-want-C-u-scroll t)
 (setq evil-want-fine-undo nil)
 (setq evil-want-integration nil)
+(setq evil-want-abbrev-on-insert-exit nil)
+(setq evil-want-abbrev-expand-on-insert-exit nil)
 ;; move evil tag to beginning of modeline
 (setq evil-mode-line-format '(before . mode-line-front-space))
 
@@ -44,10 +46,10 @@
 
 (cl-loop for mode in dotemacs-evil/emacs-state-minor-modes
          do (let ((hook (concat (symbol-name mode) "-hook")))
-              (add-hook (intern hook) `(lambda ()
-                                         (if ,mode
-                                             (evil-emacs-state)
-                                           (evil-normal-state))))))
+              (add-hook (intern hook) (lambda ()
+                                        (if ,mode
+                                            (evil-emacs-state)
+                                          (evil-normal-state))))))
 
 (cl-loop for hook in dotemacs-evil/emacs-state-hooks
          do (add-hook hook #'evil-emacs-state))
@@ -56,13 +58,13 @@
          do (evil-set-initial-state mode 'emacs))
 
 (after 'evil-common
-       (evil-put-property 'evil-state-properties 'normal   :tag " NORMAL ")
-       (evil-put-property 'evil-state-properties 'insert   :tag " INSERT ")
-       (evil-put-property 'evil-state-properties 'visual   :tag " VISUAL ")
-       (evil-put-property 'evil-state-properties 'motion   :tag " MOTION ")
-       (evil-put-property 'evil-state-properties 'emacs    :tag " EMACS ")
-       (evil-put-property 'evil-state-properties 'replace  :tag " REPLACE ")
-       (evil-put-property 'evil-state-properties 'operator :tag " OPERATOR "))
+  (evil-put-property 'evil-state-properties 'normal   :tag " NORMAL ")
+  (evil-put-property 'evil-state-properties 'insert   :tag " INSERT ")
+  (evil-put-property 'evil-state-properties 'visual   :tag " VISUAL ")
+  (evil-put-property 'evil-state-properties 'motion   :tag " MOTION ")
+  (evil-put-property 'evil-state-properties 'emacs    :tag " EMACS ")
+  (evil-put-property 'evil-state-properties 'replace  :tag " REPLACE ")
+  (evil-put-property 'evil-state-properties 'operator :tag " OPERATOR "))
 
 (when dotemacs-evil/emacs-insert-mode
   (defalias 'evil-insert-state 'evil-emacs-state)
