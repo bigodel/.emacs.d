@@ -29,7 +29,7 @@
 (set-face-attribute 'mode-line nil :height 1.0)
 
 ;; default font
-(add-to-list 'default-frame-alist '(font . "Terminus-16"))
+(add-to-list 'default-frame-alist '(font . "DejaVu Sans Mono-14"))
 
 ;; increase, decrease and adjust font size
 (global-set-key (kbd "C-+") 'text-scale-increase)

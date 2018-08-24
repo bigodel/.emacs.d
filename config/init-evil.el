@@ -18,7 +18,7 @@
 
 (setq evil-search-module 'isearch-regexp)
 (setq evil-magic 'very-magic)
-(setq evil-shift-width 4)
+(setq evil-shift-width (symbol-value 'tab-width))
 (setq evil-regexp-search t)
 (setq evil-search-wrap t)
 (setq evil-want-C-i-jump t)

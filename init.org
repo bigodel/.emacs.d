@@ -74,7 +74,7 @@ install it, and then uses =require= to load its libraries. This was actually
 
 #+BEGIN_SRC emacs-lisp :tangle no
   (defun require-package (package &optional min-version no-refresh)
-    "Install given PACKAGE, optionally requiring MIN-VERSION.
+    "Install and load given PACKAGE, optionally requiring MIN-VERSION.
   If NO-REFRESH is non-nil, the available package lists will not be
   re-downloaded in order to locate PACKAGE."
     (if (or (package-installed-p package min-version)
@@ -205,7 +205,7 @@ The next code block sets the garbage collector threshold and the =core= and
 all of the bars are disabled if they're enabled.
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
-  ;; (setq debug-on-error t)
+  (setq debug-on-error t)
 
   (eval-when-compile (require 'cl))
 
@@ -361,7 +361,7 @@ Here are the macros mentioned on the [[#intro][introduction]] section.
 
 #+BEGIN_SRC emacs-lisp :tangle config/init-boot.el
   (defun require-package (package &optional min-version no-refresh)
-    "Install given PACKAGE, optionally requiring MIN-VERSION.
+    "Install and load given PACKAGE, optionally requiring MIN-VERSION.
   If NO-REFRESH is non-nil, the available package lists will not be
   re-downloaded in order to locate PACKAGE."
     (if (or (package-installed-p package min-version)
@@ -800,7 +800,7 @@ Here is where I store configuration for specific languages.
 Configuration regarding C/C++ and some packages.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
-  (setq-default c-basic-offset 4)
+  (setq-default c-basic-offset (symbol-value 'tab-width))
 #+END_SRC
 
 *** Haskell
@@ -999,7 +999,7 @@ Some variable configuration for =evil= to feel more like (n)vim.
 #+BEGIN_SRC emacs-lisp :tangle config/init-evil.el
   (setq evil-search-module 'isearch-regexp)
   (setq evil-magic 'very-magic)
-  (setq evil-shift-width 4)
+  (setq evil-shift-width (symbol-value 'tab-width))
   (setq evil-regexp-search t)
   (setq evil-search-wrap t)
   (setq evil-want-C-i-jump t)
@@ -1467,6 +1467,17 @@ Since it is my most used package it makes total sense that is has it's own file.
         ("C-n" #'company-complete)
         ("TAB" #'company-indent-or-complete-common)))
 
+    (after 'proof-site
+      (evil-ex-define-cmd "pr[ove]" 'proof-goto-point)
+      (evil-define-key 'normal proof-mode-map (kbd "M-n")
+        'proof-assert-next-command-interactive)
+      (evil-define-key 'normal proof-mode-map (kbd "M-p")
+        'proof-undo-last-successful-command)
+      (evil-define-key 'insert proof-mode-map (kbd "M-n")
+        'proof-assert-next-command-interactive)
+      (evil-define-key 'insert proof-mode-map (kbd "M-p")
+        'proof-undo-last-successful-command))
+
     (/bindings/define-keys evil-normal-state-map
       ("SPC" ":noh")
       ("C-b" #'evil-scroll-up)
@@ -1531,7 +1542,7 @@ Color theme config and font config.
   (set-face-attribute 'mode-line nil :height 1.0)
 
   ;; default font
-  (add-to-list 'default-frame-alist '(font . "Terminus-16"))
+  (add-to-list 'default-frame-alist '(font . "DejaVu Sans Mono-14"))
 
   ;; increase, decrease and adjust font size
   (global-set-key (kbd "C-+") 'text-scale-increase)
@@ -2004,7 +2015,9 @@ Some major modes that are not installed by default.
    :CUSTOM_ID: cfg-company
    :END:
 
-This is the auto-completion engine I use. Configuration pretty straight forward.
+This is the auto-completion engine I use. Configuration is pretty straight
+forward. There are some other packages for each language. Those packages are
+configured and installed on the language's or mode's config section.
 
 #+BEGIN_SRC emacs-lisp :tangle config/init-company.el
   (require-package 'company)
@@ -2035,11 +2048,7 @@ This is the auto-completion engine I use. Configuration pretty straight forward.
                (append (if (consp backend) backend (list backend))
                        '(:with company-yasnippet))))
            company-backends)))
-#+END_SRC
 
-This is to stop the conflict between =company= and =yasnippet=.
-
-#+BEGIN_SRC emacs-lisp :tangle config/init-company.el
   (provide 'init-company)
 #+END_SRC
 
@@ -2051,22 +2060,21 @@ This is to stop the conflict between =company= and =yasnippet=.
 And this is my snippet package. The configuration is even smaller.
 
 #+BEGIN_SRC emacs-lisp :tangle config/init-yasnippet.el
-  (/boot/delayed-init
-   (require-package 'yasnippet)
+  (require-package 'yasnippet)
 
-   (after 'yasnippet
-     (require-package 'yasnippet-snippets)
-     (require-package 'yasnippet-classic-snippets))
+  (after 'yasnippet
+    (require-package 'yasnippet-snippets)
+    (require-package 'yasnippet-classic-snippets))
 
-   (require 'yasnippet)
+  (require 'yasnippet)
 
-   (setq yas-fallback-behavior 'return-nil)
-   (setq yas-also-auto-indent-first-line t)
-   (setq yas-prompt-functions '(yas-ido-prompt yas-completing-prompt))
+  (setq yas-fallback-behavior 'return-nil)
+  (setq yas-also-auto-indent-first-line t)
+  (setq yas-prompt-functions '(yas-ido-prompt yas-completing-prompt))
 
-   (yas-global-mode t)
+  (yas-global-mode t)
 
-   (yas-load-directory (concat user-emacs-directory "snippets")))
+  (yas-load-directory (concat user-emacs-directory "snippets"))
 
   (provide 'init-yasnippet)
 #+END_SRC
@@ -2220,31 +2228,53 @@ blocks if the block has =:async= in its header.
 
 [[https://proofgeneral.github.io/][Proof General]] is a generic front-end for /proof assistants/ (also known as
 interactive /theorem provers/). It is installed separately via =git= and
-mantained up to date via =el-get=. The following code is to open =.v= (Coq)
-files with Proof General.
+mantained up to date via =el-get=. The following code is to load the Proof
+General in the supported proof assistant files, with its respective modes.
+
+This is the =el-get= config. Here we set the =el-get= path to be a
 
 #+BEGIN_SRC emacs-lisp :tangle config/init-pg.el
-  (require 'proof-site "~/.emacs.d/elisp/PG/generic/proof-site")
+  (add-to-list
+   'load-path (concat user-emacs-directory "el-get/el-get"))
+
+  (require-package 'el-get)
+  (require 'el-get)
+
+  (setq el-get-sources
+        '((:name proof-general
+                 :type github
+                 :pkgname "ProofGeneral/PG"
+                 :url "https://github.com/ProofGeneral/PG.git")))
+
+  (unless (require 'proof-site nil t)
+    (unless (file-directory-p "~/.emacs.d/el-get")
+      (make-directory "~/.emacs.d/el-get"))
+    (shell-command
+     "git clone https://github.com/ProofGeneral/PG.git ~/.emacs.d/el-get/proof-general")
+    (el-get 'sync 'proof-general))
+
   (setq proof-strict-read-only t)
-  ;; look into electric-terminator for coq
-  ;; maybe activate tool-bar-mode only when on proof general (also activating
-  ;; the toolbar with M-x proof-toolbar-toggle or C-c b)
+  (setq proof-electric-terminator-enable t)
+  (setq proof-indent (symbol-value 'tab-width))
+  (setq proof-splash-time 4)
+  (setq proof-splash-enable nil)
 
-  ;; for some reason coq mode deactivates undo-tree
-  (add-hook 'coq-mode-hook 'turn-on-undo-tree-mode)
+  (require
+   'proof-site (concat user-emacs-directory
+                       "el-get/proof-general/generic/proof-site"))
 
-  (after 'evil
-    (evil-ex-define-cmd "pr[ove]" 'proof-goto-point)
-    (evil-define-key 'normal coq-mode-map (kbd "C-n")
-      'proof-assert-next-command-interactive)
-    (evil-define-key 'normal coq-mode-map (kbd "C-p")
-      'proof-undo-last-successful-command))
+  (after 'proof-site
+    (require-package 'company-coq)
 
-  ;; proof general has a unicode symbols that shows a big sans true and false
-  ;; and I didn't like it so I changed it to the default font and normal size
-  ;; (set-face-attribute
-  ;;   'unicode-tokens-sans-font-face
-  ;;   nil :height 1.0 :family '(face-attribute 'default :font)))
+    ;; for some reason proof mode deactivates undo-tree
+    ;; and I don't like the holes
+    (add-hook
+     'proof-mode-hook
+     '(lambda ()
+        "Enable `undo-tree-mode' and disable `holes-mode' in Proof
+          General's modes"
+        (undo-tree-mode t)
+        (holes-mode -1))))
+
+  (el-get 'sync 'proof-general)
 #+END_SRC
-
-*** TODO Investigate the =unicode-sans-font-face= problem

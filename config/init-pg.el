@@ -1,21 +1,43 @@
-(require 'proof-site "~/.emacs.d/elisp/PG/generic/proof-site")
+(add-to-list
+ 'load-path (concat user-emacs-directory "el-get/el-get"))
+
+(require-package 'el-get)
+(require 'el-get)
+
+(setq el-get-sources
+      '((:name proof-general
+               :type github
+               :pkgname "ProofGeneral/PG"
+               :url "https://github.com/ProofGeneral/PG.git")))
+
+(unless (require 'proof-site nil t)
+  (unless (file-directory-p "~/.emacs.d/el-get")
+    (make-directory "~/.emacs.d/el-get"))
+  (shell-command
+   "git clone https://github.com/ProofGeneral/PG.git ~/.emacs.d/el-get/proof-general")
+  (el-get 'sync 'proof-general))
+
 (setq proof-strict-read-only t)
-;; look into electric-terminator for coq
-;; maybe activate tool-bar-mode only when on proof general (also activating
-;; the toolbar with M-x proof-toolbar-toggle or C-c b)
+(setq proof-electric-terminator-enable t)
+(setq proof-indent (symbol-value 'tab-width))
+(setq proof-splash-time 4)
+(setq proof-splash-enable nil)
 
-;; for some reason coq mode deactivates undo-tree
-(add-hook 'coq-mode-hook 'turn-on-undo-tree-mode)
+(require
+ 'proof-site (concat user-emacs-directory
+                     "el-get/proof-general/generic/proof-site"))
 
-(after 'evil
-  (evil-ex-define-cmd "pr[ove]" 'proof-goto-point)
-  (evil-define-key 'normal coq-mode-map (kbd "C-n")
-    'proof-assert-next-command-interactive)
-  (evil-define-key 'normal coq-mode-map (kbd "C-p")
-    'proof-undo-last-successful-command))
+(after 'proof-site
+  (require-package 'company-coq)
 
-;; proof general has a unicode symbols that shows a big sans true and false
-;; and I didn't like it so I changed it to the default font and normal size
-;; (set-face-attribute
-;;   'unicode-tokens-sans-font-face
-;;   nil :height 1.0 :family '(face-attribute 'default :font)))
+  ;; for some reason proof mode deactivates undo-tree
+  ;; and I don't like the holes
+  (add-hook
+   'proof-mode-hook
+   '(lambda ()
+      "Enable `undo-tree-mode' and disable `holes-mode' in Proof
+        General's modes"
+      (undo-tree-mode t)
+      (holes-mode -1))))
+
+(el-get 'sync 'proof-general)
