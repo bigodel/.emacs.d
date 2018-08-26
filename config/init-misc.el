@@ -1,3 +1,9 @@
+(after 'dired
+  (require-package 'dired-k)
+  (setq dired-k-style 'git)
+  (setq dired-k-human-readable t)
+  (add-hook 'dired-initial-position-hook #'dired-k))
+
 (require-package 'undo-tree)
 (setq undo-tree-auto-save-history t)
 (setq undo-tree-enable-undo-in-region nil)

@@ -54,15 +54,16 @@
   (require-package 'company-coq)
   (add-hook 'coq-mode-hook #'company-coq-mode)
 
-(evil-ex-define-cmd "pr[ove]" 'proof-goto-point)
-(evil-define-key 'normal proof-mode-map (kbd "M-n")
-  'proof-assert-next-command-interactive)
-(evil-define-key 'normal proof-mode-map (kbd "M-p")
-  'proof-undo-last-successful-command)
-(evil-define-key 'insert proof-mode-map (kbd "M-n")
-  'proof-assert-next-command-interactive)
-(evil-define-key 'insert proof-mode-map (kbd "M-p")
-  'proof-undo-last-successful-command)
+(after 'evil
+  (evil-ex-define-cmd "pr[ove]" 'proof-goto-point)
+  (evil-define-key 'normal proof-mode-map (kbd "M-n")
+    'proof-assert-next-command-interactive)
+  (evil-define-key 'normal proof-mode-map (kbd "M-p")
+    'proof-undo-last-successful-command)
+  (evil-define-key 'insert proof-mode-map (kbd "M-n")
+    'proof-assert-next-command-interactive)
+  (evil-define-key 'insert proof-mode-map (kbd "M-p")
+    'proof-undo-last-successful-command))
 
 (add-hook
    'proof-mode-hook
@@ -73,3 +74,5 @@
      (holes-mode -1))))
 
 (el-get 'sync 'proof-general)
+
+(provide 'init-pg)

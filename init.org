@@ -7,6 +7,7 @@
 
 * TODO review the bindings location
 
+
 * Introduction
 :PROPERTIES:
 :CUSTOM_ID: intro
@@ -801,7 +802,7 @@ Here is where I store configuration for specific languages.
 
 Configuration regarding C/C++ and some packages.
 
-#+BEGIN_SRC emacs-lisp :tangle yes
+#+BEGIN_SRC emacs-lisp :tangle config/langs/lang-c-cpp.el
   (setq-default c-basic-offset (symbol-value 'tab-width))
 #+END_SRC
 
@@ -1674,7 +1675,7 @@ This section is some miscellaneous stuff.
 
 A package to make dired more beautiful.
 
-#+BEGIN_SRC emacs-lisp :tangle yes
+#+BEGIN_SRC emacs-lisp :tangle config/init-misc.el
   (after 'dired
     (require-package 'dired-k)
     (setq dired-k-style 'git)
@@ -2326,15 +2327,16 @@ evaluate or undo the commands, so I remapped it to =M-n= and =M-p= in both
 normal and insert mode.
 
 #+BEGIN_SRC emacs-lisp :tangle config/init-pg.el
-    (evil-ex-define-cmd "pr[ove]" 'proof-goto-point)
-    (evil-define-key 'normal proof-mode-map (kbd "M-n")
-      'proof-assert-next-command-interactive)
-    (evil-define-key 'normal proof-mode-map (kbd "M-p")
-      'proof-undo-last-successful-command)
-    (evil-define-key 'insert proof-mode-map (kbd "M-n")
-      'proof-assert-next-command-interactive)
-    (evil-define-key 'insert proof-mode-map (kbd "M-p")
-      'proof-undo-last-successful-command)
+    (after 'evil
+      (evil-ex-define-cmd "pr[ove]" 'proof-goto-point)
+      (evil-define-key 'normal proof-mode-map (kbd "M-n")
+        'proof-assert-next-command-interactive)
+      (evil-define-key 'normal proof-mode-map (kbd "M-p")
+        'proof-undo-last-successful-command)
+      (evil-define-key 'insert proof-mode-map (kbd "M-n")
+        'proof-assert-next-command-interactive)
+      (evil-define-key 'insert proof-mode-map (kbd "M-p")
+        'proof-undo-last-successful-command))
 #+END_SRC
 
 ProofGeneral disables =undo-tree-mode= and has it's own =pg-protected-undo=
@@ -2355,4 +2357,6 @@ The last line sync's ProofGeneral using =el-get=.
        (holes-mode -1))))
 
   (el-get 'sync 'proof-general)
+
+  (provide 'init-pg)
 #+END_SRC
