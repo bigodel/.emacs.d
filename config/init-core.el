@@ -246,6 +246,7 @@ and if neither, we use the current indent-tabs-mode"
 (setq inhibit-startup-message t)
 (setq initial-scratch-message nil)
 
+(setq truncate-lines nil)
 (setq-default truncate-lines nil)
 (xterm-mouse-mode t)
 (which-function-mode t)

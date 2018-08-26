@@ -772,6 +772,7 @@ start-up.
 Some modes that I like to have by default.
 
 #+BEGIN_SRC emacs-lisp :tangle config/init-core.el
+  (setq truncate-lines nil)
   (setq-default truncate-lines nil)
   (xterm-mouse-mode t)
   (which-function-mode t)
@@ -1407,7 +1408,7 @@ snippet.
 
     (after 'magit-todos
       (define-key magit-todos-section-map (kbd "j") 'evil-next-line)
-      (define-key magit-todos-section-map (kbd "k") 'evil-next-line)))
+      (define-key magit-todos-section-map (kbd "k") 'evil-previous-line)))
 
     (after 'projectile
       (global-set-key (kbd "C-S-p") #'projectile-switch-project))

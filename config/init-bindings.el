@@ -103,7 +103,7 @@
 
   (after 'magit-todos
     (define-key magit-todos-section-map (kbd "j") 'evil-next-line)
-    (define-key magit-todos-section-map (kbd "k") 'evil-next-line)))
+    (define-key magit-todos-section-map (kbd "k") 'evil-previous-line)))
 
   (after 'projectile
     (global-set-key (kbd "C-S-p") #'projectile-switch-project))
