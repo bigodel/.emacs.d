@@ -5,6 +5,8 @@
 #+PROPERTY: header-args :tangle yes
 #+OPTIONS: toc:t
 
+* TODO review the bindings location
+
 * Introduction
 :PROPERTIES:
 :CUSTOM_ID: intro
@@ -1467,15 +1469,7 @@ Since it is my most used package it makes total sense that is has it's own file.
         ("TAB" #'company-indent-or-complete-common)))
 
     (after 'proof-site
-      (evil-ex-define-cmd "pr[ove]" 'proof-goto-point)
-      (evil-define-key 'normal proof-mode-map (kbd "M-n")
-        'proof-assert-next-command-interactive)
-      (evil-define-key 'normal proof-mode-map (kbd "M-p")
-        'proof-undo-last-successful-command)
-      (evil-define-key 'insert proof-mode-map (kbd "M-n")
-        'proof-assert-next-command-interactive)
-      (evil-define-key 'insert proof-mode-map (kbd "M-p")
-        'proof-undo-last-successful-command))
+      )
 
     (/bindings/define-keys evil-normal-state-map
       ("SPC" ":noh")
@@ -2226,17 +2220,25 @@ blocks if the block has =:async= in its header.
 
 [[https://proofgeneral.github.io/][Proof General]] is a generic front-end for /proof assistants/ (also known as
 interactive /theorem provers/). It is installed separately via =git= and
-mantained up to date via =el-get=. The following code is to load the Proof
-General in the supported proof assistant files, with its respective modes.
+mantained up to date via [[https://github.com/dimitri/el-get][=el-get=]].
 
-This is the =el-get= config. Here we set the =el-get= path to be a
+On this first part we add to the =load-path= the path to =el-get= and
+=proof-general=, so that we can load them with =require=.
 
 #+BEGIN_SRC emacs-lisp :tangle config/init-pg.el
   (add-to-list
    'load-path (concat user-emacs-directory "el-get/el-get"))
   (add-to-list
    'load-path (concat user-emacs-directory "el-get/proof-general"))
+#+END_SRC
 
+This is the =el-get= config. First we install it if not already installed and
+then setup a custom recipe for =proof-general=, because it is not one of the pre
+installed recipes (for more information, see =el-get's= info page or the [[https://github.com/dimitri/el-get][README]]
+on their github). We could also specify how to build ProofGeneral, but =el-get=
+already does a wonderful job on figuring that out.
+
+#+BEGIN_SRC emacs-lisp :tangle config/init-pg.el
   (require-package 'el-get)
   (require 'el-get)
 
@@ -2245,9 +2247,19 @@ This is the =el-get= config. Here we set the =el-get= path to be a
                  :type github
                  :pkgname "ProofGeneral/PG"
                  :url "https://github.com/ProofGeneral/PG.git")))
+#+END_SRC
 
+Here we check if ProofGeneral is installed or not by trying to load it and
+specifying the full path it should be installed at.
+
+#+BEGIN_SRC emacs-lisp :tangle config/init-pg.el
   (unless (load (concat user-emacs-directory
                         "el-get/proof-general/generic/proof-site.el") 'noerror)
+#+END_SRC
+
+In case it isn't installed, we set some local variables to use to install it.
+
+#+BEGIN_SRC emacs-lisp :tangle config/init-pg.el
     (let* ((el-get-root
             (file-name-as-directory
              (or (bound-and-true-p el-get-dir)
@@ -2261,20 +2273,35 @@ This is the =el-get= config. Here we set the =el-get= path to be a
            (url "https://github.com/ProofGeneral/PG.git")
            (default-directory el-get-root)
            (process-connection-type nil)) ; use pipe instead of pty
+#+END_SRC
 
+This next part is to clone ProofGeneral into the specified path =pkgdir= above.
+if it fails, throw an error.
+
+#+BEGIN_SRC emacs-lisp :tangle config/init-pg.el
       ;; clone the package (in this case, proof general)
       (if (zerop (funcall #'call-process git nil `(,buf t) 'display
                           "--no-pager" "clone" "-v" url package))
           (insert (format "Successfully cloned \"%s\" into %s!" url pkgdir))
         (error "Couldn't clone \"%s\" from the Git repositorty: %s" package url))
+#+END_SRC
 
+If the cloning of the repository was successful, add =proof-general= to the
+=load-path= and load its main file. Last, but not least, sync it with =el-get=.
+
+#+BEGIN_SRC emacs-lisp :tangle config/init-pg.el
       (add-to-list 'load-path pkgdir)
       (load-file (concat pkgdir "generic/proof-site.el"))
       (load 'proof-site)
       (insert (format "Package \"%s\" loaded!" package))
 
       (el-get 'sync 'proof-general)))
+#+END_SRC
 
+Here is the actual configuration for ProofGeneral. First there are some settings
+and then we load it.
+
+#+BEGIN_SRC emacs-lisp :tangle config/init-pg.el
   (setq proof-strict-read-only t)
   (setq proof-electric-terminator-enable t)
   (setq proof-indent (symbol-value 'tab-width))
@@ -2282,17 +2309,48 @@ This is the =el-get= config. Here we set the =el-get= path to be a
   (setq proof-splash-enable nil)
 
   (require 'proof-site)
+#+END_SRC
 
+=company-coq= is a wonderful package to work with the Coq language. It adds many
+features and improves many of ProofGeneral's defaults.
+
+#+BEGIN_SRC emacs-lisp :tangle config/init-pg.el
   (after 'proof-site
     (require-package 'company-coq)
+    (add-hook 'coq-mode-hook #'company-coq-mode)
+#+END_SRC
 
-    ;; for some reason proof mode deactivates undo-tree
-    ;; and I don't like the holes
+I also created an ex command for evil (the commands you type when you press =:=)
+and I didn't really liked to press =C-c C-n= or =C-c C-u= all the time to
+evaluate or undo the commands, so I remapped it to =M-n= and =M-p= in both
+normal and insert mode.
+
+#+BEGIN_SRC emacs-lisp :tangle config/init-pg.el
+    (evil-ex-define-cmd "pr[ove]" 'proof-goto-point)
+    (evil-define-key 'normal proof-mode-map (kbd "M-n")
+      'proof-assert-next-command-interactive)
+    (evil-define-key 'normal proof-mode-map (kbd "M-p")
+      'proof-undo-last-successful-command)
+    (evil-define-key 'insert proof-mode-map (kbd "M-n")
+      'proof-assert-next-command-interactive)
+    (evil-define-key 'insert proof-mode-map (kbd "M-p")
+      'proof-undo-last-successful-command)
+#+END_SRC
+
+ProofGeneral disables =undo-tree-mode= and has it's own =pg-protected-undo=
+function, that works like Emacs' undo and redo (with the difference that it
+avoids breaking the locked region). I prefer to have =undo-tree's= undo and redo
+(Emacs doesn't have redo, so every time I tried typing =C-r=, vim's and evil's
+command for redo, it would give me an error), so I enable =undo-tree-mode=.
+Also, since I use =yasnippet= I don't need =holes-mode=, so I also disable it.
+The last line sync's ProofGeneral using =el-get=.
+
+#+BEGIN_SRC emacs-lisp :tangle config/init-pg.el
     (add-hook
      'proof-mode-hook
      (lambda ()
        "Enable `undo-tree-mode' and disable `holes-mode' in Proof
-    General's modes"
+      General's modes"
        (undo-tree-mode t)
        (holes-mode -1))))
 

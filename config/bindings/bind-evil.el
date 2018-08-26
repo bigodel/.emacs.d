@@ -16,15 +16,7 @@
       ("TAB" #'company-indent-or-complete-common)))
 
   (after 'proof-site
-    (evil-ex-define-cmd "pr[ove]" 'proof-goto-point)
-    (evil-define-key 'normal proof-mode-map (kbd "M-n")
-      'proof-assert-next-command-interactive)
-    (evil-define-key 'normal proof-mode-map (kbd "M-p")
-      'proof-undo-last-successful-command)
-    (evil-define-key 'insert proof-mode-map (kbd "M-n")
-      'proof-assert-next-command-interactive)
-    (evil-define-key 'insert proof-mode-map (kbd "M-p")
-      'proof-undo-last-successful-command))
+    )
 
   (/bindings/define-keys evil-normal-state-map
     ("SPC" ":noh")
