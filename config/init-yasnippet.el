@@ -1,4 +1,5 @@
 (require-package 'yasnippet)
+(require 'yasnippet)
 
 (after 'yasnippet
   (require-package 'yasnippet-snippets)

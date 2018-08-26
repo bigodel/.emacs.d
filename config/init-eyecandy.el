@@ -32,9 +32,9 @@
 (add-to-list 'default-frame-alist '(font . "DejaVu Sans Mono-14"))
 
 ;; increase, decrease and adjust font size
-(global-set-key (kbd "C-+") 'text-scale-increase)
-(global-set-key (kbd "C--") 'text-scale-decrease)
-(global-set-key (kbd "C-0") 'text-scale-adjust)
+(global-set-key (kbd "C-+") #'text-scale-increase)
+(global-set-key (kbd "C--") #'text-scale-decrease)
+(global-set-key (kbd "C-0") #'text-scale-adjust)
 
 (line-number-mode t)
 (column-number-mode t)
@@ -68,6 +68,7 @@
 ;; (delight 'auto-fill-function nil t)
 
 (require-package 'diminish)
+(require 'diminish)
 
 (diminish 'visual-line-mode)
 (diminish 'auto-fill-function)
@@ -111,13 +112,13 @@
 
 (require-package 'highlight-symbol)
 (setq highlight-symbol-idle-delay 0.3)
-(add-hook 'prog-mode-hook 'highlight-symbol-mode)
+(add-hook 'prog-mode-hook #'highlight-symbol-mode)
 
 (require-package 'highlight-numbers)
-(add-hook 'prog-mode-hook 'highlight-numbers-mode)
+(add-hook 'prog-mode-hook #'highlight-numbers-mode)
 
 (require-package 'highlight-quoted)
-(add-hook 'prog-mode-hook 'highlight-quoted-mode)
+(add-hook 'prog-mode-hook #'highlight-quoted-mode)
 
 (require-package 'page-break-lines)
 (global-page-break-lines-mode)

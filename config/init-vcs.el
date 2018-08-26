@@ -7,16 +7,17 @@
               (next-line)))
 
   (require-package 'magit)
+  (require 'magit)
 
   (setq magit-section-show-child-couno t)
   (setq magit-diff-arguments '("--histogram"))
   (setq magit-ediff-dwim-show-on-hunks t)
   (setq magit-display-buffer-function #'magit-display-buffer-traditional)
 
-  (add-hook 'magit-mode-hook 'hl-line-mode)
+  (add-hook 'magit-mode-hook #'hl-line-mode)
 
   (require-package 'magit-todos)
-  (add-hook 'prog-mode-hook 'hl-todo-mode)
+  (add-hook 'prog-mode-hook #'hl-todo-mode)
   (setq magit-todos-fontify-org nil)
   (when (executable-find "rg")
     (setq magit-todos-scanner 'magit-todos--scan-with-rg))

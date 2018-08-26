@@ -1,7 +1,3 @@
-(require-package 'dired-sidebar)
-(setq dired-sidebar-should-follow-file t)
-(setq dired-sidebar-follow-file-idle-delay 0.2)
-
 (require-package 'undo-tree)
 (setq undo-tree-auto-save-history t)
 (setq undo-tree-enable-undo-in-region nil)
@@ -18,6 +14,7 @@
 
 (when (executable-find "ag")
   (require-package 'ag)
+  (require 'ag)
   (setq ag-highlight-search t)
   (setq ag-ignore-list dotemacs-globally-ignored-directories)
   (add-hook 'ag-mode-hook (lambda () (toggle-truncate-lines t))))

@@ -1,4 +1,5 @@
 (require-package 'helm)
+(require 'helm)
 
 (setq helm-bookmark-show-location t)
 (setq helm-buffer-max-length 40)

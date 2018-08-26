@@ -74,7 +74,7 @@ install it, and then uses =require= to load its libraries. This was actually
 
 #+BEGIN_SRC emacs-lisp :tangle no
   (defun require-package (package &optional min-version no-refresh)
-    "Install and load given PACKAGE, optionally requiring MIN-VERSION.
+    "Install given PACKAGE, optionally requiring MIN-VERSION.
   If NO-REFRESH is non-nil, the available package lists will not be
   re-downloaded in order to locate PACKAGE."
     (if (or (package-installed-p package min-version)
@@ -205,7 +205,7 @@ The next code block sets the garbage collector threshold and the =core= and
 all of the bars are disabled if they're enabled.
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
-  (setq debug-on-error t)
+  (setq debug-on-error nil)
 
   (eval-when-compile (require 'cl))
 
@@ -361,7 +361,7 @@ Here are the macros mentioned on the [[#intro][introduction]] section.
 
 #+BEGIN_SRC emacs-lisp :tangle config/init-boot.el
   (defun require-package (package &optional min-version no-refresh)
-    "Install and load given PACKAGE, optionally requiring MIN-VERSION.
+    "Install given PACKAGE, optionally requiring MIN-VERSION.
   If NO-REFRESH is non-nil, the available package lists will not be
   re-downloaded in order to locate PACKAGE."
     (if (or (package-installed-p package min-version)
@@ -578,7 +578,7 @@ It has an info page =C-h F hippie-expand= in case you want to know more, and the
                                            try-complete-lisp-symbol-partially
                                            try-complete-lisp-symbol))
 
-  (global-set-key (kbd "M-/") 'hippie-expand)
+  (global-set-key (kbd "M-/") #'hippie-expand)
 
   (setq save-abbrevs 'silently)
 #+END_SRC
@@ -595,9 +595,9 @@ comments on programming modes, but not auto fill the code itself.
      (setq-local comment-auto-fill-only-comments t)
      (turn-on-auto-fill))
 
-  (add-hook 'prog-mode-hook '/core/comment-auto-fill)
+  (add-hook 'prog-mode-hook #'/core/comment-auto-fill)
 
-  (add-hook 'text-mode-hook 'turn-on-auto-fill)
+  (add-hook 'text-mode-hook #'turn-on-auto-fill)
 #+END_SRC
 
 Here we configure the behavior of some default Emacs functions. If you'd like to
@@ -608,7 +608,7 @@ in this portion that I have added a hook to reload tangle and compile Emacs
 every time it loads.
 
 #+BEGIN_SRC emacs-lisp :tangle config/init-core.el
-  (add-hook 'after-save-hook '/util/tangle-init)
+  (add-hook 'after-save-hook #'/util/tangle-init)
 
   ;; pcomplete
   (setq pcomplete-ignore-case t)
@@ -620,8 +620,7 @@ every time it loads.
   (put 'narrow-to-region 'disabled nil)
 
   ;; dired
-  (after 'dired
-    (require 'dired-x))
+  (require 'dired-x)
 
   ;; url
   (setq url-configuration-directory (concat dotemacs-cache-directory "url/"))
@@ -716,7 +715,7 @@ every time it loads.
                 '("*scratch*" "*Messages*" "*Require Times*"))
         (progn (bury-buffer) nil)
       t))
-  (add-hook 'kill-buffer-query-functions '/core/do-not-kill-scratch-buffer)
+  (add-hook 'kill-buffer-query-functions #'/core/do-not-kill-scratch-buffer)
 #+END_SRC
 
 Change the "yes or no" prompt to "y-or-n", set the coding system based on the
@@ -773,7 +772,7 @@ start-up.
 Some modes that I like to have by default.
 
 #+BEGIN_SRC emacs-lisp :tangle config/init-core.el
-  (setq-default truncate-lines t)
+  (setq-default truncate-lines nil)
   (xterm-mouse-mode t)
   (which-function-mode t)
   (blink-cursor-mode -1)
@@ -822,10 +821,10 @@ Emacs. Then we set the =haskell-mode= to be the major mode for the =.ghci= file.
   ;; (when (maybe-require-package 'intero)
   ;;   (after 'haskell-mode
   ;;     (intero-global-mode)
-  ;;     (add-hook 'haskell-mode-hook 'subword-mode)
-  ;;     (add-hook 'haskell-mode-hook 'eldoc-mode))
+  ;;     (add-hook 'haskell-mode-hook #'subword-mode)
+  ;;     (add-hook 'haskell-mode-hook #'eldoc-mode))
   ;;   (after 'haskell-cabal
-  ;;     (add-hook 'haskell-cabal-mode 'subword-mode)
+  ;;     (add-hook 'haskell-cabal-mode #'subword-mode)
   ;;     (define-key haskell-cabal-mode-map (kbd "C-c C-l") 'intero-restart))
   ;;   (after [intero flycheck]
   ;;     (flycheck-add-next-checker 'intero
@@ -1105,7 +1104,7 @@ packages to help integrate =evil= into the most modes possible.
   (after 'org
     (require-package 'evil-org)
     (require 'evil-org)
-    (add-hook 'org-mode-hook 'evil-org-mode)
+    (add-hook 'org-mode-hook #'evil-org-mode)
     (add-hook 'evil-org-mode-hook
               (lambda ()
                 (evil-org-set-key-theme))))
@@ -1175,6 +1174,7 @@ helm is much more powerful than that.
 
 #+BEGIN_SRC emacs-lisp :tangle config/init-helm.el
   (require-package 'helm)
+  (require 'helm)
 
   (setq helm-bookmark-show-location t)
   (setq helm-buffer-max-length 40)
@@ -1329,15 +1329,13 @@ First I map =C-S-n= to create a new below where the point is, and
 regarding a bunch of packages and modes.
 
 #+BEGIN_SRC emacs-lisp :tangle config/init-bindings.el
-  (global-set-key (kbd "C-S-n") '/util/insert-line-below)
-  (global-set-key (kbd "C-S-o") '/util/insert-line-above)
+  (global-set-key (kbd "C-S-n") #'/util/insert-line-below)
+  (global-set-key (kbd "C-S-o") #'/util/insert-line-above)
 
-  (global-set-key (kbd "C-x C-/") '/util/find-file-as-root)
-
-  (global-set-key (kbd "C-c d") #'dired-sidebar-toggle-sidebar)
+  (global-set-key (kbd "C-x C-/") #'/util/find-file-as-root)
 
   (after "expand-region-autoloads"
-    (global-set-key (kbd "C-=") 'er/expand-region))
+    (global-set-key (kbd "C-=") #'er/expand-region))
 
   ;; mouse scrolling in terminal
   (unless (display-graphic-p)
@@ -1381,8 +1379,8 @@ default.
     (after "helm-tramp-autoloads"
       (global-set-key (kbd "C-x t") #'helm-tramp)))
 
-  (global-set-key (kbd "M-!") 'eshell-command)
-  (global-set-key (kbd "C-!") '/eshell/new-window)
+  (global-set-key (kbd "M-!") #'eshell-command)
+  (global-set-key (kbd "C-!") #'/eshell/new-window)
 #+END_SRC
 
 These bindings are mostly regarding third party packages, that's why most of
@@ -1404,12 +1402,12 @@ snippet.
   (define-key company-active-map (kbd "RET") 'company-complete-selection)
 
   (after 'magit
-    (global-set-key (kbd "C-x g") 'magit-status)
-    (global-set-key (kbd "C-x M-g") 'magit-dispatch-popup)
+    (global-set-key (kbd "C-x g") #'magit-status)
+    (global-set-key (kbd "C-x M-g") #'magit-dispatch-popup)
 
     (after 'magit-todos
-      (define-key magit-todos-section-map (kbd "j") 'evil-next-visual-line)
-      (define-key magit-todos-section-map (kbd "k") 'evil-next-visual-line)))
+      (define-key magit-todos-section-map (kbd "j") 'evil-next-line)
+      (define-key magit-todos-section-map (kbd "k") 'evil-next-line)))
 
     (after 'projectile
       (global-set-key (kbd "C-S-p") #'projectile-switch-project))
@@ -1545,9 +1543,9 @@ Color theme config and font config.
   (add-to-list 'default-frame-alist '(font . "DejaVu Sans Mono-14"))
 
   ;; increase, decrease and adjust font size
-  (global-set-key (kbd "C-+") 'text-scale-increase)
-  (global-set-key (kbd "C--") 'text-scale-decrease)
-  (global-set-key (kbd "C-0") 'text-scale-adjust)
+  (global-set-key (kbd "C-+") #'text-scale-increase)
+  (global-set-key (kbd "C--") #'text-scale-decrease)
+  (global-set-key (kbd "C-0") #'text-scale-adjust)
 #+END_SRC
 
 Also there is some mode to display stuff in the modeline that are very useful.
@@ -1593,6 +1591,7 @@ The =diminish= package hides minor modes from the modeline.
   ;; (delight 'auto-fill-function nil t)
 
   (require-package 'diminish)
+  (require 'diminish)
 
   (diminish 'visual-line-mode)
   (diminish 'auto-fill-function)
@@ -1657,13 +1656,13 @@ them up on your favorite search engine.
 
   (require-package 'highlight-symbol)
   (setq highlight-symbol-idle-delay 0.3)
-  (add-hook 'prog-mode-hook 'highlight-symbol-mode)
+  (add-hook 'prog-mode-hook #'highlight-symbol-mode)
 
   (require-package 'highlight-numbers)
-  (add-hook 'prog-mode-hook 'highlight-numbers-mode)
+  (add-hook 'prog-mode-hook #'highlight-numbers-mode)
 
   (require-package 'highlight-quoted)
-  (add-hook 'prog-mode-hook 'highlight-quoted-mode)
+  (add-hook 'prog-mode-hook #'highlight-quoted-mode)
 
   (require-package 'page-break-lines)
   (global-page-break-lines-mode)
@@ -1678,14 +1677,6 @@ them up on your favorite search engine.
 
 This section is some miscellaneous stuff.
 
-A sidebar with dired.
-
-#+BEGIN_SRC emacs-lisp :tangle config/init-misc.el
-  (require-package 'dired-sidebar)
-  (setq dired-sidebar-should-follow-file t)
-  (setq dired-sidebar-follow-file-idle-delay 0.2)
-#+END_SRC
-
 A package to make dired more beautiful.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
@@ -1693,7 +1684,7 @@ A package to make dired more beautiful.
     (require-package 'dired-k)
     (setq dired-k-style 'git)
     (setq dired-k-human-readable t)
-    (add-hook 'dired-initial-position-hook 'dired-k))
+    (add-hook 'dired-initial-position-hook #'dired-k))
 #+END_SRC
 
 A tree to visualize modifications on the file and go back to previous states.
@@ -1724,6 +1715,7 @@ only uses =ag= or =grep= or =ripgrep= or =rg=.
 #+BEGIN_SRC emacs-lisp :tangle config/init-misc.el
   (when (executable-find "ag")
     (require-package 'ag)
+    (require 'ag)
     (setq ag-highlight-search t)
     (setq ag-ignore-list dotemacs-globally-ignored-directories)
     (add-hook 'ag-mode-hook (lambda () (toggle-truncate-lines t))))
@@ -1907,16 +1899,17 @@ packages and a reason a lot of people stick to it (of course, if they use git).
                 (next-line)))
 
     (require-package 'magit)
+    (require 'magit)
 
     (setq magit-section-show-child-couno t)
     (setq magit-diff-arguments '("--histogram"))
     (setq magit-ediff-dwim-show-on-hunks t)
     (setq magit-display-buffer-function #'magit-display-buffer-traditional)
 
-    (add-hook 'magit-mode-hook 'hl-line-mode)
+    (add-hook 'magit-mode-hook #'hl-line-mode)
 
     (require-package 'magit-todos)
-    (add-hook 'prog-mode-hook 'hl-todo-mode)
+    (add-hook 'prog-mode-hook #'hl-todo-mode)
     (setq magit-todos-fontify-org nil)
     (when (executable-find "rg")
       (setq magit-todos-scanner 'magit-todos--scan-with-rg))
@@ -1949,6 +1942,7 @@ have it always on.
 
 #+BEGIN_SRC emacs-lisp :tangle config/init-flycheck.el
   (require-package 'flycheck)
+  (require 'flycheck)
 
   (setq flycheck-standard-error-navigation t)
 
@@ -1986,8 +1980,8 @@ Flyspell highlights incorrect words as soon as they are completed or as soon as
 the [[https://www.emacswiki.org/emacs/TextCursor][TextCursor]] hits a new word.
 
 #+BEGIN_SRC emacs-lisp :tangle config/init-flyspell.el
-  (add-hook 'prog-mode-hook 'flyspell-prog-mode)
-  (add-hook 'text-mode-hook 'turn-on-flyspell)
+  (add-hook 'prog-mode-hook #'flyspell-prog-mode)
+  (add-hook 'text-mode-hook #'turn-on-flyspell)
 #+END_SRC
 
 ** Auxiliary modes
@@ -2021,6 +2015,7 @@ configured and installed on the language's or mode's config section.
 
 #+BEGIN_SRC emacs-lisp :tangle config/init-company.el
   (require-package 'company)
+  (require 'company)
 
   (setq company-idle-delay 0.3)
   (setq company-minimum-prefix-length 1)
@@ -2061,6 +2056,7 @@ And this is my snippet package. The configuration is even smaller.
 
 #+BEGIN_SRC emacs-lisp :tangle config/init-yasnippet.el
   (require-package 'yasnippet)
+  (require 'yasnippet)
 
   (after 'yasnippet
     (require-package 'yasnippet-snippets)
@@ -2088,6 +2084,7 @@ This package is amazing at dealing with projects.
 
 #+BEGIN_SRC emacs-lisp :tangle config/init-projectile.el
   (require-package 'projectile)
+  (require 'projectile)
 
   (setq projectile-cache-file
         (concat dotemacs-cache-directory "projectile.cache"))
@@ -2236,6 +2233,8 @@ This is the =el-get= config. Here we set the =el-get= path to be a
 #+BEGIN_SRC emacs-lisp :tangle config/init-pg.el
   (add-to-list
    'load-path (concat user-emacs-directory "el-get/el-get"))
+  (add-to-list
+   'load-path (concat user-emacs-directory "el-get/proof-general"))
 
   (require-package 'el-get)
   (require 'el-get)
@@ -2246,12 +2245,34 @@ This is the =el-get= config. Here we set the =el-get= path to be a
                  :pkgname "ProofGeneral/PG"
                  :url "https://github.com/ProofGeneral/PG.git")))
 
-  (unless (require 'proof-site nil t)
-    (unless (file-directory-p "~/.emacs.d/el-get")
-      (make-directory "~/.emacs.d/el-get"))
-    (shell-command
-     "git clone https://github.com/ProofGeneral/PG.git ~/.emacs.d/el-get/proof-general")
-    (el-get 'sync 'proof-general))
+  (unless (load (concat user-emacs-directory
+                        "el-get/proof-general/generic/proof-site.el") 'noerror)
+    (let* ((el-get-root
+            (file-name-as-directory
+             (or (bound-and-true-p el-get-dir)
+                 (concat (file-name-as-directory user-emacs-directory)
+                         "el-get"))))
+           (package "proof-general")
+           (buf (switch-to-buffer (format "*%s bootstrap*" package)))
+           (pkgdir (file-name-as-directory (concat el-get-root package)))
+           (git (or (executable-find "git")
+                    (error "Unable to find `git'")))
+           (url "https://github.com/ProofGeneral/PG.git")
+           (default-directory el-get-root)
+           (process-connection-type nil)) ; use pipe instead of pty
+
+      ;; clone the package (in this case, proof general)
+      (if (zerop (funcall #'call-process git nil `(,buf t) 'display
+                          "--no-pager" "clone" "-v" url package))
+          (insert (format "Successfully cloned \"%s\" into %s!" url pkgdir))
+        (error "Couldn't clone \"%s\" from the Git repositorty: %s" package url))
+
+      (add-to-list 'load-path pkgdir)
+      (load-file (concat pkgdir "generic/proof-site.el"))
+      (load 'proof-site)
+      (insert (format "Package \"%s\" loaded!" package))
+
+      (el-get 'sync 'proof-general)))
 
   (setq proof-strict-read-only t)
   (setq proof-electric-terminator-enable t)
@@ -2259,9 +2280,7 @@ This is the =el-get= config. Here we set the =el-get= path to be a
   (setq proof-splash-time 4)
   (setq proof-splash-enable nil)
 
-  (require
-   'proof-site (concat user-emacs-directory
-                       "el-get/proof-general/generic/proof-site"))
+  (require 'proof-site)
 
   (after 'proof-site
     (require-package 'company-coq)
@@ -2270,11 +2289,11 @@ This is the =el-get= config. Here we set the =el-get= path to be a
     ;; and I don't like the holes
     (add-hook
      'proof-mode-hook
-     '(lambda ()
-        "Enable `undo-tree-mode' and disable `holes-mode' in Proof
-          General's modes"
-        (undo-tree-mode t)
-        (holes-mode -1))))
+     (lambda ()
+       "Enable `undo-tree-mode' and disable `holes-mode' in Proof
+    General's modes"
+       (undo-tree-mode t)
+       (holes-mode -1))))
 
   (el-get 'sync 'proof-general)
 #+END_SRC

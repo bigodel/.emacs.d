@@ -1,4 +1,5 @@
 (require-package 'projectile)
+(require 'projectile)
 
 (setq projectile-cache-file
       (concat dotemacs-cache-directory "projectile.cache"))

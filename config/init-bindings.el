@@ -44,15 +44,13 @@
 
 ;; (define-key minibuffer-local-map (kbd "C-w") 'backward-kill-word)
 
-(global-set-key (kbd "C-S-n") '/util/insert-line-below)
-(global-set-key (kbd "C-S-o") '/util/insert-line-above)
+(global-set-key (kbd "C-S-n") #'/util/insert-line-below)
+(global-set-key (kbd "C-S-o") #'/util/insert-line-above)
 
-(global-set-key (kbd "C-x C-/") '/util/find-file-as-root)
-
-(global-set-key (kbd "C-c d") #'dired-sidebar-toggle-sidebar)
+(global-set-key (kbd "C-x C-/") #'/util/find-file-as-root)
 
 (after "expand-region-autoloads"
-  (global-set-key (kbd "C-=") 'er/expand-region))
+  (global-set-key (kbd "C-=") #'er/expand-region))
 
 ;; mouse scrolling in terminal
 (unless (display-graphic-p)
@@ -88,8 +86,8 @@
   (after "helm-tramp-autoloads"
     (global-set-key (kbd "C-x t") #'helm-tramp)))
 
-(global-set-key (kbd "M-!") 'eshell-command)
-(global-set-key (kbd "C-!") '/eshell/new-window)
+(global-set-key (kbd "M-!") #'eshell-command)
+(global-set-key (kbd "C-!") #'/eshell/new-window)
 
 (after 'company
   (after "yasnippet-autoloads"
@@ -100,12 +98,12 @@
 (define-key company-active-map (kbd "RET") 'company-complete-selection)
 
 (after 'magit
-  (global-set-key (kbd "C-x g") 'magit-status)
-  (global-set-key (kbd "C-x M-g") 'magit-dispatch-popup)
+  (global-set-key (kbd "C-x g") #'magit-status)
+  (global-set-key (kbd "C-x M-g") #'magit-dispatch-popup)
 
   (after 'magit-todos
-    (define-key magit-todos-section-map (kbd "j") 'evil-next-visual-line)
-    (define-key magit-todos-section-map (kbd "k") 'evil-next-visual-line)))
+    (define-key magit-todos-section-map (kbd "j") 'evil-next-line)
+    (define-key magit-todos-section-map (kbd "k") 'evil-next-line)))
 
   (after 'projectile
     (global-set-key (kbd "C-S-p") #'projectile-switch-project))

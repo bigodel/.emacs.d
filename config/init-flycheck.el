@@ -1,4 +1,5 @@
 (require-package 'flycheck)
+(require 'flycheck)
 
 (setq flycheck-standard-error-navigation t)
 

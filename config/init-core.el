@@ -86,7 +86,7 @@
                                          try-complete-lisp-symbol-partially
                                          try-complete-lisp-symbol))
 
-(global-set-key (kbd "M-/") 'hippie-expand)
+(global-set-key (kbd "M-/") #'hippie-expand)
 
 (setq save-abbrevs 'silently)
 
@@ -96,11 +96,11 @@
    (setq-local comment-auto-fill-only-comments t)
    (turn-on-auto-fill))
 
-(add-hook 'prog-mode-hook '/core/comment-auto-fill)
+(add-hook 'prog-mode-hook #'/core/comment-auto-fill)
 
-(add-hook 'text-mode-hook 'turn-on-auto-fill)
+(add-hook 'text-mode-hook #'turn-on-auto-fill)
 
-(add-hook 'after-save-hook '/util/tangle-init)
+(add-hook 'after-save-hook #'/util/tangle-init)
 
 ;; pcomplete
 (setq pcomplete-ignore-case t)
@@ -112,8 +112,7 @@
 (put 'narrow-to-region 'disabled nil)
 
 ;; dired
-(after 'dired
-  (require 'dired-x))
+(require 'dired-x)
 
 ;; url
 (setq url-configuration-directory (concat dotemacs-cache-directory "url/"))
@@ -208,7 +207,7 @@
               '("*scratch*" "*Messages*" "*Require Times*"))
       (progn (bury-buffer) nil)
     t))
-(add-hook 'kill-buffer-query-functions '/core/do-not-kill-scratch-buffer)
+(add-hook 'kill-buffer-query-functions #'/core/do-not-kill-scratch-buffer)
 
 (defalias 'yes-or-no-p 'y-or-n-p)
 
@@ -247,7 +246,7 @@ and if neither, we use the current indent-tabs-mode"
 (setq inhibit-startup-message t)
 (setq initial-scratch-message nil)
 
-(setq-default truncate-lines t)
+(setq-default truncate-lines nil)
 (xterm-mouse-mode t)
 (which-function-mode t)
 (blink-cursor-mode -1)
