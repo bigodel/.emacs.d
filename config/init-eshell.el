@@ -42,11 +42,6 @@
            t))
   (eshell-send-input))
 
-(defun eshell/l (&rest args)
-  "`ls -lh' doesn't work as an alias in `eshell', so I decided to
-create a function."
-  (eshell/ls "-lh" args))
-
 (defun eshell/tramp (&rest args)
   "Use tramp as a eshell command."
   (insert (apply #'format "cd /ssh:%s:\\~/" args))
