@@ -48,10 +48,13 @@
 (setq proof-splash-time 4)
 (setq proof-splash-enable nil)
 
+(/boot/lazy-major-mode "\\.v$" 'coq-mode)
+
 (require 'proof-site)
 
 (after 'proof-site
   (require-package 'company-coq)
+  (setq company-coq-disabled-features '(prettify-symbols))
   (add-hook 'coq-mode-hook #'company-coq-mode)
 
 (after 'evil

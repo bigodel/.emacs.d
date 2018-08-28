@@ -73,30 +73,8 @@
 (unless (display-graphic-p)
   (evil-esc-mode 1))
 
-(defadvice evil-open-below (after dotemacs activate)
-  "When inserting a new line below with `o', also indent."
-  (evil-indent-line (point-at-bol) (point-at-eol)))
-
-(defadvice evil-open-above (after dotemacs activate)
-  "When inserting a new line above with `O', also indent."
-  (evil-indent-line (point-at-bol) (point-at-eol)))
-
-(defadvice evil-org-open-below (after dotemacs activate)
-  "When inserting a new line below with `o' in an org file, also indent."
-  (evil-indent-line (point-at-bol) (point-at-eol)))
-
-(defadvice evil-org-open-above (after dotemacs activate)
-  "When inserting a new line below with `O' in an org file, also indent."
-  (evil-indent-line (point-at-bol) (point-at-eol)))
-
 (require-package 'evil-surround)
 (global-evil-surround-mode t)
-
-(require-package 'evil-exchange)
-(evil-exchange-install)
-
-(require-package 'evil-anzu)
-(require 'evil-anzu)
 
 (after 'magit
   (require-package 'evil-magit)
@@ -129,9 +107,6 @@
   (global-evil-visualstar-mode t)
 
   (require-package 'evil-numbers)
-
-  (require-package 'evil-terminal-cursor-changer)
-  (evil-terminal-cursor-changer-activate)
 
 (after 'evil
   (require-package 'evil-collection)

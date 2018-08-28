@@ -1,4 +1,5 @@
 (require-package 'which-key)
+(require 'which-key)
 (setq which-key-idle-delay 0.2)
 (setq which-key-min-display-lines 3)
 (setq which-key-max-description-length 20)
@@ -48,6 +49,8 @@
 (global-set-key (kbd "C-S-o") #'/util/insert-line-above)
 
 (global-set-key (kbd "C-x C-/") #'/util/find-file-as-root)
+
+(global-set-key (kbd "M-;") #'comment-line)
 
 (after "expand-region-autoloads"
   (global-set-key (kbd "C-=") #'er/expand-region))
@@ -109,9 +112,9 @@
     (global-set-key (kbd "C-S-p") #'projectile-switch-project))
 
 (after 'evil
-  (define-key evil-normal-state-map (kbd "!") '/eshell/new-window)
-  (define-key evil-visual-state-map (kbd "!") '/eshell/new-window)
-  (define-key evil-motion-state-map (kbd "!") '/eshell/new-window))
+  (define-key evil-normal-state-map (kbd "!") #'/eshell/new-window)
+  (define-key evil-visual-state-map (kbd "!") #'/eshell/new-window)
+  (define-key evil-motion-state-map (kbd "!") #'/eshell/new-window))
 
 (/bindings/define-keys (current-global-map)
   ("C-c c" #'org-capture)

@@ -25,8 +25,15 @@
 (after 'linum
   (set-face-attribute 'linum nil :foreground "gold"))
 
-;; change mode-line's font size
-(set-face-attribute 'mode-line nil :height 1.0)
+;; change mode-line's font size and foreground and background
+(set-face-attribute 'mode-line nil
+                    :height 1.0
+                    :background (face-foreground 'default)
+                    :foreground (face-background 'default))
+(set-face-attribute 'mode-line-buffer-id nil
+                    :height 1.0
+                    :background (face-foreground 'default)
+                    :foreground (face-background 'default))
 
 ;; default font
 (add-to-list 'default-frame-alist '(font . "DejaVu Sans Mono-14"))
@@ -76,6 +83,7 @@
   (diminish 'global-whitespace-mode)
   (diminish 'whitespace-mode))
 (after 'org-indent (diminish 'org-indent-mode))
+(after 'outline (diminish 'outline-minor-mode))
 (after 'aggressive-indent (diminish 'aggressive-indent-mode))
 (after 'autorevert (diminish 'auto-revert-mode))
 (after 'abbrev (diminish 'abbrev-mode))
@@ -100,6 +108,7 @@
 (after 'yasnippet (diminish 'yas-minor-mode))
 (after 'evil-org (diminish 'evil-org-mode))
 (after 'evil-vimish-fold (diminish 'evil-vimish-fold-mode))
+(after 'proof-site (diminish 'proof-active-buffer-fake-minor-mode))
 (after "intero-autoloads" (diminish 'intero-mode))
 
 (when (fboundp 'global-prettify-symbols-mode)

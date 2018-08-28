@@ -1,9 +1,14 @@
 (defvar dotemacs-eshell/prompt-git-info
-  (executable-find "git"))
+  (executable-find "git")
+  "Full path for the `git' executable.")
 
 (defvar dotemacs-eshell/visual-commands
   '("ssh" "top" "tail" "less")
   "Command that present their output in a visual fashion.")
+
+(defadvice eshell/exit (before dotemacs activate)
+  "After exiting `eshell', remove its window."
+  (delete-window))
 
 (setq eshell-directory-name (concat dotemacs-cache-directory "eshell"))
 (setq eshell-buffer-maximum-lines 20000)
@@ -16,35 +21,11 @@
 (setq eshell-hist-ignoredups t)
 (setq eshell-cmpl-ignore-case t)
 
-(setq eshell-prompt-function
-      (lambda ()
-        (concat
-         (propertize (abbreviate-file-name (eshell/pwd)) 'face 'eshell-prompt)
-         (when (and dotemacs-eshell/prompt-git-info
-                    (fboundp #'vc-git-branches))
-           (let ((branch (car (vc-git-branches))))
-             (when branch
-               (concat
-                (propertize " [" 'face 'font-lock-keyword-face)
-                (propertize branch 'face 'font-lock-function-name-face)
-                (let* ((status (shell-command-to-string "git status --porcelain"))
-                       (parts (split-string status "\n" t " "))
-                       (states (mapcar #'string-to-char parts))
-                       (added (count-if (lambda (char) (= char ?A)) states))
-                       (modified (count-if (lambda (char) (= char ?M)) states))
-                       (deleted (count-if (lambda (char) (= char ?D)) states)))
-                  (when (> (+ added modified deleted) 0)
-                    (propertize
-                     (format " +%d ~%d -%d" added modified deleted)
-                     'face 'font-lock-comment-face)))
-                (propertize "]" 'face 'font-lock-keyword-face)))))
-         (propertize " $ " 'face 'font-lock-constant-face))))
-
 (when (executable-find "fortune")
   (defadvice eshell (before dotemacs activate)
     (setq eshell-banner-message
           (concat (shell-command-to-string "fortune") "\n"))
-    "Display a little `fortune' at `eshell' startup."))
+    "Display a little `fortune' at `eshell's startup."))
 
 (defun eshell/ff (&rest args)
   "Opens a file in emacs."
@@ -58,19 +39,27 @@
            "Run previous command: "
            (delete-dups (ring-elements eshell-history-ring))
            nil
-           t)))
+           t))
+  (eshell-send-input))
+
+(defun eshell/l (&rest args)
+  "`ls -lh' doesn't work as an alias in `eshell', so I decided to
+create a function."
+  (eshell/ls "-lh" args))
 
 (defun eshell/tramp (&rest args)
   "Use tramp as a eshell command."
-  (insert (apply #'format "cd /ssh:%s:\\~" args))
+  (insert (apply #'format "cd /ssh:%s:\\~/" args))
   (eshell-send-input))
 
 (after 'em-term
-       (dolist (cmd dotemacs-eshell/visual-commands)
-         (add-to-list 'eshell-visual-commands cmd)))
+  (dolist (cmd dotemacs-eshell/visual-commands)
+    (add-to-list 'eshell-visual-commands cmd)))
 
 (after "magit-autoloads"
-       (defalias 'eshell/gst #'magit-status))
+  (defun eshell/gst (&rest args)
+    (magit-status (pop args) nil)
+    (eshell/echo)))
 
 (defun /eshell/new-window ()
   "Opens up a new shell in the directory associated with the

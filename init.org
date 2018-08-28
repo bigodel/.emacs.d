@@ -7,6 +7,8 @@
 
 * TODO review the bindings location
 
+* TODO configure pdf-tools and look for dpi var for docview
+* TODO look into emms
 
 * Introduction
 :PROPERTIES:
@@ -806,6 +808,7 @@ Configuration regarding C/C++ and some packages.
   (setq-default c-basic-offset (symbol-value 'tab-width))
 #+END_SRC
 
+*** Java
 *** Haskell
 
 I work a lot with Haskell, here is configuration regarding it.
@@ -1069,22 +1072,6 @@ in the end of this code block, and advice to indent every time we use =o= or
 
   (unless (display-graphic-p)
     (evil-esc-mode 1))
-
-  (defadvice evil-open-below (after dotemacs activate)
-    "When inserting a new line below with `o', also indent."
-    (evil-indent-line (point-at-bol) (point-at-eol)))
-
-  (defadvice evil-open-above (after dotemacs activate)
-    "When inserting a new line above with `O', also indent."
-    (evil-indent-line (point-at-bol) (point-at-eol)))
-
-  (defadvice evil-org-open-below (after dotemacs activate)
-    "When inserting a new line below with `o' in an org file, also indent."
-    (evil-indent-line (point-at-bol) (point-at-eol)))
-
-  (defadvice evil-org-open-above (after dotemacs activate)
-    "When inserting a new line below with `O' in an org file, also indent."
-    (evil-indent-line (point-at-bol) (point-at-eol)))
 #+END_SRC
 
 Here is the configuration for the comment package. And some more additional
@@ -1093,12 +1080,6 @@ packages to help integrate =evil= into the most modes possible.
 #+BEGIN_SRC emacs-lisp :tangle config/init-evil.el
   (require-package 'evil-surround)
   (global-evil-surround-mode t)
-
-  (require-package 'evil-exchange)
-  (evil-exchange-install)
-
-  (require-package 'evil-anzu)
-  (require 'evil-anzu)
 
   (after 'magit
     (require-package 'evil-magit)
@@ -1131,9 +1112,6 @@ packages to help integrate =evil= into the most modes possible.
     (global-evil-visualstar-mode t)
 
     (require-package 'evil-numbers)
-
-    (require-package 'evil-terminal-cursor-changer)
-    (evil-terminal-cursor-changer-activate)
 #+END_SRC
 
 I also use [[https://github.com/emacs-evil/evil-collection][=evil-collection=]], a set of keybindings for =evil-mode=.
@@ -1270,6 +1248,7 @@ starting with the prefix you pressed.
 
 #+BEGIN_SRC emacs-lisp :tangle config/init-bindings.el
   (require-package 'which-key)
+  (require 'which-key)
   (setq which-key-idle-delay 0.2)
   (setq which-key-min-display-lines 3)
   (setq which-key-max-description-length 20)
@@ -1337,6 +1316,8 @@ regarding a bunch of packages and modes.
   (global-set-key (kbd "C-S-o") #'/util/insert-line-above)
 
   (global-set-key (kbd "C-x C-/") #'/util/find-file-as-root)
+
+  (global-set-key (kbd "M-;") #'comment-line)
 
   (after "expand-region-autoloads"
     (global-set-key (kbd "C-=") #'er/expand-region))
@@ -1417,9 +1398,9 @@ snippet.
       (global-set-key (kbd "C-S-p") #'projectile-switch-project))
 
   (after 'evil
-    (define-key evil-normal-state-map (kbd "!") '/eshell/new-window)
-    (define-key evil-visual-state-map (kbd "!") '/eshell/new-window)
-    (define-key evil-motion-state-map (kbd "!") '/eshell/new-window))
+    (define-key evil-normal-state-map (kbd "!") #'/eshell/new-window)
+    (define-key evil-visual-state-map (kbd "!") #'/eshell/new-window)
+    (define-key evil-motion-state-map (kbd "!") #'/eshell/new-window))
 
   (/bindings/define-keys (current-global-map)
     ("C-c c" #'org-capture)
@@ -1532,8 +1513,15 @@ Color theme config and font config.
   (after 'linum
     (set-face-attribute 'linum nil :foreground "gold"))
 
-  ;; change mode-line's font size
-  (set-face-attribute 'mode-line nil :height 1.0)
+  ;; change mode-line's font size and foreground and background
+  (set-face-attribute 'mode-line nil
+                      :height 1.0
+                      :background (face-foreground 'default)
+                      :foreground (face-background 'default))
+  (set-face-attribute 'mode-line-buffer-id nil
+                      :height 1.0
+                      :background (face-foreground 'default)
+                      :foreground (face-background 'default))
 
   ;; default font
   (add-to-list 'default-frame-alist '(font . "DejaVu Sans Mono-14"))
@@ -1595,6 +1583,7 @@ The =diminish= package hides minor modes from the modeline.
     (diminish 'global-whitespace-mode)
     (diminish 'whitespace-mode))
   (after 'org-indent (diminish 'org-indent-mode))
+  (after 'outline (diminish 'outline-minor-mode))
   (after 'aggressive-indent (diminish 'aggressive-indent-mode))
   (after 'autorevert (diminish 'auto-revert-mode))
   (after 'abbrev (diminish 'abbrev-mode))
@@ -1619,6 +1608,7 @@ The =diminish= package hides minor modes from the modeline.
   (after 'yasnippet (diminish 'yas-minor-mode))
   (after 'evil-org (diminish 'evil-org-mode))
   (after 'evil-vimish-fold (diminish 'evil-vimish-fold-mode))
+  (after 'proof-site (diminish 'proof-active-buffer-fake-minor-mode))
   (after "intero-autoloads" (diminish 'intero-mode))
 #+END_SRC
 
@@ -1742,7 +1732,7 @@ easier to restart your config and load new code snippets.
 #+END_SRC
 
 ** =eshell=
-   :PROPERTIES:
+:PROPERTIES:
    :CUSTOM_ID: cfg-eshell
    :END:
 
@@ -1753,11 +1743,16 @@ people do).
 
 #+BEGIN_SRC emacs-lisp :tangle config/init-eshell.el
   (defvar dotemacs-eshell/prompt-git-info
-    (executable-find "git"))
+    (executable-find "git")
+    "Full path for the `git' executable.")
 
   (defvar dotemacs-eshell/visual-commands
     '("ssh" "top" "tail" "less")
     "Command that present their output in a visual fashion.")
+
+  (defadvice eshell/exit (before dotemacs activate)
+    "After exiting `eshell', remove its window."
+    (delete-window))
 #+END_SRC
 
 Some variable configuration.
@@ -1776,11 +1771,13 @@ Some variable configuration.
 #+END_SRC
 
 This is the prompt function for =eshell= (usually called =$PS1= on =bash= or
-=zsh=).
+=zsh=). I'm not currently using this, because it made =eshell= a little slow and
+I didn't like it, but I decided to leave it here if anyone wants to try it out.
 
-#+BEGIN_SRC emacs-lisp :tangle config/init-eshell.el
+#+BEGIN_SRC emacs-lisp :tangle no
   (setq eshell-prompt-function
         (lambda ()
+          "The function to generate `eshell's prompt."
           (concat
            (propertize (abbreviate-file-name (eshell/pwd)) 'face 'eshell-prompt)
            (when (and dotemacs-eshell/prompt-git-info
@@ -1811,7 +1808,7 @@ If you have fortune installed, show a fortune every time =eshell= is opened.
     (defadvice eshell (before dotemacs activate)
       (setq eshell-banner-message
             (concat (shell-command-to-string "fortune") "\n"))
-      "Display a little `fortune' at `eshell' startup."))
+      "Display a little `fortune' at `eshell's startup."))
 #+END_SRC
 
 Functions defined as =eshell/name-of-function= are functions executed on
@@ -1830,11 +1827,17 @@ Functions defined as =eshell/name-of-function= are functions executed on
              "Run previous command: "
              (delete-dups (ring-elements eshell-history-ring))
              nil
-             t)))
+             t))
+    (eshell-send-input))
+
+  (defun eshell/l (&rest args)
+    "`ls -lh' doesn't work as an alias in `eshell', so I decided to
+  create a function."
+    (eshell/ls "-lh" args))
 
   (defun eshell/tramp (&rest args)
     "Use tramp as a eshell command."
-    (insert (apply #'format "cd /ssh:%s:\\~" args))
+    (insert (apply #'format "cd /ssh:%s:\\~/" args))
     (eshell-send-input))
 #+END_SRC
 
@@ -1843,11 +1846,13 @@ commands. Also, when on =eshell=, =gst= opens up =magit=.
 
 #+BEGIN_SRC emacs-lisp :tangle config/init-eshell.el
   (after 'em-term
-         (dolist (cmd dotemacs-eshell/visual-commands)
-           (add-to-list 'eshell-visual-commands cmd)))
+    (dolist (cmd dotemacs-eshell/visual-commands)
+      (add-to-list 'eshell-visual-commands cmd)))
 
   (after "magit-autoloads"
-         (defalias 'eshell/gst #'magit-status))
+    (defun eshell/gst (&rest args)
+      (magit-status (pop args) nil)
+      (eshell/echo)))
 #+END_SRC
 
 This function splits the current window in half, opening a new =eshell= instance
@@ -1911,8 +1916,8 @@ packages and a reason a lot of people stick to it (of course, if they use git).
       (setq magit-todos-scanner 'magit-todos--scan-with-rg))
     (magit-todos-mode t))
 
-  (/boot/lazy-major-mode "^\\.gitignore$" 'gitignore-mode)
-  (/boot/lazy-major-mode "^\\.gitattributes$" 'gitattributes-mode)
+  (/boot/lazy-major-mode "\\.gitignore$" 'gitignore-mode)
+  (/boot/lazy-major-mode "\\.gitattributes$" 'gitattributes-mode)
 
   (after [evil diff-mode]
     (evil-define-key 'normal diff-mode diff-mode-map
@@ -2309,6 +2314,8 @@ and then we load it.
   (setq proof-splash-time 4)
   (setq proof-splash-enable nil)
 
+  (/boot/lazy-major-mode "\\.v$" 'coq-mode)
+
   (require 'proof-site)
 #+END_SRC
 
@@ -2318,6 +2325,7 @@ features and improves many of ProofGeneral's defaults.
 #+BEGIN_SRC emacs-lisp :tangle config/init-pg.el
   (after 'proof-site
     (require-package 'company-coq)
+    (setq company-coq-disabled-features '(prettify-symbols))
     (add-hook 'coq-mode-hook #'company-coq-mode)
 #+END_SRC
 
@@ -2359,4 +2367,27 @@ The last line sync's ProofGeneral using =el-get=.
   (el-get 'sync 'proof-general)
 
   (provide 'init-pg)
+#+END_SRC
+
+** PDF
+
+Emacs has its own PDF viewer, called =docview= (more on it on the [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Document-View.html][manual]]). But
+there is a lot of cool features missing. That's why I use <<target>>[[https://github.com/politza/pdf-tools][=pdf-tools=]].
+
+=pdf-tools= configuration is pretty simple, but there is a lot of system
+dependencies since it uses a server, outside Emacs, to render the PDF's as PNG
+images, so that Emacs can display it in a better quality, so make sure to read
+its README in the [[target][link above]].
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (require-package 'pdf-tools)
+  (require 'pdf-tools)
+
+  (unless (pdf-info-running-p)
+    (pdf-tools-install))
+
+  ;; add this in the LaTeX part later to revert the pdf after TeX finished
+  ;; compiling
+  ;; (add-hook 'TeX-after-compilation-finished-functions
+  ;;           #'TeX-revert-document-buffer)
 #+END_SRC
