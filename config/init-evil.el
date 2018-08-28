@@ -73,9 +73,6 @@
 (unless (display-graphic-p)
   (evil-esc-mode 1))
 
-(require-package 'evil-surround)
-(global-evil-surround-mode t)
-
 (after 'magit
   (require-package 'evil-magit)
   (require 'evil-magit)
@@ -94,19 +91,14 @@
   (require 'evil-vimish-fold)
   (evil-vimish-fold-mode t))
 
-  (require-package 'evil-matchit)
-  (defun evilmi-customize-keybinding ()
-    (evil-define-key 'normal evil-matchit-mode-map
-      "%" 'evilmi-jump-items))
-  (global-evil-matchit-mode t)
+(require-package 'evil-matchit)
+(defun evilmi-customize-keybinding ()
+  (evil-define-key 'normal evil-matchit-mode-map
+    "%" 'evilmi-jump-items))
+(global-evil-matchit-mode t)
 
-  (require-package 'evil-indent-textobject)
-  (require 'evil-indent-textobject)
-
-  (require-package 'evil-visualstar)
-  (global-evil-visualstar-mode t)
-
-  (require-package 'evil-numbers)
+(require-package 'evil-numbers)
+(require 'evil-numbers)
 
 (after 'evil
   (require-package 'evil-collection)

@@ -10,6 +10,7 @@
 * TODO configure pdf-tools and look for dpi var for docview
 * TODO look into emms
 
+
 * Introduction
 :PROPERTIES:
 :CUSTOM_ID: intro
@@ -1078,9 +1079,6 @@ Here is the configuration for the comment package. And some more additional
 packages to help integrate =evil= into the most modes possible.
 
 #+BEGIN_SRC emacs-lisp :tangle config/init-evil.el
-  (require-package 'evil-surround)
-  (global-evil-surround-mode t)
-
   (after 'magit
     (require-package 'evil-magit)
     (require 'evil-magit)
@@ -1099,19 +1097,14 @@ packages to help integrate =evil= into the most modes possible.
     (require 'evil-vimish-fold)
     (evil-vimish-fold-mode t))
 
-    (require-package 'evil-matchit)
-    (defun evilmi-customize-keybinding ()
-      (evil-define-key 'normal evil-matchit-mode-map
-        "%" 'evilmi-jump-items))
-    (global-evil-matchit-mode t)
+  (require-package 'evil-matchit)
+  (defun evilmi-customize-keybinding ()
+    (evil-define-key 'normal evil-matchit-mode-map
+      "%" 'evilmi-jump-items))
+  (global-evil-matchit-mode t)
 
-    (require-package 'evil-indent-textobject)
-    (require 'evil-indent-textobject)
-
-    (require-package 'evil-visualstar)
-    (global-evil-visualstar-mode t)
-
-    (require-package 'evil-numbers)
+  (require-package 'evil-numbers)
+  (require 'evil-numbers)
 #+END_SRC
 
 I also use [[https://github.com/emacs-evil/evil-collection][=evil-collection=]], a set of keybindings for =evil-mode=.
@@ -2379,12 +2372,13 @@ dependencies since it uses a server, outside Emacs, to render the PDF's as PNG
 images, so that Emacs can display it in a better quality, so make sure to read
 its README in the [[target][link above]].
 
-#+BEGIN_SRC emacs-lisp :tangle yes
-  (require-package 'pdf-tools)
-  (require 'pdf-tools)
+#+BEGIN_SRC emacs-lisp :tangle config/init-pdf.el
+  (/boot/delayed-init
+   (require-package 'pdf-tools)
+   (require 'pdf-tools)
 
-  (unless (pdf-info-running-p)
-    (pdf-tools-install))
+   (unless (pdf-info-running-p)
+     (pdf-tools-install)))
 
   ;; add this in the LaTeX part later to revert the pdf after TeX finished
   ;; compiling
