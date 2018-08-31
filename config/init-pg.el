@@ -35,9 +35,9 @@
   (error "Couldn't clone \"%s\" from the Git repositorty: %s" package url))
 
 (add-to-list 'load-path pkgdir)
-(load-file (concat pkgdir "generic/proof-site.el"))
-(load 'proof-site)
-(insert (format "Package \"%s\" loaded!" package))
+    (load-file (concat pkgdir "generic/proof-site.el"))
+    (load 'proof-site)
+    (insert (format "Package \"%s\" loaded!" package))
 
 (el-get 'sync 'proof-general)))
 

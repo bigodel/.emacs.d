@@ -2263,7 +2263,7 @@ If the cloning of the repository was successful, add =proof-general= to the
       (load 'proof-site)
       (insert (format "Package \"%s\" loaded!" package))
 
-      (el-get 'sync 'proof-general)))
+  (el-get 'sync 'proof-general)))
 #+END_SRC
 
 Here is the actual configuration for ProofGeneral. First there are some settings
