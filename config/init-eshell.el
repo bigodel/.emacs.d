@@ -15,7 +15,7 @@
 (setq eshell-scroll-to-bottom-on-input 'this)
 (setq eshell-buffer-shorthand t)
 (setq eshell-aliases-file (concat user-emacs-directory "alias"))
-(setq eshell-glob-case-insensitive t)
+(setq eshell-glob-case-insensitive nil)
 (setq eshell-error-if-no-glob t)
 (setq eshell-history-size (* 10 1024))
 (setq eshell-hist-ignoredups t)

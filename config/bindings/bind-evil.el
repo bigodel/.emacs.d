@@ -11,12 +11,8 @@
     (/bindings/define-key evil-normal-state-map "C-S-a" #'evil-numbers/dec-at-pt))
 
   (after "company-autoloads"
-    (/bindings/define-keys evil-insert-state-map
-      ("C-n" #'company-complete)
-      ("TAB" #'company-indent-or-complete-common)))
-
-  (after 'proof-site
-    )
+    (define-key evil-insert-state-map (kbd "TAB")
+      #'company-indent-or-complete-common))
 
   (/bindings/define-keys evil-normal-state-map
     ("SPC" ":noh")

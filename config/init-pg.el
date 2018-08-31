@@ -30,9 +30,8 @@
        (process-connection-type nil)) ; use pipe instead of pty
 
 ;; clone the package (in this case, proof general)
-(if (zerop (funcall #'call-process git nil `(,buf t) 'display
-                    "--no-pager" "clone" "-v" url package))
-    (insert (format "Successfully cloned \"%s\" into %s!" url pkgdir))
+(unless (zerop (funcall #'call-process git nil `(,buf t) 'display
+                        "--no-pager" "clone" "-v" url package))
   (error "Couldn't clone \"%s\" from the Git repositorty: %s" package url))
 
 (add-to-list 'load-path pkgdir)
@@ -43,38 +42,51 @@
 (el-get 'sync 'proof-general)))
 
 (setq proof-strict-read-only t)
-(setq proof-electric-terminator-enable t)
+(setq proof-three-window-mode-policy 'smart)
 (setq proof-indent (symbol-value 'tab-width))
-(setq proof-splash-time 4)
 (setq proof-splash-enable nil)
+(setq proof-script-fly-past-comments t)
 
 (/boot/lazy-major-mode "\\.v$" 'coq-mode)
 
 (require 'proof-site)
 
 (after 'proof-site
-  (require-package 'company-coq)
-  (setq company-coq-disabled-features '(prettify-symbols))
-  (add-hook 'coq-mode-hook #'company-coq-mode)
-
-(after 'evil
-  (evil-ex-define-cmd "pr[ove]" 'proof-goto-point)
-  (evil-define-key 'normal proof-mode-map (kbd "M-n")
-    'proof-assert-next-command-interactive)
-  (evil-define-key 'normal proof-mode-map (kbd "M-p")
-    'proof-undo-last-successful-command)
-  (evil-define-key 'insert proof-mode-map (kbd "M-n")
-    'proof-assert-next-command-interactive)
-  (evil-define-key 'insert proof-mode-map (kbd "M-p")
-    'proof-undo-last-successful-command))
+  (after 'evil
+    (evil-ex-define-cmd "pr[ove]" 'proof-goto-point)
+    (evil-define-key 'normal proof-mode-map (kbd "M-n")
+      'proof-assert-next-command-interactive)
+    (evil-define-key 'normal proof-mode-map (kbd "M-p")
+      'proof-undo-last-successful-command)
+    (evil-define-key 'normal proof-mode-map (kbd "C-n")
+      'pg-next-input)
+    (evil-define-key 'normal proof-mode-map (kbd "C-p")
+      'pg-previous-input)
+    (evil-define-key 'insert proof-mode-map (kbd "M-n")
+      'proof-assert-next-command-interactive)
+    (evil-define-key 'insert proof-mode-map (kbd "M-p")
+      'proof-undo-last-successful-command)
+    (evil-define-key 'insert proof-mode-map (kbd "C-n")
+      'pg-next-input)
+    (evil-define-key 'insert proof-mode-map (kbd "C-p")
+      'pg-previous-input))
 
 (add-hook
-   'proof-mode-hook
-   (lambda ()
-     "Enable `undo-tree-mode' and disable `holes-mode' in Proof
-    General's modes"
-     (undo-tree-mode t)
-     (holes-mode -1))))
+ 'proof-mode-hook
+ (lambda ()
+   "Enable `undo-tree-mode', disable `holes-mode' and enable
+  `flyspell-prog-mode' in Proof General's modes"
+   (flyspell-prog-mode)
+   (undo-tree-mode t)
+   (holes-mode -1)))
+
+(require-package 'company-coq)
+  (setq company-coq-disabled-features '(prettify-symbols smart-subscripts))
+  (add-hook 'coq-mode-hook #'company-coq-mode)
+  (add-hook 'company-coq-mode-hook
+            (lambda ()
+              (setq company-idle-delay 0.5)
+              (setq coq-one-command-per-line nil))))
 
 (el-get 'sync 'proof-general)
 

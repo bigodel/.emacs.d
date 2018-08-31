@@ -939,24 +939,6 @@ more I could say about it.
     (interactive "f")
     (find-file-other-window (concat "/sudo:root@localhost:" file)))
 
-  (defun /util/insert-line-below ()
-    "Insert a line below the cursor without moving point."
-    (interactive)
-    (let ((current-point (point)))
-      (move-end-of-line 1)
-      (open-line 1)
-      (goto-char current-point)))
-
-  (defun /util/insert-line-above ()
-    "Insert a line above the cursor without moving point."
-    (interactive)
-    (let ((current-point (point)))
-      (move-beginning-of-line 1)
-      (newline-and-indent)
-      (indent-according-to-mode)
-      (goto-char current-point)
-      (forward-char)))
-
   (defun /util/tangle-init ()
     (interactive)
     "If the current buffer is init.org' the code-blocks are
@@ -1305,9 +1287,6 @@ First I map =C-S-n= to create a new below where the point is, and
 regarding a bunch of packages and modes.
 
 #+BEGIN_SRC emacs-lisp :tangle config/init-bindings.el
-  (global-set-key (kbd "C-S-n") #'/util/insert-line-below)
-  (global-set-key (kbd "C-S-o") #'/util/insert-line-above)
-
   (global-set-key (kbd "C-x C-/") #'/util/find-file-as-root)
 
   (global-set-key (kbd "M-;") #'comment-line)
@@ -1341,7 +1320,6 @@ default.
     (global-set-key (kbd "C-x C-b") #'helm-mini)
     (global-set-key (kbd "C-x C-f") #'helm-find-files)
     (global-set-key (kbd "C-x r b") #'helm-bookmarks)
-    (define-key evil-normal-state-map (kbd "C-p") #'helm-projectile)
     (global-set-key (kbd "M-x") #'helm-M-x)
     (global-set-key (kbd "M-y") #'helm-show-kill-ring)
     (global-set-key (kbd "M-:") #'helm-eval-expression-with-eldoc)
@@ -1388,6 +1366,7 @@ snippet.
       (define-key magit-todos-section-map (kbd "k") 'evil-previous-line)))
 
     (after 'projectile
+      (define-key projectile-mode-map (kbd "C-c p") #'projectile-command-map)
       (global-set-key (kbd "C-S-p") #'projectile-switch-project))
 
   (after 'evil
@@ -1439,12 +1418,8 @@ Since it is my most used package it makes total sense that is has it's own file.
       (/bindings/define-key evil-normal-state-map "C-S-a" #'evil-numbers/dec-at-pt))
 
     (after "company-autoloads"
-      (/bindings/define-keys evil-insert-state-map
-        ("C-n" #'company-complete)
-        ("TAB" #'company-indent-or-complete-common)))
-
-    (after 'proof-site
-      )
+      (define-key evil-insert-state-map (kbd "TAB")
+        #'company-indent-or-complete-common))
 
     (/bindings/define-keys evil-normal-state-map
       ("SPC" ":noh")
@@ -1756,7 +1731,7 @@ Some variable configuration.
   (setq eshell-scroll-to-bottom-on-input 'this)
   (setq eshell-buffer-shorthand t)
   (setq eshell-aliases-file (concat user-emacs-directory "alias"))
-  (setq eshell-glob-case-insensitive t)
+  (setq eshell-glob-case-insensitive nil)
   (setq eshell-error-if-no-glob t)
   (setq eshell-history-size (* 10 1024))
   (setq eshell-hist-ignoredups t)
@@ -2006,7 +1981,7 @@ configured and installed on the language's or mode's config section.
   (require-package 'company)
   (require 'company)
 
-  (setq company-idle-delay 0.3)
+  (setq company-idle-delay 0.5)
   (setq company-minimum-prefix-length 1)
   (setq company-tooltip-limit 20)
   (setq company-auto-complete 'company-explicit-action-p)
@@ -2274,9 +2249,8 @@ if it fails, throw an error.
 
 #+BEGIN_SRC emacs-lisp :tangle config/init-pg.el
       ;; clone the package (in this case, proof general)
-      (if (zerop (funcall #'call-process git nil `(,buf t) 'display
-                          "--no-pager" "clone" "-v" url package))
-          (insert (format "Successfully cloned \"%s\" into %s!" url pkgdir))
+      (unless (zerop (funcall #'call-process git nil `(,buf t) 'display
+                              "--no-pager" "clone" "-v" url package))
         (error "Couldn't clone \"%s\" from the Git repositorty: %s" package url))
 #+END_SRC
 
@@ -2297,24 +2271,14 @@ and then we load it.
 
 #+BEGIN_SRC emacs-lisp :tangle config/init-pg.el
   (setq proof-strict-read-only t)
-  (setq proof-electric-terminator-enable t)
+  (setq proof-three-window-mode-policy 'smart)
   (setq proof-indent (symbol-value 'tab-width))
-  (setq proof-splash-time 4)
   (setq proof-splash-enable nil)
+  (setq proof-script-fly-past-comments t)
 
   (/boot/lazy-major-mode "\\.v$" 'coq-mode)
 
   (require 'proof-site)
-#+END_SRC
-
-=company-coq= is a wonderful package to work with the Coq language. It adds many
-features and improves many of ProofGeneral's defaults.
-
-#+BEGIN_SRC emacs-lisp :tangle config/init-pg.el
-  (after 'proof-site
-    (require-package 'company-coq)
-    (setq company-coq-disabled-features '(prettify-symbols))
-    (add-hook 'coq-mode-hook #'company-coq-mode)
 #+END_SRC
 
 I also created an ex command for evil (the commands you type when you press =:=)
@@ -2323,16 +2287,25 @@ evaluate or undo the commands, so I remapped it to =M-n= and =M-p= in both
 normal and insert mode.
 
 #+BEGIN_SRC emacs-lisp :tangle config/init-pg.el
+  (after 'proof-site
     (after 'evil
       (evil-ex-define-cmd "pr[ove]" 'proof-goto-point)
       (evil-define-key 'normal proof-mode-map (kbd "M-n")
         'proof-assert-next-command-interactive)
       (evil-define-key 'normal proof-mode-map (kbd "M-p")
         'proof-undo-last-successful-command)
+      (evil-define-key 'normal proof-mode-map (kbd "C-n")
+        'pg-next-input)
+      (evil-define-key 'normal proof-mode-map (kbd "C-p")
+        'pg-previous-input)
       (evil-define-key 'insert proof-mode-map (kbd "M-n")
         'proof-assert-next-command-interactive)
       (evil-define-key 'insert proof-mode-map (kbd "M-p")
-        'proof-undo-last-successful-command))
+        'proof-undo-last-successful-command)
+      (evil-define-key 'insert proof-mode-map (kbd "C-n")
+        'pg-next-input)
+      (evil-define-key 'insert proof-mode-map (kbd "C-p")
+        'pg-previous-input))
 #+END_SRC
 
 ProofGeneral disables =undo-tree-mode= and has it's own =pg-protected-undo=
@@ -2344,13 +2317,28 @@ Also, since I use =yasnippet= I don't need =holes-mode=, so I also disable it.
 The last line sync's ProofGeneral using =el-get=.
 
 #+BEGIN_SRC emacs-lisp :tangle config/init-pg.el
-    (add-hook
-     'proof-mode-hook
-     (lambda ()
-       "Enable `undo-tree-mode' and disable `holes-mode' in Proof
-      General's modes"
-       (undo-tree-mode t)
-       (holes-mode -1))))
+  (add-hook
+   'proof-mode-hook
+   (lambda ()
+     "Enable `undo-tree-mode', disable `holes-mode' and enable
+    `flyspell-prog-mode' in Proof General's modes"
+     (flyspell-prog-mode)
+     (undo-tree-mode t)
+     (holes-mode -1)))
+#+END_SRC
+
+=company-coq= is a wonderful package to work with the Coq language. It adds many
+features and improves many of ProofGeneral's defaults. The last line sync's
+ProofGeneral using =el-get=.
+
+#+BEGIN_SRC emacs-lisp :tangle config/init-pg.el
+    (require-package 'company-coq)
+    (setq company-coq-disabled-features '(prettify-symbols smart-subscripts))
+    (add-hook 'coq-mode-hook #'company-coq-mode)
+    (add-hook 'company-coq-mode-hook
+              (lambda ()
+                (setq company-idle-delay 0.5)
+                (setq coq-one-command-per-line nil))))
 
   (el-get 'sync 'proof-general)
 

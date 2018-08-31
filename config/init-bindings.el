@@ -45,9 +45,6 @@
 
 ;; (define-key minibuffer-local-map (kbd "C-w") 'backward-kill-word)
 
-(global-set-key (kbd "C-S-n") #'/util/insert-line-below)
-(global-set-key (kbd "C-S-o") #'/util/insert-line-above)
-
 (global-set-key (kbd "C-x C-/") #'/util/find-file-as-root)
 
 (global-set-key (kbd "M-;") #'comment-line)
@@ -73,7 +70,6 @@
   (global-set-key (kbd "C-x C-b") #'helm-mini)
   (global-set-key (kbd "C-x C-f") #'helm-find-files)
   (global-set-key (kbd "C-x r b") #'helm-bookmarks)
-  (define-key evil-normal-state-map (kbd "C-p") #'helm-projectile)
   (global-set-key (kbd "M-x") #'helm-M-x)
   (global-set-key (kbd "M-y") #'helm-show-kill-ring)
   (global-set-key (kbd "M-:") #'helm-eval-expression-with-eldoc)
@@ -109,6 +105,7 @@
     (define-key magit-todos-section-map (kbd "k") 'evil-previous-line)))
 
   (after 'projectile
+    (define-key projectile-mode-map (kbd "C-c p") #'projectile-command-map)
     (global-set-key (kbd "C-S-p") #'projectile-switch-project))
 
 (after 'evil

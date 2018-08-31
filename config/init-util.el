@@ -89,24 +89,6 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
   (interactive "f")
   (find-file-other-window (concat "/sudo:root@localhost:" file)))
 
-(defun /util/insert-line-below ()
-  "Insert a line below the cursor without moving point."
-  (interactive)
-  (let ((current-point (point)))
-    (move-end-of-line 1)
-    (open-line 1)
-    (goto-char current-point)))
-
-(defun /util/insert-line-above ()
-  "Insert a line above the cursor without moving point."
-  (interactive)
-  (let ((current-point (point)))
-    (move-beginning-of-line 1)
-    (newline-and-indent)
-    (indent-according-to-mode)
-    (goto-char current-point)
-    (forward-char)))
-
 (defun /util/tangle-init ()
   (interactive)
   "If the current buffer is init.org' the code-blocks are
