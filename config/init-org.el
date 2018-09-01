@@ -2,7 +2,7 @@
   (setq org-directory (concat (getenv "HOME") "/docs/org"))
 
   (unless (file-directory-p org-directory)
-    (unless (/core/create-non-existent-directory org-directory)
+    (unless (/boot/create-non-existent-directory org-directory)
     (let ((default-org (concat (getenv "HOME") "/Documents/Org")))
       (if (y-or-n-p
        (format "Failed to create `%s', use the default directory for org files [%s]?"
