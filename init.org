@@ -255,6 +255,12 @@ my Emacs setup, like completion engine, which could either be =helm=, =ido= or
 Here is where we set the default repositories from where Emacs should fetch
 packages from.
 
+This is where we load all of our configuration files stored in
+=~/.emacs.d/config= and any custom configuration in the file
+=~/.emacs.d/custom.el=. The first to be loaded is the core part, followed by the
+=custom.el= file. Then there is a common lisp loop to recursively load all of
+the elisp files in =~/.emacs.d/config=.
+
 #+BEGIN_SRC emacs-lisp :tangle init.el
     (setq package-archives '(("melpa" . "http://melpa.org/packages/")
                              ("org" . "http://orgmode.org/elpa/")
@@ -262,12 +268,6 @@ packages from.
     (setq package-enable-at-startup nil)
     (package-initialize)
 #+END_SRC
-
-This is where we load all of our configuration files stored in
-=~/.emacs.d/core=, =~/.emacs.d/config= and any custom configuration in the file
-=~/.emacs.d/custom.el=. The first to be loaded is the core part, followed by the
-=custom.el= file. Then there is a common lisp loop to recursively load all of
-the elisp files in =~/.emacs.d/config=.
 
 Note that if the variable =user-emacs-directory= is changed to, let's say,
 =~/.myemacs=, this configuration file will look for elisp files in =~/.myemacs/=
@@ -443,6 +443,24 @@ This macro is to lazily install a major mode like described in [[#lazy-major-mod
   (provide 'init-boot)
 #+END_SRC
 
+This function is to create a ask to create a directory if trying to access a
+non-existing directory.
+
+#+BEGIN_SRC emacs-lisp :tangle config/init-boot.el
+  (defun /boot/create-non-existent-directory (&optional dir)
+    "When trying to access non-existing directories, ask to create them.
+  If DIR is provided, ask to create DIR."
+    (let ((parent-directory (or (bound-and-true-p dir)
+                                (file-name-directory buffer-file-name))))
+      (when (and (not (file-exists-p parent-directory))
+                 (y-or-n-p (format "Directory `%s' does not exist! Create it?"
+                                   parent-directory)))
+        (make-directory parent-directory t))))
+
+  (add-to-list 'find-file-not-found-functions
+               #'/boot/create-non-existent-directory)
+#+END_SRC
+
 ** Core
 :PROPERTIES:
 :CUSTOM_ID: cfg-core
@@ -470,24 +488,6 @@ initializes the server if it is not already running.
   (require 'server)
   (unless (server-running-p)
     (server-start))
-#+END_SRC
-
-This function is to create a ask to create a directory if trying to access a
-non-existing directory.
-
-#+BEGIN_SRC emacs-lisp :tangle config/init-core.el
-  (defun /core/create-non-existent-directory (&optional dir)
-    "When trying to access non-exising directories, ask to create them.
-  If DIR is provided, ask to create DIR."
-    (let ((parent-directory (or (bound-and-true-p dir)
-                                (file-name-directory buffer-file-name))))
-      (when (and (not (file-exists-p parent-directory))
-                 (y-or-n-p (format "Directory `%s' does not exist! Create it?"
-                                   parent-directory)))
-        (make-directory parent-directory t))))
-
-  (add-to-list 'find-file-not-found-functions
-               #'/core/create-non-existent-directory)
 #+END_SRC
 
 Some personal information.

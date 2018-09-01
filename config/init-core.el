@@ -10,19 +10,6 @@
 (unless (server-running-p)
   (server-start))
 
-(defun /core/create-non-existent-directory (&optional dir)
-  "When trying to access non-exising directories, ask to create them.
-If DIR is provided, ask to create DIR."
-  (let ((parent-directory (or (bound-and-true-p dir)
-                              (file-name-directory buffer-file-name))))
-    (when (and (not (file-exists-p parent-directory))
-               (y-or-n-p (format "Directory `%s' does not exist! Create it?"
-                                 parent-directory)))
-      (make-directory parent-directory t))))
-
-(add-to-list 'find-file-not-found-functions
-             #'/core/create-non-existent-directory)
-
 (setq user-full-name "João Pedro de Amorim Paula")
 (setq user-mail-address "jpedrodeamorim@gmail.com")
 
