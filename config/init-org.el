@@ -1,5 +1,15 @@
 (after 'org
-  (setq org-directory "~/docs/org")
+  (setq org-directory (concat (getenv "HOME") "/docs/org"))
+
+  (unless (file-directory-p org-directory)
+    (unless (/core/create-non-existent-directory org-directory)
+    (let ((default-org (concat (getenv "HOME") "/Documents/Org")))
+      (if (y-or-n-p
+       (format "Failed to create `%s', use the default directory for org files [%s]?"
+               org-directory default-org))
+          (progn (make-directory (concat (getenv "HOME") "/Documents/Org") t)
+                 (setq org-directory (concat (getenv "HOME") "/Documents")))
+        (error (concat "Couldn't load the configuration for org-mode. Try again or remove the file init-org.el from the config folder"))))))
 
   (defvar dotemacs-org/journal-file (concat org-directory "/journal.org")
     "The path to the file where you want to make journal entries.")

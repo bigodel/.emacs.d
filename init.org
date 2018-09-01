@@ -476,16 +476,18 @@ This function is to create a ask to create a directory if trying to access a
 non-existing directory.
 
 #+BEGIN_SRC emacs-lisp :tangle config/init-core.el
-  (defun /core/create-non-existent-directory ()
-    "When trying to access non-exising directories, ask to create them."
-    (let ((parent-directory (file-name-directory buffer-file-name)))
+  (defun /core/create-non-existent-directory (&optional dir)
+    "When trying to access non-exising directories, ask to create them.
+  If DIR is provided, ask to create DIR."
+    (let ((parent-directory (or (bound-and-true-p dir)
+                                (file-name-directory buffer-file-name))))
       (when (and (not (file-exists-p parent-directory))
-               (y-or-n-p
-                (format "Directory `%s' does not exist! Create it?"
-                        parent-directory)))
+                 (y-or-n-p (format "Directory `%s' does not exist! Create it?"
+                                   parent-directory)))
         (make-directory parent-directory t))))
 
-  (add-to-list 'find-file-not-found-functions #'/core/create-non-existent-directory)
+  (add-to-list 'find-file-not-found-functions
+               #'/core/create-non-existent-directory)
 #+END_SRC
 
 Some personal information.
@@ -2107,7 +2109,17 @@ is not already created.
 
 #+BEGIN_SRC emacs-lisp :tangle config/init-org.el
   (after 'org
-    (setq org-directory "~/docs/org")
+    (setq org-directory (concat (getenv "HOME") "/docs/org"))
+
+    (unless (file-directory-p org-directory)
+      (unless (/core/create-non-existent-directory org-directory)
+      (let ((default-org (concat (getenv "HOME") "/Documents/Org")))
+        (if (y-or-n-p
+         (format "Failed to create `%s', use the default directory for org files [%s]?"
+                 org-directory default-org))
+            (progn (make-directory (concat (getenv "HOME") "/Documents/Org") t)
+                   (setq org-directory (concat (getenv "HOME") "/Documents")))
+          (error (concat "Couldn't load the configuration for org-mode. Try again or remove the file init-org.el from the config folder"))))))
 
     (defvar dotemacs-org/journal-file (concat org-directory "/journal.org")
       "The path to the file where you want to make journal entries.")
@@ -2248,6 +2260,10 @@ This next part is to clone ProofGeneral into the specified path =pkgdir= above.
 if it fails, throw an error.
 
 #+BEGIN_SRC emacs-lisp :tangle config/init-pg.el
+      ;; create directory if it doesn't exist
+      (unless (file-directory-p el-get-root)
+        (make-directory el-get-root))
+
       ;; clone the package (in this case, proof general)
       (unless (zerop (funcall #'call-process git nil `(,buf t) 'display
                               "--no-pager" "clone" "-v" url package))
@@ -2270,7 +2286,7 @@ Here is the actual configuration for ProofGeneral. First there are some settings
 and then we load it.
 
 #+BEGIN_SRC emacs-lisp :tangle config/init-pg.el
-  (setq proof-strict-read-only t)
+  (setq proof-strict-read-only 'retract)
   (setq proof-three-window-mode-policy 'smart)
   (setq proof-indent (symbol-value 'tab-width))
   (setq proof-splash-enable nil)

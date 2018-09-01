@@ -29,6 +29,10 @@
        (default-directory el-get-root)
        (process-connection-type nil)) ; use pipe instead of pty
 
+;; create directory if it doesn't exist
+(unless (file-directory-p el-get-root)
+  (make-directory el-get-root))
+
 ;; clone the package (in this case, proof general)
 (unless (zerop (funcall #'call-process git nil `(,buf t) 'display
                         "--no-pager" "clone" "-v" url package))
@@ -41,7 +45,7 @@
 
 (el-get 'sync 'proof-general)))
 
-(setq proof-strict-read-only t)
+(setq proof-strict-read-only 'retract)
 (setq proof-three-window-mode-policy 'smart)
 (setq proof-indent (symbol-value 'tab-width))
 (setq proof-splash-enable nil)
