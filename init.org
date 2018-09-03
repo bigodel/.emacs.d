@@ -11,6 +11,7 @@
 * TODO look into emms
 * TODO allow the removal of a module by simply removing its file
 
+
 * Introduction
 :PROPERTIES:
 :CUSTOM_ID: intro
@@ -211,6 +212,7 @@ The next code block sets the garbage collector threshold and the =core= and
 all of the bars are disabled if they're enabled.
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
+  (require 'org)
   (setq debug-on-error nil)
 
   (eval-when-compile (require 'cl))
@@ -277,7 +279,6 @@ and =~/.myemacsc/config/= instead of the above mentioned paths with
 #+BEGIN_SRC emacs-lisp :tangle init.el
     (load (concat config-directory "init-boot"))
 
-    (require 'org)
     (org-babel-tangle-file (concat user-emacs-directory "init.el"))
 
     (setq custom-file (concat user-emacs-directory "custom.el"))

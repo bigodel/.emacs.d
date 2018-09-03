@@ -1,3 +1,4 @@
+(require 'org)
 (setq debug-on-error nil)
 
 (eval-when-compile (require 'cl))
@@ -40,7 +41,6 @@
 
 (load (concat config-directory "init-boot"))
 
-(require 'org)
 (org-babel-tangle-file (concat user-emacs-directory "init.el"))
 
 (setq custom-file (concat user-emacs-directory "custom.el"))
