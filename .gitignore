@@ -2,6 +2,7 @@
 /*/
 !.gitignore
 !init.org
+!init.el
 !README.org
 !LICENSE
 !/snippets/
