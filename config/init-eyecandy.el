@@ -35,6 +35,8 @@
                     :height 1.0
                     :background "gray20"
                     :foreground (face-foreground 'default))
+(set-face-attribute 'which-func nil
+                    :foreground (face-foreground 'default))
 
 ;; default font
 (add-to-list 'default-frame-alist '(font . "DejaVu Sans Mono-14"))

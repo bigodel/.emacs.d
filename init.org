@@ -9,7 +9,7 @@
 
 * TODO look for dpi var for docview
 * TODO look into emms
-
+* TODO allow the removal of a module by simply removing its file
 
 * Introduction
 :PROPERTIES:
@@ -1496,6 +1496,8 @@ Color theme config and font config.
   (set-face-attribute 'mode-line-buffer-id nil
                       :height 1.0
                       :background "gray20"
+                      :foreground (face-foreground 'default))
+  (set-face-attribute 'which-func nil
                       :foreground (face-foreground 'default))
 
   ;; default font
