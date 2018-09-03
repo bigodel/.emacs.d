@@ -1,6 +1,7 @@
-alias rd rmdir $*
-alias l ls -lh $*
-alias la ls -lha $*
-alias md mkdir $*
-alias e exit
+alias q exit
 alias .. cd ..
+alias e exit
+alias md mkdir $*
+alias la ls -lha $*
+alias l ls -lh $*
+alias rd rmdir $*

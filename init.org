@@ -7,7 +7,7 @@
 
 * TODO review the bindings location
 
-* TODO configure pdf-tools and look for dpi var for docview
+* TODO look for dpi var for docview
 * TODO look into emms
 
 
@@ -237,19 +237,19 @@ my Emacs setup, like completion engine, which could either be =helm=, =ido= or
 =ivy=.
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
-  (defvar dotemacs-cache-directory (concat user-emacs-directory ".cache/")
-    "The storage location for various persistent files.")
+    (defvar dotemacs-cache-directory (concat user-emacs-directory ".cache/")
+      "The storage location for various persistent files.")
 
-  (when (and (not (file-directory-p dotemacs-cache-directory))
-             (y-or-n-p
-              (format "Directory `%s' does not exist! Create it?"
-                      dotemacs-cache-directory)))
-    (make-directory dotemacs-cache-directory t))
+    (when (and (not (file-directory-p dotemacs-cache-directory))
+               (y-or-n-p
+                (format "Directory `%s' does not exist! Create it?"
+                        dotemacs-cache-directory)))
+      (make-directory dotemacs-cache-directory t))
 
-  (defvar dotemacs-globally-ignored-directories
-    '("elpa" ".cache" "target" "dist" "node_modules" ".git" ".hg" ".svn" ".idea")
-    "A set of default directories to ignore for anything that
-    involves searching.")
+    (defvar dotemacs-globally-ignored-directories
+      '("elpa" ".cache" "target" "dist" "node_modules" ".git" ".hg" ".svn" ".idea")
+      "A set of default directories to ignore for anything that
+      involves searching.")
 #+END_SRC
 
 Here is where we set the default repositories from where Emacs should fetch
@@ -275,21 +275,26 @@ and =~/.myemacsc/config/= instead of the above mentioned paths with
 =~/.emacs.d/=.
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
-  (load (concat config-directory "init-boot"))
+    (load (concat config-directory "init-boot"))
 
-  (setq custom-file (concat user-emacs-directory "custom.el"))
-  (when (file-exists-p custom-file)
-    (load custom-file))
+    (require 'org)
+    (org-babel-tangle-file (concat user-emacs-directory "init.el"))
 
-  (cl-loop for file in (reverse (directory-files-recursively
-                                 config-directory "\\.el$"))
-           do (condition-case ex
-                  (load (file-name-sans-extension file))
-                ('error (with-current-buffer "*scratch*"
-                          (insert (format "[INIT ERROR]\n%s\n%s\n\n" file ex)))))
-           (load (file-name-sans-extension file))))
+    (setq custom-file (concat user-emacs-directory "custom.el"))
+    (when (file-exists-p custom-file)
+      (load custom-file))
 
-  (provide 'init.el) ;;; init.el ends here
+    (cl-loop for file in (reverse (directory-files-recursively
+                                   config-directory "\\.el$"))
+             do (condition-case ex
+                    (load (file-name-sans-extension file))
+                  ('error (with-current-buffer "*scratch*"
+                            (insert (format "[INIT ERROR]\n%s\n%s\n\n" file ex)))))
+             (load (file-name-sans-extension file))))
+
+    (byte-compile-file (concat user-emacs-directory "init.el"))
+
+    (provide 'init.el) ;;; init.el ends here
 #+END_SRC
 
 
@@ -1094,11 +1099,10 @@ packages to help integrate =evil= into the most modes possible.
 I also use [[https://github.com/emacs-evil/evil-collection][=evil-collection=]], a set of keybindings for =evil-mode=.
 
 #+BEGIN_SRC emacs-lisp :tangle config/init-evil.el
-  (after 'evil
-    (require-package 'evil-collection)
-    (setq evil-collection-setup-minibuffer t)
-    (setq evil-collection-company-use-tng t)
-    (evil-collection-init))
+  (require-package 'evil-collection)
+  (setq evil-collection-setup-minibuffer t)
+  (setq evil-collection-company-use-tng t)
+  (evil-collection-init)
 
   (defadvice evil-ex-search-next (after dotemacs activate)
     (recenter))
@@ -1486,12 +1490,13 @@ Color theme config and font config.
   ;; change mode-line's font size and foreground and background
   (set-face-attribute 'mode-line nil
                       :height 1.0
-                      :background (face-foreground 'default)
-                      :foreground (face-background 'default))
+                      :box nil
+                      :background "gray20"
+                      :foreground (face-foreground 'default))
   (set-face-attribute 'mode-line-buffer-id nil
                       :height 1.0
-                      :background (face-foreground 'default)
-                      :foreground (face-background 'default))
+                      :background "gray20"
+                      :foreground (face-foreground 'default))
 
   ;; default font
   (add-to-list 'default-frame-alist '(font . "DejaVu Sans Mono-14"))
@@ -1632,6 +1637,13 @@ them up on your favorite search engine.
 :END:
 
 This section is some miscellaneous stuff.
+
+This package restarts Emacs in-place.
+
+#+BEGIN_SRC emacs-lisp :tangle config/init-misc.el
+  (require-package 'restart-emacs)
+  (require 'restart-emacs)
+#+END_SRC
 
 A package to make dired more beautiful.
 

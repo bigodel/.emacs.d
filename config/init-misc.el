@@ -1,3 +1,6 @@
+(require-package 'restart-emacs)
+(require 'restart-emacs)
+
 (after 'dired
   (require-package 'dired-k)
   (setq dired-k-style 'git)

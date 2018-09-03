@@ -100,11 +100,10 @@
 (require-package 'evil-numbers)
 (require 'evil-numbers)
 
-(after 'evil
-  (require-package 'evil-collection)
-  (setq evil-collection-setup-minibuffer t)
-  (setq evil-collection-company-use-tng t)
-  (evil-collection-init))
+(require-package 'evil-collection)
+(setq evil-collection-setup-minibuffer t)
+(setq evil-collection-company-use-tng t)
+(evil-collection-init)
 
 (defadvice evil-ex-search-next (after dotemacs activate)
   (recenter))

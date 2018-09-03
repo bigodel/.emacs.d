@@ -28,12 +28,13 @@
 ;; change mode-line's font size and foreground and background
 (set-face-attribute 'mode-line nil
                     :height 1.0
-                    :background (face-foreground 'default)
-                    :foreground (face-background 'default))
+                    :box nil
+                    :background "gray20"
+                    :foreground (face-foreground 'default))
 (set-face-attribute 'mode-line-buffer-id nil
                     :height 1.0
-                    :background (face-foreground 'default)
-                    :foreground (face-background 'default))
+                    :background "gray20"
+                    :foreground (face-foreground 'default))
 
 ;; default font
 (add-to-list 'default-frame-alist '(font . "DejaVu Sans Mono-14"))
