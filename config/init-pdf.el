@@ -1,3 +1,4 @@
+
 (/boot/delayed-init
  (require-package 'pdf-tools)
  (require 'pdf-tools)

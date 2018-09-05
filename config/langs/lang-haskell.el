@@ -1,3 +1,4 @@
+
 (require-package 'haskell-mode)
 
 (/boot/lazy-major-mode "\\.ghci\\'" 'haskell-mode)

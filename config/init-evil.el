@@ -1,3 +1,4 @@
+
 (defvar dotemacs-evil/emacs-state-hooks
   '(org-log-buffer-setup-hook
     org-capture-mode-hook)
@@ -78,13 +79,13 @@
   (require 'evil-magit)
   (evil-magit-init))
 
-(after 'org
-  (require-package 'evil-org)
-  (require 'evil-org)
-  (add-hook 'org-mode-hook #'evil-org-mode)
-  (add-hook 'evil-org-mode-hook
-            (lambda ()
-              (evil-org-set-key-theme))))
+;; (after 'org
+;;   (require-package 'evil-org)
+;;   (require 'evil-org)
+;;   (add-hook 'org-mode-hook #'evil-org-mode)
+;;   (add-hook 'evil-org-mode-hook
+;;             (lambda ()
+;;               (evil-org-set-key-theme))))
 
 (after 'vimish-fold
   (require-package 'evil-vimish-fold)

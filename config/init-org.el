@@ -1,3 +1,4 @@
+
 (after 'org
   (setq org-directory (concat (getenv "HOME") "/docs/org"))
 

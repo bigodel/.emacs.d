@@ -1,3 +1,4 @@
+
 (setq vc-make-backup-files t)
 
 (when (executable-find "git")

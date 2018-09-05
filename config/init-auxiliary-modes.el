@@ -1,3 +1,4 @@
+
 (/boot/lazy-major-mode "\\.\\(md\\|markdown\\)$" 'markdown-mode)
 (/boot/lazy-major-mode "\\.toml$" 'toml-mode)
 (/boot/lazy-major-mode "\\.yaml$" 'yaml-mode)
