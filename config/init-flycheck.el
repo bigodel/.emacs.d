@@ -1,11 +1,14 @@
 
 (require-package 'flycheck)
-(require 'flycheck)
 
 (setq flycheck-standard-error-navigation t)
+(setq flycheck-check-syntax-automatically '(save idle-change mode-enabled))
+(setq flycheck-idle-change-delay 0.8)
+(setq flycheck-display-errors-function
+      #'flycheck-display-error-messages-unless-error-list)
 
 (after 'web-mode
-       (flycheck-add-mode 'javascript-eslint 'web-mode))
+  (flycheck-add-mode 'javascript-eslint 'web-mode))
 
 (add-hook 'after-init-hook #'global-flycheck-mode)
 

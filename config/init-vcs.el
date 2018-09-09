@@ -8,7 +8,6 @@
               (next-line)))
 
   (require-package 'magit)
-  (require 'magit)
 
   (setq magit-section-show-child-couno t)
   (setq magit-diff-arguments '("--histogram"))

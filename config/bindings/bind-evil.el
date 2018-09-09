@@ -7,10 +7,6 @@
   (key-chord-define evil-insert-state-map "jk" 'evil-normal-state)
   (key-chord-define evil-insert-state-map "kj" 'evil-normal-state)
 
-  (after "evil-numbers-autoloads"
-    (/bindings/define-key evil-normal-state-map "C-a" #'evil-numbers/inc-at-pt)
-    (/bindings/define-key evil-normal-state-map "C-S-a" #'evil-numbers/dec-at-pt))
-
   (after "company-autoloads"
     (define-key evil-insert-state-map (kbd "TAB")
       #'company-indent-or-complete-common))

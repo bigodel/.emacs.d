@@ -128,7 +128,7 @@
   ("C-x C-k" #'kill-this-buffer)
   ("C-x p" #'proced))
 
-(global-set-key (kbd "<M-f7>") (bind (profiler-start 'cpu+mem)))
 (global-set-key (kbd "<M-f6>") (bind (profiler-report) (profiler-stop)))
+(global-set-key (kbd "<M-f7>") (bind (profiler-start 'cpu+mem)))
 
 (provide 'init-bindings)

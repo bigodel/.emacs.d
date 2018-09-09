@@ -1091,9 +1091,6 @@ packages to help integrate =evil= into the most modes possible.
     (evil-define-key 'normal evil-matchit-mode-map
       "%" 'evilmi-jump-items))
   (global-evil-matchit-mode t)
-
-  (require-package 'evil-numbers)
-  (require 'evil-numbers)
 #+END_SRC
 
 I also use [[https://github.com/emacs-evil/evil-collection][=evil-collection=]], a set of keybindings for =evil-mode=.
@@ -1162,20 +1159,14 @@ parts of Emacs that the default package doesn't cover. Here are some of those.
 
 #+BEGIN_SRC emacs-lisp :tangle config/init-helm.el
   (after 'helm
-    (require-package 'helm-descbinds)
-
-    (require-package 'helm-flx)
-    (helm-flx-mode t)
-
-    (require-package 'helm-dash)
-    (setq helm-dash-browser-func 'eww)
-
     (require-package 'helm-ag)
     (setq helm-ag-fuzzy-match t)
     (setq helm-ag-use-agignore t)
     (setq helm-ag-ignore-patterns dotemacs-globally-ignored-directories)
     (after 'helm-ag
-      (cond ((executable-find "ag")
+      (cond ((executable-find "rg")
+             (setq helm-ag-base-command "rg -e"))
+            ((executable-find "ag")
              t)
             ((executable-find "pt")
              (setq helm-ag-base-command "pt -e --nogroup --nocolor"))
@@ -1394,8 +1385,8 @@ snippet.
     ("C-x C-k" #'kill-this-buffer)
     ("C-x p" #'proced))
 
-  (global-set-key (kbd "<M-f7>") (bind (profiler-start 'cpu+mem)))
   (global-set-key (kbd "<M-f6>") (bind (profiler-report) (profiler-stop)))
+  (global-set-key (kbd "<M-f7>") (bind (profiler-start 'cpu+mem)))
 
   (provide 'init-bindings)
 #+END_SRC
@@ -1418,10 +1409,6 @@ Since it is my most used package it makes total sense that is has it's own file.
     (key-chord-mode 1)
     (key-chord-define evil-insert-state-map "jk" 'evil-normal-state)
     (key-chord-define evil-insert-state-map "kj" 'evil-normal-state)
-
-    (after "evil-numbers-autoloads"
-      (/bindings/define-key evil-normal-state-map "C-a" #'evil-numbers/inc-at-pt)
-      (/bindings/define-key evil-normal-state-map "C-S-a" #'evil-numbers/dec-at-pt))
 
     (after "company-autoloads"
       (define-key evil-insert-state-map (kbd "TAB")
@@ -1701,6 +1688,8 @@ package to indent, you want it or not, your code.
   (require 'aggressive-indent)
   (add-hook 'emacs-lisp-mode-hook #'aggressive-indent-mode)
   (add-hook 'lisp-mode-hook #'aggressive-indent-mode)
+  (add-hook 'prog-mode-hook #'aggressive-indent-mode)
+  (add-hook 'TeX-mode-hook #'aggressive-indent-mode)
 #+END_SRC
 
 =popwin= is used to better manage pop-up windows. =restart-emacs= makes it
@@ -1879,7 +1868,6 @@ packages and a reason a lot of people stick to it (of course, if they use git).
                 (next-line)))
 
     (require-package 'magit)
-    (require 'magit)
 
     (setq magit-section-show-child-couno t)
     (setq magit-diff-arguments '("--histogram"))
@@ -1922,12 +1910,15 @@ have it always on.
 
 #+BEGIN_SRC emacs-lisp :tangle config/init-flycheck.el
   (require-package 'flycheck)
-  (require 'flycheck)
 
   (setq flycheck-standard-error-navigation t)
+  (setq flycheck-check-syntax-automatically '(save idle-change mode-enabled))
+  (setq flycheck-idle-change-delay 0.8)
+  (setq flycheck-display-errors-function
+        #'flycheck-display-error-messages-unless-error-list)
 
   (after 'web-mode
-         (flycheck-add-mode 'javascript-eslint 'web-mode))
+    (flycheck-add-mode 'javascript-eslint 'web-mode))
 
   (add-hook 'after-init-hook #'global-flycheck-mode)
 
@@ -1960,8 +1951,20 @@ Flyspell highlights incorrect words as soon as they are completed or as soon as
 the [[https://www.emacswiki.org/emacs/TextCursor][TextCursor]] hits a new word.
 
 #+BEGIN_SRC emacs-lisp :tangle config/init-flyspell.el
+  (setq flyspell-issue-message-flag nil)
   (add-hook 'prog-mode-hook #'flyspell-prog-mode)
   (add-hook 'text-mode-hook #'turn-on-flyspell)
+
+  (defun /flyspell/switch-dictionary()
+    (interactive)
+    (let* ((dic ispell-current-dictionary)
+           (change (if (string= dic "brazilian")
+                       "english"
+                     "brazilian")))
+      (ispell-change-dictionary change)
+      (message "Dictionary switched from %s to %s" dic change)))
+
+  (global-set-key (kbd "M-<f8>") #'/flyspell/switch-dictionary)
 #+END_SRC
 
 ** Auxiliary modes
@@ -1997,7 +2000,7 @@ configured and installed on the language's or mode's config section.
   (require-package 'company)
   (require 'company)
 
-  (setq company-idle-delay 0.5)
+  (setq company-idle-delay nil)
   (setq company-minimum-prefix-length 1)
   (setq company-tooltip-limit 20)
   (setq company-auto-complete 'company-explicit-action-p)
@@ -2150,7 +2153,7 @@ is not already created.
 
     (setq org-startup-indented t)
     (setq org-indent-indentation-per-level 2)
-    (setq org-src-fontify-natively nil)
+    (setq org-src-fontify-natively t)
 #+END_SRC
 
 Org is also a great way o handling TODO's, here we set some configuration and
@@ -2300,11 +2303,16 @@ Here is the actual configuration for ProofGeneral. First there are some settings
 and then we load it.
 
 #+BEGIN_SRC emacs-lisp :tangle config/init-pg.el
+  ;; proof general settings
   (setq proof-strict-read-only 'retract)
+  (setq proof-electric-terminator-enable t)
   (setq proof-three-window-mode-policy 'smart)
   (setq proof-indent (symbol-value 'tab-width))
   (setq proof-splash-enable nil)
   (setq proof-script-fly-past-comments t)
+
+  ;; coq settings
+  (setq coq-compile-before-require t)
 
   (/boot/lazy-major-mode "\\.v$" 'coq-mode)
 
@@ -2347,14 +2355,17 @@ Also, since I use =yasnippet= I don't need =holes-mode=, so I also disable it.
 The last line sync's ProofGeneral using =el-get=.
 
 #+BEGIN_SRC emacs-lisp :tangle config/init-pg.el
-  (add-hook
-   'proof-mode-hook
-   (lambda ()
-     "Enable `undo-tree-mode', disable `holes-mode' and enable
-    `flyspell-prog-mode' in Proof General's modes"
-     (flyspell-prog-mode)
-     (undo-tree-mode t)
-     (holes-mode -1)))
+    (add-hook
+     'proof-mode-hook
+     (lambda ()
+       "Enable `undo-tree-mode', `aggressive-indent-mode',
+    `hl-todo-mode' and `flyspell-prog-mode' and disable
+    `holes-mode'."
+       (hl-todo-mode t)
+       (aggressive-indent-mode t)
+       (flyspell-prog-mode)
+       (undo-tree-mode t)
+       (holes-mode -1)))
 #+END_SRC
 
 =company-coq= is a wonderful package to work with the Coq language. It adds many
@@ -2364,10 +2375,13 @@ ProofGeneral using =el-get=.
 #+BEGIN_SRC emacs-lisp :tangle config/init-pg.el
     (require-package 'company-coq)
     (setq company-coq-disabled-features '(prettify-symbols smart-subscripts))
+
+    (add-to-list 'company-backends 'company-coq)
+
     (add-hook 'coq-mode-hook #'company-coq-mode)
     (add-hook 'company-coq-mode-hook
               (lambda ()
-                (setq company-idle-delay 0.5)
+                (setq-local company-idle-delay nil)
                 (setq coq-one-command-per-line nil))))
 
   (el-get 'sync 'proof-general)
@@ -2386,24 +2400,31 @@ images, so that Emacs can display it in a better quality, so make sure to read
 its README in the [[target][link above]].
 
 #+BEGIN_SRC emacs-lisp :tangle config/init-pdf.el
-  (/boot/delayed-init
-   (require-package 'pdf-tools)
-   (require 'pdf-tools)
-
-   (unless (pdf-info-running-p)
-     (pdf-tools-install)))
-
-  ;; add this in the LaTeX part later to revert the pdf after TeX finished
-  ;; compiling
-  ;; (add-hook 'TeX-after-compilation-finished-functions
-  ;;           #'TeX-revert-document-buffer)
+  (require-package 'pdf-tools)
 #+END_SRC
+
+** TeX
+
+I use TeX and LaTeX for writing prose, documents and etc. Emacs has an amazing
+environment for working with both TeX and LaTeX. Here are its configurations.
+
+#+BEGIN_SRC emacs-lisp :tangle config/init-tex.el
+  (setq TeX-brace-indent-level 4)
+  (setq LaTeX-indent-level 4)
+
+  (require-package 'auctex)
+  (require-package 'company-auctex)
+
+  (company-auctex-init)
+
+#+END_SRC
+
 ** COMMENT Emms
 
 This is still wip.
 
 #+BEGIN_SRC emacs-lisp :tangle config/init-emms.el
-  ;; (add-to-list 
+  ;; (add-to-list
   ;;  'load-path (concat user-emacs-directory "el-get/emms"))
   ;; (require 'emms-setup)
   ;; (emms-standard)

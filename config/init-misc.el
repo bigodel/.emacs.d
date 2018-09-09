@@ -35,6 +35,8 @@
 (require 'aggressive-indent)
 (add-hook 'emacs-lisp-mode-hook #'aggressive-indent-mode)
 (add-hook 'lisp-mode-hook #'aggressive-indent-mode)
+(add-hook 'prog-mode-hook #'aggressive-indent-mode)
+(add-hook 'TeX-mode-hook #'aggressive-indent-mode)
 
 (require-package 'popwin)
 (require 'popwin)

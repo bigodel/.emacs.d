@@ -20,20 +20,14 @@
   (advice-add 'helm-make-source :around '/helm/make-source))
 
 (after 'helm
-  (require-package 'helm-descbinds)
-
-  (require-package 'helm-flx)
-  (helm-flx-mode t)
-
-  (require-package 'helm-dash)
-  (setq helm-dash-browser-func 'eww)
-
   (require-package 'helm-ag)
   (setq helm-ag-fuzzy-match t)
   (setq helm-ag-use-agignore t)
   (setq helm-ag-ignore-patterns dotemacs-globally-ignored-directories)
   (after 'helm-ag
-    (cond ((executable-find "ag")
+    (cond ((executable-find "rg")
+           (setq helm-ag-base-command "rg -e"))
+          ((executable-find "ag")
            t)
           ((executable-find "pt")
            (setq helm-ag-base-command "pt -e --nogroup --nocolor"))

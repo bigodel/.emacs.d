@@ -46,11 +46,16 @@
 
 (el-get 'sync 'proof-general)))
 
+;; proof general settings
 (setq proof-strict-read-only 'retract)
+(setq proof-electric-terminator-enable t)
 (setq proof-three-window-mode-policy 'smart)
 (setq proof-indent (symbol-value 'tab-width))
 (setq proof-splash-enable nil)
 (setq proof-script-fly-past-comments t)
+
+;; coq settings
+(setq coq-compile-before-require t)
 
 (/boot/lazy-major-mode "\\.v$" 'coq-mode)
 
@@ -79,18 +84,24 @@
 (add-hook
  'proof-mode-hook
  (lambda ()
-   "Enable `undo-tree-mode', disable `holes-mode' and enable
-  `flyspell-prog-mode' in Proof General's modes"
+   "Enable `undo-tree-mode', `aggressive-indent-mode',
+`hl-todo-mode' and `flyspell-prog-mode' and disable
+`holes-mode'."
+   (hl-todo-mode t)
+   (aggressive-indent-mode t)
    (flyspell-prog-mode)
    (undo-tree-mode t)
    (holes-mode -1)))
 
 (require-package 'company-coq)
   (setq company-coq-disabled-features '(prettify-symbols smart-subscripts))
+
+  (add-to-list 'company-backends 'company-coq)
+
   (add-hook 'coq-mode-hook #'company-coq-mode)
   (add-hook 'company-coq-mode-hook
             (lambda ()
-              (setq company-idle-delay 0.5)
+              (setq-local company-idle-delay nil)
               (setq coq-one-command-per-line nil))))
 
 (el-get 'sync 'proof-general)

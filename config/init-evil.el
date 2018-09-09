@@ -98,9 +98,6 @@
     "%" 'evilmi-jump-items))
 (global-evil-matchit-mode t)
 
-(require-package 'evil-numbers)
-(require 'evil-numbers)
-
 (require-package 'evil-collection)
 (setq evil-collection-setup-minibuffer t)
 (setq evil-collection-company-use-tng t)
