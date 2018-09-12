@@ -113,8 +113,6 @@ necessary, and activates it."
     nil
     (lambda () ,@body)))
 
-(provide 'init-boot)
-
 (defun /boot/create-non-existent-directory (&optional dir)
   "When trying to access non-existing directories, ask to create them.
 If DIR is provided, ask to create DIR."
@@ -127,3 +125,5 @@ If DIR is provided, ask to create DIR."
 
 (add-to-list 'find-file-not-found-functions
              #'/boot/create-non-existent-directory)
+
+(provide 'init-boot)

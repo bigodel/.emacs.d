@@ -1,6 +1,6 @@
 
 (require-package 'company)
-(require 'company)
+;; (require 'company)
 
 (setq company-idle-delay nil)
 (setq company-minimum-prefix-length 1)

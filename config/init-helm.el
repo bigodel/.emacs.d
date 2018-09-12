@@ -1,6 +1,5 @@
 
 (require-package 'helm)
-(require 'helm)
 
 (setq helm-bookmark-show-location t)
 (setq helm-buffer-max-length 40)
@@ -25,9 +24,7 @@
   (setq helm-ag-use-agignore t)
   (setq helm-ag-ignore-patterns dotemacs-globally-ignored-directories)
   (after 'helm-ag
-    (cond ((executable-find "rg")
-           (setq helm-ag-base-command "rg -e"))
-          ((executable-find "ag")
+    (cond ((executable-find "ag")
            t)
           ((executable-find "pt")
            (setq helm-ag-base-command "pt -e --nogroup --nocolor"))

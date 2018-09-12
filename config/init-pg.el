@@ -5,7 +5,7 @@
  'load-path (concat user-emacs-directory "el-get/proof-general"))
 
 (require-package 'el-get)
-(require 'el-get)
+;; (require 'el-get)
 
 (setq el-get-sources
       '((:name proof-general
@@ -59,7 +59,7 @@
 
 (/boot/lazy-major-mode "\\.v$" 'coq-mode)
 
-(require 'proof-site)
+;; (require 'proof-site)
 
 (after 'proof-site
   (after 'evil
@@ -94,14 +94,14 @@
    (holes-mode -1)))
 
 (require-package 'company-coq)
-  (setq company-coq-disabled-features '(prettify-symbols smart-subscripts))
+  (setq company-coq-disabled-features '(smart-subscripts prettify-symbols)) ; prettify-symbols
 
   (add-to-list 'company-backends 'company-coq)
 
   (add-hook 'coq-mode-hook #'company-coq-mode)
   (add-hook 'company-coq-mode-hook
             (lambda ()
-              (setq-local company-idle-delay nil)
+              (setq-local company-idle-delay 0.5)
               (setq coq-one-command-per-line nil))))
 
 (el-get 'sync 'proof-general)

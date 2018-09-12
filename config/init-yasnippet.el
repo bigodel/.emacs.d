@@ -1,12 +1,10 @@
 
 (require-package 'yasnippet)
-(require 'yasnippet)
+;; (require 'yasnippet)
 
 (after 'yasnippet
   (require-package 'yasnippet-snippets)
   (require-package 'yasnippet-classic-snippets))
-
-(require 'yasnippet)
 
 (setq yas-fallback-behavior 'return-nil)
 (setq yas-also-auto-indent-first-line t)

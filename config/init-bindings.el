@@ -1,6 +1,6 @@
 
 (require-package 'which-key)
-(require 'which-key)
+;; (require 'which-key)
 (setq which-key-idle-delay 0.2)
 (setq which-key-min-display-lines 3)
 (setq which-key-max-description-length 20)

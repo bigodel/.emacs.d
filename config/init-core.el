@@ -47,34 +47,36 @@
 
 (require 'whitespace)
 
-;; (setq whitespace-display-mappings
-;;       '((space-mark 32 [183])
-;;         (newline-mark 10 [182 10])
-;;         (tab-mark 9 [9655 9] [92 9])))
+(setq whitespace-display-mappings
+      '((space-mark 32 [183])
+        (newline-mark 10 [182 10])
+        (tab-mark 9 [9655 9] [92 9])))
 
-(setq whitespace-style '(face trailing tabs lines-tail))
+(setq whitespace-style '(face trailing tabs tab-mark lines-tail))
 
-;; (set-face-attribute 'whitespace-space nil
-;;                     :background nil
-;;                     :foreground "black")
+(set-face-attribute 'whitespace-space nil
+                    :background nil
+                    :foreground (face-background 'default))
 
 (set-face-attribute 'whitespace-trailing nil
-                    :background "gray15")
+                    :foreground (face-foreground 'default)
+                    :background "gray15") ; gray15
 
 (add-hook 'after-save-hook 'whitespace-cleanup)
 
 (global-whitespace-mode t)
 
-(setq hippie-expand-try-functions-list '(try-expand-dabbrev
-                                         try-expand-dabbrev-all-buffers
-                                         try-expand-dabbrev-from-kill
-                                         try-complete-file-name-partially
-                                         try-complete-file-name
-                                         try-expand-all-abbrevs
-                                         try-expand-list
-                                         try-expand-line
-                                         try-complete-lisp-symbol-partially
-                                         try-complete-lisp-symbol))
+(setq hippie-expand-try-functions-list
+      '(try-expand-dabbrev
+        try-expand-dabbrev-all-buffers
+        try-expand-dabbrev-from-kill
+        try-complete-file-name-partially
+        try-complete-file-name
+        try-expand-all-abbrevs
+        try-expand-list
+        try-expand-line
+        try-complete-lisp-symbol-partially
+        try-complete-lisp-symbol))
 
 (global-set-key (kbd "M-/") #'hippie-expand)
 
@@ -92,11 +94,8 @@
 
 (add-hook 'after-save-hook #'/util/tangle-init)
 
-;; pcomplete
+;; ignore case when doing file name completion
 (setq pcomplete-ignore-case t)
-
-;; imenu
-(setq-default imenu-auto-rescan t)
 
 ;; narrowing
 (put 'narrow-to-region 'disabled nil)

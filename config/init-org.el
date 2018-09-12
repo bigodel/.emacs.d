@@ -65,7 +65,7 @@
 
   (add-hook 'org-babel-after-execute-hook #'org-redisplay-inline-images)
 
-  (require-package 'ob-async)
-  (require 'ob-async))
+  (require-package 'ob-async))
+  ;; (require 'ob-async))
 
 (provide 'init-org)

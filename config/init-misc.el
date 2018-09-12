@@ -1,6 +1,6 @@
 
 (require-package 'restart-emacs)
-(require 'restart-emacs)
+;; (require 'restart-emacs)
 
 (after 'dired
   (require-package 'dired-k)
@@ -24,7 +24,7 @@
 
 (when (executable-find "ag")
   (require-package 'ag)
-  (require 'ag)
+  ;; (require 'ag)
   (setq ag-highlight-search t)
   (setq ag-ignore-list dotemacs-globally-ignored-directories)
   (add-hook 'ag-mode-hook (lambda () (toggle-truncate-lines t))))
@@ -32,7 +32,7 @@
 (require-package 'expand-region)
 
 (require-package 'aggressive-indent)
-(require 'aggressive-indent)
+;; (require 'aggressive-indent)
 (add-hook 'emacs-lisp-mode-hook #'aggressive-indent-mode)
 (add-hook 'lisp-mode-hook #'aggressive-indent-mode)
 (add-hook 'prog-mode-hook #'aggressive-indent-mode)

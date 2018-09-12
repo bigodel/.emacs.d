@@ -42,7 +42,6 @@
 (add-hook 'evil-jumps-post-jump-hook #'recenter)
 
 (require-package 'evil)
-(require 'evil)
 (evil-mode)
 
 (cl-loop for mode in dotemacs-evil/emacs-state-minor-modes
@@ -76,26 +75,13 @@
 
 (after 'magit
   (require-package 'evil-magit)
-  (require 'evil-magit)
   (evil-magit-init))
-
-;; (after 'org
-;;   (require-package 'evil-org)
-;;   (require 'evil-org)
-;;   (add-hook 'org-mode-hook #'evil-org-mode)
-;;   (add-hook 'evil-org-mode-hook
-;;             (lambda ()
-;;               (evil-org-set-key-theme))))
 
 (after 'vimish-fold
   (require-package 'evil-vimish-fold)
-  (require 'evil-vimish-fold)
   (evil-vimish-fold-mode t))
 
 (require-package 'evil-matchit)
-(defun evilmi-customize-keybinding ()
-  (evil-define-key 'normal evil-matchit-mode-map
-    "%" 'evilmi-jump-items))
 (global-evil-matchit-mode t)
 
 (require-package 'evil-collection)

@@ -1,8 +1,13 @@
 
+(when (fboundp 'tool-bar-mode) (tool-bar-mode -1))
+(when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
+;; (when (fboundp 'menu-bar-mode) (menu-bar-mode -1))
+(when (fboundp 'horizontal-scroll-bar-mode) (horizontal-scroll-bar-mode -1))
+
 (require-package 'solarized-theme)
 (setq solarized-scale-org-headlines nil)
 (setq x-underline-at-descent-line t)
-(require 'solarized-theme)
+;; (require 'solarized-theme)
 
 (require-package 'monokai-theme)
 
@@ -52,7 +57,7 @@
 (size-indication-mode t)
 
 (require-package 'vimish-fold)
-(require 'vimish-fold)
+;; (require 'vimish-fold)
 (vimish-fold-global-mode t)
 
 ;; (require-package 'delight)
@@ -79,7 +84,7 @@
 ;; (delight 'auto-fill-function nil t)
 
 (require-package 'diminish)
-(require 'diminish)
+;; (require 'diminish)
 
 (diminish 'visual-line-mode)
 (diminish 'auto-fill-function)

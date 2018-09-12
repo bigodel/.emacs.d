@@ -88,7 +88,7 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 (defun /util/find-file-as-root (file)
   "Edits a file as root."
   (interactive "f")
-  (find-file-other-window (concat "/sudo:root@localhost:" file)))
+  (find-file-other-window (concat "/sudo::" file)))
 
 (defun /util/tangle-init ()
   (interactive)
