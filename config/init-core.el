@@ -7,7 +7,6 @@
   "The storage location for the socket file used to connect to the daemon.")
 (setq server-socket-dir dotemacs-core/server-directory)
 (setq server-auth-dir (concat dotemacs-core/server-directory "server"))
-(require 'server)
 (unless (server-running-p)
   (server-start))
 
@@ -15,7 +14,6 @@
 (setq user-mail-address "jpedrodeamorim@gmail.com")
 
 ;; move cursor to the last position upon open
-(require 'saveplace)
 (setq save-place-file (concat dotemacs-cache-directory "places"))
 (save-place-mode t)
 
@@ -27,14 +25,16 @@
 (savehist-mode t)
 
 ;; recent files
-(require 'recentf)
 (setq recentf-save-file (concat dotemacs-cache-directory "recentf"))
 (setq recentf-max-saved-items 1000)
 (setq recentf-max-menu-items 500)
 (setq recentf-auto-cleanup 300)
+
+(recentf-mode t)
+
 (add-to-list 'recentf-exclude "COMMIT_EDITMSG\\'")
 (add-to-list 'recentf-exclude ".*elpa.*autoloads\.el$")
-(recentf-mode t)
+
 (run-with-idle-timer 600 t #'recentf-save-list)
 
 ;; gc
@@ -45,8 +45,6 @@
 (add-hook 'minibuffer-setup-hook #'/core/minibuffer-setup-hook)
 (add-hook 'minibuffer-exit-hook #'/core/minibuffer-exit-hook)
 
-(require 'whitespace)
-
 (setq whitespace-display-mappings
       '((space-mark 32 [183])
         (newline-mark 10 [182 10])
@@ -54,13 +52,14 @@
 
 (setq whitespace-style '(face trailing tabs tab-mark lines-tail))
 
-(set-face-attribute 'whitespace-space nil
-                    :background nil
-                    :foreground (face-background 'default))
+(after 'whitespace
+  (set-face-attribute 'whitespace-trailing nil
+                      :foreground (face-foreground 'default)
+                      :background "gray15") ; gray15
 
-(set-face-attribute 'whitespace-trailing nil
-                    :foreground (face-foreground 'default)
-                    :background "gray15") ; gray15
+  (set-face-attribute 'whitespace-space nil
+                      :background nil
+                      :foreground (face-background 'default)))
 
 (add-hook 'after-save-hook 'whitespace-cleanup)
 
@@ -101,7 +100,16 @@
 (put 'narrow-to-region 'disabled nil)
 
 ;; dired
-(require 'dired-x)
+;; dired-x is a library to add extra functionality to dired, for more info refer
+;; to the GNU manual [https://www.gnu.org/software/emacs/manual/html_node/dired-x/]
+(after 'dired
+  (require 'dired-x)
+  ;; *BSD 'ls' command does not support the "--dired" option needed by Emacs
+  ;; alternatively, we use Emacs's own emulation of "ls"
+  (when (string= system-type "berkeley-unix")
+    (setq dired-use-ls-dired nil)
+    (setq ls-lisp-use-insert-directory-program nil)
+    (require 'ls-lisp)))
 
 ;; url
 (setq url-configuration-directory (concat dotemacs-cache-directory "url/"))
@@ -114,7 +122,6 @@
       (format "%s\\|%s"
               vc-ignore-dir-regexp
               tramp-file-name-regexp))
-;; (eval-after-load 'tramp '(setenv "SHELL" "/bin/bash"))
 
 ;; comint
 (after 'comint
@@ -149,10 +156,6 @@
 ;; re-builder
 (setq reb-re-syntax 'string) ;; fix backslash madness
 
-;; clean up old buffers periodically
-(midnight-mode)
-(midnight-delay-set 'midnight-delay 0)
-
 ;; ibuffer
 (setq ibuffer-expert t)
 (setq ibuffer-show-empty-filter-groups nil)
@@ -164,7 +167,8 @@
   (setq auto-save-file-name-transforms `((".*" ,(concat dir "save-") t))))
 
 ;; multiple-backups
-(setq backup-directory-alist `((".*" . ,(expand-file-name (concat dotemacs-cache-directory "backups/")))))
+(setq backup-directory-alist
+      `((".*" . ,(expand-file-name (concat dotemacs-cache-directory "backups/")))))
 (setq backup-by-copying t)
 (setq version-control t)
 (setq kept-old-versions 2)
@@ -177,19 +181,19 @@
       scroll-margin 1)
 
 ;; better buffer names for duplicates
-(require 'uniquify)
 (setq uniquify-buffer-name-style 'forward
       uniquify-separator "/"
       uniquify-ignore-buffers-re "^\\*" ; leave special buffers alone
       uniquify-after-kill-buffer-p t)
 
-(require 'paren)
-(set-face-background 'show-paren-match (face-foreground 'default))
-(set-face-foreground 'show-paren-match (face-background 'default))
-(set-face-attribute 'show-paren-match nil :weight 'extra-bold)
-(show-paren-mode 1)
-
 (setq show-paren-delay 0)
+
+(after 'paren
+  (set-face-background 'show-paren-match (face-foreground 'default))
+  (set-face-foreground 'show-paren-match (face-background 'default))
+  (set-face-attribute 'show-paren-match nil :weight 'extra-bold))
+
+(show-paren-mode 1)
 
 (defun /core/do-not-kill-scratch-buffer ()
   (if (member (buffer-name (current-buffer))
@@ -221,14 +225,13 @@
 (setq-default tab-width 4)
 
 (defun /core/infer-indentation-style ()
+  (interactive)
   "If our source file uses tabs, we use tabs, if spaces spaces,
 and if neither, we use the current indent-tabs-mode"
   (let ((space-count (how-many "^  " (point-min) (point-max)))
         (tab-count (how-many "^\t" (point-min) (point-max))))
     (if (> space-count tab-count) (setq indent-tabs-mode nil))
     (if (> tab-count space-count) (setq indent-tabs-mode t))))
-
-(add-hook 'prog-mode-hook #'/core/infer-indentation-style)
 
 (setq inhibit-splash-screen t)
 (setq inhibit-startup-echo-area-message t)
@@ -247,6 +250,7 @@ and if neither, we use the current indent-tabs-mode"
 (random t) ;; seed
 
 (defun /core/find-file-hook ()
+  (/core/infer-indentation-style)
   (when (string-match "\\.min\\." (buffer-file-name))
     (fundamental-mode)))
 (add-hook 'find-file-hook #'/core/find-file-hook)

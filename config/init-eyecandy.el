@@ -52,6 +52,10 @@
 (global-set-key (kbd "C--") #'text-scale-decrease)
 (global-set-key (kbd "C-0") #'text-scale-adjust)
 
+;; line numbers
+(when (version= emacs-version "26.1")
+  (global-display-line-numbers-mode t))
+
 (line-number-mode t)
 (column-number-mode t)
 (size-indication-mode t)

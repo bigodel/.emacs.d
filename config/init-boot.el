@@ -47,12 +47,11 @@
   "Install given PACKAGE, optionally requiring MIN-VERSION.
 If NO-REFRESH is non-nil, the available package lists will not be
 re-downloaded in order to locate PACKAGE."
-  (if (or (package-installed-p package min-version)
-          (require package nil 'noerror))
-      t
+  (unless (or (package-installed-p package min-version)
+              (require package nil 'noerror))
     (if (or (assoc package package-archive-contents) no-refresh)
         (if (boundp 'package-selected-packages)
-            ;; Record this as a package the user installed explicitly
+            ;; record this as a package the user installed explicitly
             (package-install package nil)
           (package-install package))
       (progn

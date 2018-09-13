@@ -65,7 +65,9 @@
 
   (add-hook 'org-babel-after-execute-hook #'org-redisplay-inline-images)
 
-  (require-package 'ob-async))
-  ;; (require 'ob-async))
+  (require-package 'ob-async)
+
+  (after 'evil
+    (evil-define-key 'normal org-mode-map (kbd "TAB") 'org-cycle)))
 
 (provide 'init-org)

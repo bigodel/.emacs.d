@@ -234,6 +234,7 @@ my Emacs setup, like completion engine, which could either be =helm=, =ido= or
     (defvar dotemacs-cache-directory (concat user-emacs-directory ".cache/")
       "The storage location for various persistent files.")
 
+    ;; check if the cache dir exists, if not ask to create it
     (when (and (not (file-directory-p dotemacs-cache-directory))
                (y-or-n-p
                 (format "Directory `%s' does not exist! Create it?"
@@ -287,13 +288,16 @@ and =~/.myemacsc/config/= instead of the above mentioned paths with
 #+BEGIN_SRC emacs-lisp :tangle init.el
     (load (concat config-directory "init-boot"))
 
+    ;; tangle the(is) org file
     (require 'ob-tangle)
-    (org-babel-tangle-file (concat user-emacs-directory "init.el"))
+    (org-babel-tangle-file (concat user-emacs-directory "init.org"))
 
+    ;; set the file for storing customization information
     (setq custom-file (concat user-emacs-directory "custom.el"))
     (when (file-exists-p custom-file)
       (load custom-file))
 
+    ;; recursively load each config file
     (cl-loop for file in (reverse (directory-files-recursively
                                    config-directory "\\.el$"))
              do (condition-case ex
@@ -385,12 +389,11 @@ Here are the functions and macros mentioned on the [[#intro][introduction]] sect
     "Install given PACKAGE, optionally requiring MIN-VERSION.
   If NO-REFRESH is non-nil, the available package lists will not be
   re-downloaded in order to locate PACKAGE."
-    (if (or (package-installed-p package min-version)
-            (require package nil 'noerror))
-        t
+    (unless (or (package-installed-p package min-version)
+                (require package nil 'noerror))
       (if (or (assoc package package-archive-contents) no-refresh)
           (if (boundp 'package-selected-packages)
-              ;; Record this as a package the user installed explicitly
+              ;; record this as a package the user installed explicitly
               (package-install package nil)
             (package-install package))
         (progn
@@ -457,7 +460,8 @@ This macro is to lazily install a major mode like described in [[#lazy-major-mod
 #+END_SRC
 
 This function is to create a ask to create a directory if trying to access a
-non-existing directory.
+non-existing directory. I placed it here because this is loaded before
+everything else, and I need it defined in some parts of the config.
 
 #+BEGIN_SRC emacs-lisp :tangle config/init-boot.el
   (defun /boot/create-non-existent-directory (&optional dir)
@@ -500,7 +504,6 @@ initializes the server if it is not already running.
     "The storage location for the socket file used to connect to the daemon.")
   (setq server-socket-dir dotemacs-core/server-directory)
   (setq server-auth-dir (concat dotemacs-core/server-directory "server"))
-  (require 'server)
   (unless (server-running-p)
     (server-start))
 #+END_SRC
@@ -520,7 +523,6 @@ files (excluding some temporary files we don't want to revisit).
 
 #+BEGIN_SRC emacs-lisp :tangle config/init-core.el
   ;; move cursor to the last position upon open
-  (require 'saveplace)
   (setq save-place-file (concat dotemacs-cache-directory "places"))
   (save-place-mode t)
 
@@ -532,14 +534,16 @@ files (excluding some temporary files we don't want to revisit).
   (savehist-mode t)
 
   ;; recent files
-  (require 'recentf)
   (setq recentf-save-file (concat dotemacs-cache-directory "recentf"))
   (setq recentf-max-saved-items 1000)
   (setq recentf-max-menu-items 500)
   (setq recentf-auto-cleanup 300)
+
+  (recentf-mode t)
+
   (add-to-list 'recentf-exclude "COMMIT_EDITMSG\\'")
   (add-to-list 'recentf-exclude ".*elpa.*autoloads\.el$")
-  (recentf-mode t)
+
   (run-with-idle-timer 600 t #'recentf-save-list)
 #+END_SRC
 
@@ -560,8 +564,6 @@ By default Emacs has =whitespace-mode=. It is used to show whitespace. For more
 information, visit [[https://www.emacswiki.org/emacs/WhiteSpace#toc1][this]] page. The configuration I got mostly from [[http://ergoemacs.org/emacs/whitespace-mode.html][here]].
 
 #+BEGIN_SRC emacs-lisp :tangle config/init-core.el
-  (require 'whitespace)
-
   (setq whitespace-display-mappings
         '((space-mark 32 [183])
           (newline-mark 10 [182 10])
@@ -569,13 +571,14 @@ information, visit [[https://www.emacswiki.org/emacs/WhiteSpace#toc1][this]] pag
 
   (setq whitespace-style '(face trailing tabs tab-mark lines-tail))
 
-  (set-face-attribute 'whitespace-space nil
-                      :background nil
-                      :foreground (face-background 'default))
+  (after 'whitespace
+    (set-face-attribute 'whitespace-trailing nil
+                        :foreground (face-foreground 'default)
+                        :background "gray15") ; gray15
 
-  (set-face-attribute 'whitespace-trailing nil
-                      :foreground (face-foreground 'default)
-                      :background "gray15") ; gray15
+    (set-face-attribute 'whitespace-space nil
+                        :background nil
+                        :foreground (face-background 'default)))
 
   (add-hook 'after-save-hook 'whitespace-cleanup)
 
@@ -642,7 +645,16 @@ every time it loads.
   (put 'narrow-to-region 'disabled nil)
 
   ;; dired
-  (require 'dired-x)
+  ;; dired-x is a library to add extra functionality to dired, for more info refer
+  ;; to the GNU manual [https://www.gnu.org/software/emacs/manual/html_node/dired-x/]
+  (after 'dired
+    (require 'dired-x)
+    ;; *BSD 'ls' command does not support the "--dired" option needed by Emacs
+    ;; alternatively, we use Emacs's own emulation of "ls"
+    (when (string= system-type "berkeley-unix")
+      (setq dired-use-ls-dired nil)
+      (setq ls-lisp-use-insert-directory-program nil)
+      (require 'ls-lisp)))
 
   ;; url
   (setq url-configuration-directory (concat dotemacs-cache-directory "url/"))
@@ -655,7 +667,6 @@ every time it loads.
         (format "%s\\|%s"
                 vc-ignore-dir-regexp
                 tramp-file-name-regexp))
-  ;; (eval-after-load 'tramp '(setenv "SHELL" "/bin/bash"))
 
   ;; comint
   (after 'comint
@@ -690,10 +701,6 @@ every time it loads.
   ;; re-builder
   (setq reb-re-syntax 'string) ;; fix backslash madness
 
-  ;; clean up old buffers periodically
-  (midnight-mode)
-  (midnight-delay-set 'midnight-delay 0)
-
   ;; ibuffer
   (setq ibuffer-expert t)
   (setq ibuffer-show-empty-filter-groups nil)
@@ -705,7 +712,8 @@ every time it loads.
     (setq auto-save-file-name-transforms `((".*" ,(concat dir "save-") t))))
 
   ;; multiple-backups
-  (setq backup-directory-alist `((".*" . ,(expand-file-name (concat dotemacs-cache-directory "backups/")))))
+  (setq backup-directory-alist
+        `((".*" . ,(expand-file-name (concat dotemacs-cache-directory "backups/")))))
   (setq backup-by-copying t)
   (setq version-control t)
   (setq kept-old-versions 2)
@@ -718,19 +726,19 @@ every time it loads.
         scroll-margin 1)
 
   ;; better buffer names for duplicates
-  (require 'uniquify)
   (setq uniquify-buffer-name-style 'forward
         uniquify-separator "/"
         uniquify-ignore-buffers-re "^\\*" ; leave special buffers alone
         uniquify-after-kill-buffer-p t)
 
-  (require 'paren)
-  (set-face-background 'show-paren-match (face-foreground 'default))
-  (set-face-foreground 'show-paren-match (face-background 'default))
-  (set-face-attribute 'show-paren-match nil :weight 'extra-bold)
-  (show-paren-mode 1)
-
   (setq show-paren-delay 0)
+
+  (after 'paren
+    (set-face-background 'show-paren-match (face-foreground 'default))
+    (set-face-foreground 'show-paren-match (face-background 'default))
+    (set-face-attribute 'show-paren-match nil :weight 'extra-bold))
+
+  (show-paren-mode 1)
 
   (defun /core/do-not-kill-scratch-buffer ()
     (if (member (buffer-name (current-buffer))
@@ -771,14 +779,13 @@ These are some configurations regarding indentation.
   (setq-default tab-width 4)
 
   (defun /core/infer-indentation-style ()
+    (interactive)
     "If our source file uses tabs, we use tabs, if spaces spaces,
   and if neither, we use the current indent-tabs-mode"
     (let ((space-count (how-many "^  " (point-min) (point-max)))
           (tab-count (how-many "^\t" (point-min) (point-max))))
       (if (> space-count tab-count) (setq indent-tabs-mode nil))
       (if (> tab-count space-count) (setq indent-tabs-mode t))))
-
-  (add-hook 'prog-mode-hook #'/core/infer-indentation-style)
 #+END_SRC
 
 Do not show the initial default splash screen and do not show any message on
@@ -806,6 +813,7 @@ Some modes that I like to have by default.
   (random t) ;; seed
 
   (defun /core/find-file-hook ()
+    (/core/infer-indentation-style)
     (when (string-match "\\.min\\." (buffer-file-name))
       (fundamental-mode)))
   (add-hook 'find-file-hook #'/core/find-file-hook)
@@ -1497,9 +1505,15 @@ Color theme config and font config.
   (global-set-key (kbd "C-0") #'text-scale-adjust)
 #+END_SRC
 
-Also there is some mode to display stuff in the modeline that are very useful.
+Here I activate line numbers (the built-in =display-line-numbers-mode= from
+Eamcs 26+). Also there is some mode to display stuff in the modeline that are
+very useful.
 
 #+BEGIN_SRC emacs-lisp :tangle config/init-eyecandy.el
+  ;; line numbers
+  (when (version= emacs-version "26.1")
+    (global-display-line-numbers-mode t))
+
   (line-number-mode t)
   (column-number-mode t)
   (size-indication-mode t)
@@ -2210,8 +2224,10 @@ blocks if the block has =:async= in its header.
 
     (add-hook 'org-babel-after-execute-hook #'org-redisplay-inline-images)
 
-    (require-package 'ob-async))
-    ;; (require 'ob-async))
+    (require-package 'ob-async)
+
+    (after 'evil
+      (evil-define-key 'normal org-mode-map (kbd "TAB") 'org-cycle)))
 
   (provide 'init-org)
 #+END_SRC

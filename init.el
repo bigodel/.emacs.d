@@ -16,6 +16,7 @@
 (defvar dotemacs-cache-directory (concat user-emacs-directory ".cache/")
   "The storage location for various persistent files.")
 
+;; check if the cache dir exists, if not ask to create it
 (when (and (not (file-directory-p dotemacs-cache-directory))
            (y-or-n-p
             (format "Directory `%s' does not exist! Create it?"
@@ -51,13 +52,16 @@
 
 (load (concat config-directory "init-boot"))
 
+  ;; tangle the(is) org file
   (require 'ob-tangle)
-  (org-babel-tangle-file (concat user-emacs-directory "init.el"))
+  (org-babel-tangle-file (concat user-emacs-directory "init.org"))
 
+  ;; set the file for storing customization information
   (setq custom-file (concat user-emacs-directory "custom.el"))
   (when (file-exists-p custom-file)
     (load custom-file))
 
+  ;; recursively load each config file
   (cl-loop for file in (reverse (directory-files-recursively
                                  config-directory "\\.el$"))
            do (condition-case ex
