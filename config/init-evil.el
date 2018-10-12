@@ -10,8 +10,7 @@
   "List of major modes that should default to Emacs state.")
 
 (defvar dotemacs-evil/emacs-state-minor-modes
-  '(git-commit-mode
-    magit-blame-mode)
+  '(magit-blame-mode)
   "List of minor modes that when active should switch to Emacs state.")
 
 (defvar dotemacs-evil/emacs-insert-mode nil
@@ -73,6 +72,9 @@
 (unless (display-graphic-p)
   (evil-esc-mode 1))
 
+(require-package 'evil-nerd-commenter)
+(evilnc-default-hotkeys)
+
 (after 'magit
   (require-package 'evil-magit)
   (evil-magit-init))
@@ -85,7 +87,7 @@
 (global-evil-matchit-mode t)
 
 (require-package 'evil-collection)
-(setq evil-collection-setup-minibuffer t)
+(setq evil-collection-setup-minibuffer nil)
 (setq evil-collection-company-use-tng t)
 (evil-collection-init)
 

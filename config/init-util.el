@@ -19,7 +19,7 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
     (abort-recursive-edit)))
 
 (defun /util/set-transparency (alpha)
-  "Sets the transparency of the current frame."
+  "Set the transparency of the current frame to ALPHA."
   (interactive "nAlpha: ")
   (set-frame-parameter nil 'alpha alpha))
 
@@ -41,7 +41,7 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
     (insert (format "%s" value))))
 
 (defun /util/rename-current-buffer-file ()
-  "Renames current buffer and file it is visiting."
+  "Rename current buffer and file it is visiting."
   (interactive)
   (let ((filename (buffer-file-name)))
     (if (not (and filename (file-exists-p filename)))
@@ -66,27 +66,28 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
           (kill-buffer))))))
 
 (defun /util/goto-scratch-buffer ()
-  "Create a new scratch buffer."
+  "Create a new scratch buffer. If *scratch* already exists, switch to it."
   (interactive)
   (switch-to-buffer (get-buffer-create "*scratch*")))
 
 (defun /util/insert-last-kbd-macro ()
+  "Insert the last defined keyboard macro."
   (interactive)
   (name-last-kbd-macro 'my-last-macro)
   (insert-kbd-macro 'my-last-macro))
 
 (defun /util/set-buffer-to-unix-format ()
-  "Converts the current buffer to UNIX file format."
+  "Convert the current buffer to UNIX file format."
   (interactive)
   (set-buffer-file-coding-system 'undecided-unix nil))
 
 (defun /util/set-buffer-to-dos-format ()
-  "Converts the current buffer to DOS file format."
+  "Convert the current buffer to DOS file format."
   (interactive)
   (set-buffer-file-coding-system 'undecided-dos nil))
 
 (defun /util/find-file-as-root (file)
-  "Edits a file as root."
+  "Edit FILE as root."
   (interactive "f")
   (find-file-other-window (concat "/sudo::" file)))
 

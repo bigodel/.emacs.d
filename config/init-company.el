@@ -1,6 +1,8 @@
 
 (require-package 'company)
-;; (require 'company)
+
+;; control what TAB does when pressed
+(setq tab-always-indent 'complete)
 
 (setq company-idle-delay nil)
 (setq company-minimum-prefix-length 1)
@@ -18,6 +20,21 @@
         eshell-mode comint-mode text-mode erc-mode))
 
 (global-company-mode)
+
+(defvar completion-at-point-functions-saved nil)
+
+(defun /company/indent-for-tab-command (&optional arg)
+  (interactive "P")
+  (let ((completion-at-point-functions-saved completion-at-point-functions)
+        (completion-at-point-functions '(company-complete-common-wrapper)))
+    (indent-for-tab-command arg)))
+
+(defun /company/complete-common-wrapper ()
+  (let ((completion-at-point-functions completion-at-point-functions-saved))
+    (company-complete-common)))
+
+(define-key company-mode-map [remap indent-for-tab-command]
+  'company-indent-for-tab-command)
 
 (after 'yasnippet
   (setq company-backends

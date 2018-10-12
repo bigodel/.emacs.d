@@ -1,19 +1,18 @@
 
 (when (fboundp 'tool-bar-mode) (tool-bar-mode -1))
 (when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
-;; (when (fboundp 'menu-bar-mode) (menu-bar-mode -1))
+(when (fboundp 'menu-bar-mode) (menu-bar-mode -1))
 (when (fboundp 'horizontal-scroll-bar-mode) (horizontal-scroll-bar-mode -1))
 
 (require-package 'solarized-theme)
 (setq solarized-scale-org-headlines nil)
 (setq x-underline-at-descent-line t)
-;; (require 'solarized-theme)
 
 (require-package 'monokai-theme)
 
 (require-package 'gruvbox-theme)
 
-(load-theme 'manoj-dark t)
+(load-theme 'solarized-dark t)
 
 ;; change fringe background and foreground color
 (set-face-attribute 'fringe nil
@@ -21,25 +20,25 @@
                     :foreground (face-foreground 'default))
 
 ;; make comments grey (manoj-dark)
-(set-face-foreground 'font-lock-comment-face "dimgray")
-(set-face-foreground 'font-lock-comment-delimiter-face "dimgray")
+;; (set-face-foreground 'font-lock-comment-face "dimgray")
+;; (set-face-foreground 'font-lock-comment-delimiter-face "dimgray")
 
 ;; disable the bigger scale on bold function fonts (manoj-dark)
-(set-face-attribute 'font-lock-function-name-face nil :height 1.0)
+;; (set-face-attribute 'font-lock-function-name-face nil :height 1.0)
 
 ;; change line number color (manoj-dark)
-(after 'linum
-  (set-face-attribute 'linum nil :foreground "gold"))
+;; (after 'linum
+;;   (set-face-attribute 'linum nil :foreground "gold"))
 
 ;; change mode-line's font size and foreground and background
 (set-face-attribute 'mode-line nil
                     :height 1.0
                     :box nil
-                    :background "gray20"
+                    ;; :background "gray20"
                     :foreground (face-foreground 'default))
 (set-face-attribute 'mode-line-buffer-id nil
                     :height 1.0
-                    :background "gray20"
+                    ;; :background "gray20"
                     :foreground (face-foreground 'default))
 (set-face-attribute 'which-func nil
                     :foreground (face-foreground 'default))

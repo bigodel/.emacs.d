@@ -1,6 +1,8 @@
 
 (after 'evil
-  (/bindings/define-keys evil-normal-state-map ("g d" #'dumb-jump-go))
+  (/bindings/define-keys evil-normal-state-map
+    ("g A" #'align-regexp)
+    ("g d" #'dumb-jump-go))
 
   (require-package 'key-chord)
   (key-chord-mode 1)

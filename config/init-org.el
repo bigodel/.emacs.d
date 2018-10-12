@@ -67,7 +67,7 @@
 
   (require-package 'ob-async)
 
-  (after 'evil
-    (evil-define-key 'normal org-mode-map (kbd "TAB") 'org-cycle)))
+  (after [evil org]
+    (evil-define-key 'normal org-mode-map (kbd "<tab>") 'org-cycle)))
 
 (provide 'init-org)

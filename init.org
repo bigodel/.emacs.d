@@ -10,7 +10,6 @@
 * TODO look into emms
 * TODO allow the removal of a module by simply removing its file
 
-
 * Introduction
 :PROPERTIES:
 :CUSTOM_ID: intro
@@ -834,6 +833,18 @@ Configuration regarding C/C++ and some packages.
 #+END_SRC
 
 *** Java
+
+Some Java configuration.
+
+#+BEGIN_SRC emacs-lisp :tangle config/langs/lang-java.el
+  (setq jdee-server-dir "~/repos/jdee-server/target")
+  (setq jdee-global-classpath '("." ".." "./src" "./classes"))
+  (setq jdee-sourcepath '("." ".." "./src" "./classes"))
+  (setq jdee-read-make-args t)
+
+  (require-package 'jdee)
+#+END_SRC
+
 *** Haskell
 
 I work a lot with Haskell, here is configuration regarding it.
@@ -892,7 +903,7 @@ more I could say about it.
       (abort-recursive-edit)))
 
   (defun /util/set-transparency (alpha)
-    "Sets the transparency of the current frame."
+    "Set the transparency of the current frame to ALPHA."
     (interactive "nAlpha: ")
     (set-frame-parameter nil 'alpha alpha))
 
@@ -914,7 +925,7 @@ more I could say about it.
       (insert (format "%s" value))))
 
   (defun /util/rename-current-buffer-file ()
-    "Renames current buffer and file it is visiting."
+    "Rename current buffer and file it is visiting."
     (interactive)
     (let ((filename (buffer-file-name)))
       (if (not (and filename (file-exists-p filename)))
@@ -939,27 +950,28 @@ more I could say about it.
             (kill-buffer))))))
 
   (defun /util/goto-scratch-buffer ()
-    "Create a new scratch buffer."
+    "Create a new scratch buffer. If *scratch* already exists, switch to it."
     (interactive)
     (switch-to-buffer (get-buffer-create "*scratch*")))
 
   (defun /util/insert-last-kbd-macro ()
+    "Insert the last defined keyboard macro."
     (interactive)
     (name-last-kbd-macro 'my-last-macro)
     (insert-kbd-macro 'my-last-macro))
 
   (defun /util/set-buffer-to-unix-format ()
-    "Converts the current buffer to UNIX file format."
+    "Convert the current buffer to UNIX file format."
     (interactive)
     (set-buffer-file-coding-system 'undecided-unix nil))
 
   (defun /util/set-buffer-to-dos-format ()
-    "Converts the current buffer to DOS file format."
+    "Convert the current buffer to DOS file format."
     (interactive)
     (set-buffer-file-coding-system 'undecided-dos nil))
 
   (defun /util/find-file-as-root (file)
-    "Edits a file as root."
+    "Edit FILE as root."
     (interactive "f")
     (find-file-other-window (concat "/sudo::" file)))
 
@@ -999,8 +1011,7 @@ contradictory isn't it?) because =evil= is awesome but ain't perfect yet.
     "List of major modes that should default to Emacs state.")
 
   (defvar dotemacs-evil/emacs-state-minor-modes
-    '(git-commit-mode
-      magit-blame-mode)
+    '(magit-blame-mode)
     "List of minor modes that when active should switch to Emacs state.")
 
   (defvar dotemacs-evil/emacs-insert-mode nil
@@ -1084,6 +1095,9 @@ Here is the configuration for the comment package. And some more additional
 packages to help integrate =evil= into the most modes possible.
 
 #+BEGIN_SRC emacs-lisp :tangle config/init-evil.el
+  (require-package 'evil-nerd-commenter)
+  (evilnc-default-hotkeys)
+
   (after 'magit
     (require-package 'evil-magit)
     (evil-magit-init))
@@ -1100,7 +1114,7 @@ I also use [[https://github.com/emacs-evil/evil-collection][=evil-collection=]],
 
 #+BEGIN_SRC emacs-lisp :tangle config/init-evil.el
   (require-package 'evil-collection)
-  (setq evil-collection-setup-minibuffer t)
+  (setq evil-collection-setup-minibuffer nil)
   (setq evil-collection-company-use-tng t)
   (evil-collection-init)
 
@@ -1286,8 +1300,6 @@ regarding a bunch of packages and modes.
 #+BEGIN_SRC emacs-lisp :tangle config/init-bindings.el
   (global-set-key (kbd "C-x C-/") #'/util/find-file-as-root)
 
-  (global-set-key (kbd "M-;") #'comment-line)
-
   (after "expand-region-autoloads"
     (global-set-key (kbd "C-=") #'er/expand-region))
 
@@ -1320,8 +1332,6 @@ default.
     (global-set-key (kbd "M-x") #'helm-M-x)
     (global-set-key (kbd "M-y") #'helm-show-kill-ring)
     (global-set-key (kbd "M-:") #'helm-eval-expression-with-eldoc)
-    (define-key helm-map (kbd "<tab>") #'helm-execute-persistent-action)
-    (define-key helm-map (kbd "C-z") #'helm-select-action)
 
     (after "helm-ag-autoloads"
       (global-set-key (kbd "C-c h g") #'helm-do-ag))
@@ -1347,6 +1357,10 @@ snippet.
 
 #+BEGIN_SRC emacs-lisp :tangle config/init-bindings.el
   (after 'company
+    (define-key evil-insert-state-map (kbd "C-n") #'company-complete-common-or-cycle)
+    (define-key evil-insert-state-map (kbd "C-p") #'(company-complete-common-or-cycle -1))
+    (define-key evil-insert-state-map (kbd "C-SPC") #'company-complete)
+
     (after "yasnippet-autoloads"
       (define-key company-active-map (kbd "<tab>")
         (bind (when (null (yas-expand))
@@ -1403,7 +1417,9 @@ Since it is my most used package it makes total sense that is has it's own file.
 
 #+BEGIN_SRC emacs-lisp :tangle config/bindings/bind-evil.el
   (after 'evil
-    (/bindings/define-keys evil-normal-state-map ("g d" #'dumb-jump-go))
+    (/bindings/define-keys evil-normal-state-map
+      ("g A" #'align-regexp)
+      ("g d" #'dumb-jump-go))
 
     (require-package 'key-chord)
     (key-chord-mode 1)
@@ -1449,7 +1465,7 @@ Disable the visual noise.
 #+BEGIN_SRC emacs-lisp :tangle config/init-eyecandy.el
   (when (fboundp 'tool-bar-mode) (tool-bar-mode -1))
   (when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
-  ;; (when (fboundp 'menu-bar-mode) (menu-bar-mode -1))
+  (when (fboundp 'menu-bar-mode) (menu-bar-mode -1))
   (when (fboundp 'horizontal-scroll-bar-mode) (horizontal-scroll-bar-mode -1))
 #+END_SRC
 
@@ -1459,13 +1475,12 @@ Color theme config and font config.
   (require-package 'solarized-theme)
   (setq solarized-scale-org-headlines nil)
   (setq x-underline-at-descent-line t)
-  ;; (require 'solarized-theme)
 
   (require-package 'monokai-theme)
 
   (require-package 'gruvbox-theme)
 
-  (load-theme 'manoj-dark t)
+  (load-theme 'solarized-dark t)
 
   ;; change fringe background and foreground color
   (set-face-attribute 'fringe nil
@@ -1473,25 +1488,25 @@ Color theme config and font config.
                       :foreground (face-foreground 'default))
 
   ;; make comments grey (manoj-dark)
-  (set-face-foreground 'font-lock-comment-face "dimgray")
-  (set-face-foreground 'font-lock-comment-delimiter-face "dimgray")
+  ;; (set-face-foreground 'font-lock-comment-face "dimgray")
+  ;; (set-face-foreground 'font-lock-comment-delimiter-face "dimgray")
 
   ;; disable the bigger scale on bold function fonts (manoj-dark)
-  (set-face-attribute 'font-lock-function-name-face nil :height 1.0)
+  ;; (set-face-attribute 'font-lock-function-name-face nil :height 1.0)
 
   ;; change line number color (manoj-dark)
-  (after 'linum
-    (set-face-attribute 'linum nil :foreground "gold"))
+  ;; (after 'linum
+  ;;   (set-face-attribute 'linum nil :foreground "gold"))
 
   ;; change mode-line's font size and foreground and background
   (set-face-attribute 'mode-line nil
                       :height 1.0
                       :box nil
-                      :background "gray20"
+                      ;; :background "gray20"
                       :foreground (face-foreground 'default))
   (set-face-attribute 'mode-line-buffer-id nil
                       :height 1.0
-                      :background "gray20"
+                      ;; :background "gray20"
                       :foreground (face-foreground 'default))
   (set-face-attribute 'which-func nil
                       :foreground (face-foreground 'default))
@@ -1704,7 +1719,6 @@ package to indent, you want it or not, your code.
   (add-hook 'emacs-lisp-mode-hook #'aggressive-indent-mode)
   (add-hook 'lisp-mode-hook #'aggressive-indent-mode)
   (add-hook 'prog-mode-hook #'aggressive-indent-mode)
-  (add-hook 'TeX-mode-hook #'aggressive-indent-mode)
 #+END_SRC
 
 =popwin= is used to better manage pop-up windows. =restart-emacs= makes it
@@ -1872,15 +1886,20 @@ directory and renames the =eshell= buffer to =*eshell: directory*= and sends an
 
 Configuration regarding the VCS. It is based on =magit=, one of the best Emacs
 packages and a reason a lot of people stick to it (of course, if they use git).
+I also use =smerge-mode= sometimes (sometimes =ediff=) to resolve merge
+conflicts.
 
 #+BEGIN_SRC emacs-lisp :tangle config/init-vcs.el
+  (setq smerge-command-prefix "\C-cn")
+
   (setq vc-make-backup-files t)
 
   (when (executable-find "git")
     (add-hook 'git-commit-mode-hook
               (lambda ()
-                (interactive)
-                (next-line)))
+                (next-line)
+                (when (evil-normal-state-p)
+                  (evil-insert-state))))
 
     (require-package 'magit)
 
@@ -1905,6 +1924,7 @@ packages and a reason a lot of people stick to it (of course, if they use git).
     (evil-define-key 'normal diff-mode diff-mode-map
       "j" #'diff-hunk-next
       "k" #'diff-hunk-prev))
+
   (after [evil vc-annotate]
     (evil-define-key 'normal vc-annotate-mode-map
       (kbd "M-p") #'vc-annotate-prev-revision
@@ -1990,7 +2010,6 @@ the [[https://www.emacswiki.org/emacs/TextCursor][TextCursor]] hits a new word.
 Some major modes that are not installed by default.
 
 #+BEGIN_SRC emacs-lisp :tangle config/init-auxiliary-modes.el
-  (/boot/lazy-major-mode "\\.\\(md\\|markdown\\)$" 'markdown-mode)
   (/boot/lazy-major-mode "\\.toml$" 'toml-mode)
   (/boot/lazy-major-mode "\\.yaml$" 'yaml-mode)
   (/boot/lazy-major-mode "\\.json$" 'json-mode)
@@ -2013,7 +2032,9 @@ configured and installed on the language's or mode's config section.
 
 #+BEGIN_SRC emacs-lisp :tangle config/init-company.el
   (require-package 'company)
-  ;; (require 'company)
+
+  ;; control what TAB does when pressed
+  (setq tab-always-indent 'complete)
 
   (setq company-idle-delay nil)
   (setq company-minimum-prefix-length 1)
@@ -2031,6 +2052,21 @@ configured and installed on the language's or mode's config section.
           eshell-mode comint-mode text-mode erc-mode))
 
   (global-company-mode)
+
+  (defvar completion-at-point-functions-saved nil)
+
+  (defun /company/indent-for-tab-command (&optional arg)
+    (interactive "P")
+    (let ((completion-at-point-functions-saved completion-at-point-functions)
+          (completion-at-point-functions '(company-complete-common-wrapper)))
+      (indent-for-tab-command arg)))
+
+  (defun /company/complete-common-wrapper ()
+    (let ((completion-at-point-functions completion-at-point-functions-saved))
+      (company-complete-common)))
+
+  (define-key company-mode-map [remap indent-for-tab-command]
+    'company-indent-for-tab-command)
 
   (after 'yasnippet
     (setq company-backends
@@ -2226,8 +2262,8 @@ blocks if the block has =:async= in its header.
 
     (require-package 'ob-async)
 
-    (after 'evil
-      (evil-define-key 'normal org-mode-map (kbd "TAB") 'org-cycle)))
+    (after [evil org]
+      (evil-define-key 'normal org-mode-map (kbd "<tab>") 'org-cycle)))
 
   (provide 'init-org)
 #+END_SRC
@@ -2425,6 +2461,12 @@ its README in the [[target][link above]].
 
 #+BEGIN_SRC emacs-lisp :tangle config/init-pdf.el
   (require-package 'pdf-tools)
+  (add-hook 'doc-view-mode-hook
+            (lambda ()
+              "Lambda function to use `pdf-tools' in
+            `doc-view-mode' when in a pdf file."
+              (require 'pdf-tools)
+              (pdf-view-mode)))
 #+END_SRC
 
 ** TeX
@@ -2438,12 +2480,13 @@ environment for working with both TeX and LaTeX. Here are its configurations.
 #+BEGIN_SRC emacs-lisp :tangle config/init-tex.el
   (setq TeX-brace-indent-level 4)
   (setq LaTeX-indent-level 4)
+  (setq tex-fontify-script nil)
+  (setq font-latex-fontify-script nil)
 
   (require-package 'auctex)
   (require-package 'company-auctex)
 
   (company-auctex-init)
-
 #+END_SRC
 
 ** COMMENT Emms

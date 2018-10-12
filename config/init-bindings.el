@@ -48,8 +48,6 @@
 
 (global-set-key (kbd "C-x C-/") #'/util/find-file-as-root)
 
-(global-set-key (kbd "M-;") #'comment-line)
-
 (after "expand-region-autoloads"
   (global-set-key (kbd "C-=") #'er/expand-region))
 
@@ -74,8 +72,6 @@
   (global-set-key (kbd "M-x") #'helm-M-x)
   (global-set-key (kbd "M-y") #'helm-show-kill-ring)
   (global-set-key (kbd "M-:") #'helm-eval-expression-with-eldoc)
-  (define-key helm-map (kbd "<tab>") #'helm-execute-persistent-action)
-  (define-key helm-map (kbd "C-z") #'helm-select-action)
 
   (after "helm-ag-autoloads"
     (global-set-key (kbd "C-c h g") #'helm-do-ag))
@@ -90,6 +86,10 @@
 (global-set-key (kbd "C-!") #'/eshell/new-window)
 
 (after 'company
+  (define-key evil-insert-state-map (kbd "C-n") #'company-complete-common-or-cycle)
+  (define-key evil-insert-state-map (kbd "C-p") #'(company-complete-common-or-cycle -1))
+  (define-key evil-insert-state-map (kbd "C-SPC") #'company-complete)
+
   (after "yasnippet-autoloads"
     (define-key company-active-map (kbd "<tab>")
       (bind (when (null (yas-expand))

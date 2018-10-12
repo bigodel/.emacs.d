@@ -1,11 +1,14 @@
 
+(setq smerge-command-prefix "\C-cn")
+
 (setq vc-make-backup-files t)
 
 (when (executable-find "git")
   (add-hook 'git-commit-mode-hook
             (lambda ()
-              (interactive)
-              (next-line)))
+              (next-line)
+              (when (evil-normal-state-p)
+                (evil-insert-state))))
 
   (require-package 'magit)
 
@@ -30,6 +33,7 @@
   (evil-define-key 'normal diff-mode diff-mode-map
     "j" #'diff-hunk-next
     "k" #'diff-hunk-prev))
+
 (after [evil vc-annotate]
   (evil-define-key 'normal vc-annotate-mode-map
     (kbd "M-p") #'vc-annotate-prev-revision
