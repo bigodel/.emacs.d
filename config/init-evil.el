@@ -11,11 +11,18 @@
   "List of major modes that should default to Emacs state.")
 
 (defvar dotemacs-evil/emacs-state-minor-modes
-  '(magit-blame-mode
-    git-commit-mode)
+  '(magit-blame-mode)
   "List of minor modes that when active should switch to Emacs state.")
 
-(defvar dotemacs-evil/emacs-insert-mode nil
+(defvar dotemacs-evil/insert-state-major-modes
+  nil
+  "List of major modes that when active should switch to Insert state.")
+
+(defvar dotemacs-evil/insert-state-minor-modes
+  '(git-commit-mode)
+  "List of minor modes that when active should switch to Insert state.")
+
+(defvar dotemacs-evil/emacs-insert-mode t
   "If non-nil, insert mode will act as Emacs state.")
 
 (setq evil-search-module 'isearch-regexp)
@@ -45,25 +52,33 @@
 (require-package 'evil)
 (evil-mode)
 
-;; (cl-loop for mode in dotemacs-evil/emacs-state-minor-modes
-;;          do (let ((hook (concat (symbol-name mode) "-hook")))
-;;               (add-hook (intern hook) (lambda ()
-;;                                         (if mode
-;;                                             (evil-emacs-state)
-;;                                           (evil-normal-state))))))
-
+;; emacs state in minor modes
 (dolist (mode dotemacs-evil/emacs-state-minor-modes)
   (let ((hook (concat (symbol-name mode) "-hook")))
     (add-hook (intern hook) `(lambda ()
+                               (if ,mode
+                                   (evil-emacs-state)
+                                 (evil-normal-state))))))
+
+;; insert state in major modes
+(dolist (mode dotemacs-evil/insert-state-minor-modes)
+  (let ((hook (concat (symbol-name mode) "-hook")))
+    (add-hook (intern hook) `(lambda ()
                               (if ,mode
-                                  (evil-emacs-state)
+                                  (evil-insert-state)
                                 (evil-normal-state))))))
 
-(cl-loop for hook in dotemacs-evil/emacs-state-hooks
-         do (add-hook hook #'evil-emacs-state))
+;; emacs state hooks
+(dolist (hook dotemacs-evil/emacs-state-hooks)
+  (add-hook hook #'evil-emacs-state))
 
-(cl-loop for mode in dotemacs-evil/emacs-state-major-modes
-         do (evil-set-initial-state mode 'emacs))
+;; emacs state in major modes
+(dolist (mode dotemacs-evil/emacs-state-major-modes)
+  (evil-set-initial-state mode 'emacs))
+
+;; insert state in major modes
+(dolist (mode dotemacs-evil/insert-state-major-modes)
+  (evil-set-initial-state mode 'insert))
 
 (after 'evil-common
   (evil-put-property 'evil-state-properties 'normal   :tag " NORMAL ")
