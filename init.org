@@ -10,6 +10,8 @@
 * TODO look into emms
 * TODO allow the removal of a module by simply removing its file
 
+* TODO substitute all =cl-loops= for =dolists= or =mapcars=
+
 * Introduction
 :PROPERTIES:
 :CUSTOM_ID: intro
@@ -989,7 +991,7 @@ more I could say about it.
   (provide 'init-util)
 #+END_SRC
 
-** Evil
+** COMMENT Evil
 :PROPERTIES:
 :CUSTOM_ID: cfg-evil
 :END:
@@ -1007,11 +1009,13 @@ contradictory isn't it?) because =evil= is awesome but ain't perfect yet.
 
   (defvar dotemacs-evil/emacs-state-major-modes
     '(calculator-mode
-      makey-key-mode)
+      makey-key-mode
+      dired-mode)
     "List of major modes that should default to Emacs state.")
 
   (defvar dotemacs-evil/emacs-state-minor-modes
-    '(magit-blame-mode)
+    '(magit-blame-mode
+      git-commit-mode)
     "List of minor modes that when active should switch to Emacs state.")
 
   (defvar dotemacs-evil/emacs-insert-mode nil
@@ -1061,12 +1065,19 @@ in the end of this code block, and advice to indent every time we use =o= or
   (require-package 'evil)
   (evil-mode)
 
-  (cl-loop for mode in dotemacs-evil/emacs-state-minor-modes
-           do (let ((hook (concat (symbol-name mode) "-hook")))
-                (add-hook (intern hook) (lambda ()
-                                          (if ,mode
-                                              (evil-emacs-state)
-                                            (evil-normal-state))))))
+  ;; (cl-loop for mode in dotemacs-evil/emacs-state-minor-modes
+  ;;          do (let ((hook (concat (symbol-name mode) "-hook")))
+  ;;               (add-hook (intern hook) (lambda ()
+  ;;                                         (if mode
+  ;;                                             (evil-emacs-state)
+  ;;                                           (evil-normal-state))))))
+
+  (dolist (mode dotemacs-evil/emacs-state-minor-modes)
+    (let ((hook (concat (symbol-name mode) "-hook")))
+      (add-hook (intern hook) `(lambda ()
+                                (if ,mode
+                                    (evil-emacs-state)
+                                  (evil-normal-state))))))
 
   (cl-loop for hook in dotemacs-evil/emacs-state-hooks
            do (add-hook hook #'evil-emacs-state))
@@ -1376,9 +1387,8 @@ snippet.
       (define-key magit-todos-section-map (kbd "j") 'evil-next-line)
       (define-key magit-todos-section-map (kbd "k") 'evil-previous-line)))
 
-    (after 'projectile
-      (define-key projectile-mode-map (kbd "C-c p") #'projectile-command-map)
-      (global-set-key (kbd "C-S-p") #'projectile-switch-project))
+  (after 'projectile
+    (define-key projectile-mode-map (kbd "s-p") #'projectile-command-map))
 
   (after 'evil
     (define-key evil-normal-state-map (kbd "!") #'/eshell/new-window)
@@ -1714,11 +1724,17 @@ package to indent, you want it or not, your code.
 #+BEGIN_SRC emacs-lisp :tangle config/init-misc.el
   (require-package 'expand-region)
 
+  (defvar dotemacs-misc/aggressive-indent-hooks
+    '(cc-mode-hook
+      lisp-mode-hook
+      emacs-lisp-mode-hook
+      java-mode-hook)
+    "Hooks for major modes to activate `aggressive-indent-mode'.")
+
   (require-package 'aggressive-indent)
-  ;; (require 'aggressive-indent)
-  (add-hook 'emacs-lisp-mode-hook #'aggressive-indent-mode)
-  (add-hook 'lisp-mode-hook #'aggressive-indent-mode)
-  (add-hook 'prog-mode-hook #'aggressive-indent-mode)
+
+  (dolist (hook dotemacs-misc/aggressive-indent-hooks)
+    (add-hook hook #'aggressive-indent-mode))
 #+END_SRC
 
 =popwin= is used to better manage pop-up windows. =restart-emacs= makes it
@@ -2122,7 +2138,7 @@ This package is amazing at dealing with projects.
         (concat dotemacs-cache-directory "projectile.cache"))
   (setq projectile-known-projects-file
         (concat dotemacs-cache-directory "projectile-bookmarks.eld"))
-  (setq projectile-indexing-method 'alien)
+  (setq projectile-indexing-method 'native)
   (setq projectile-enable-caching t)
   (setq projectile-completion-system 'helm)
 #+END_SRC

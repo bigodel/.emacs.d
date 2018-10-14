@@ -105,9 +105,8 @@
     (define-key magit-todos-section-map (kbd "j") 'evil-next-line)
     (define-key magit-todos-section-map (kbd "k") 'evil-previous-line)))
 
-  (after 'projectile
-    (define-key projectile-mode-map (kbd "C-c p") #'projectile-command-map)
-    (global-set-key (kbd "C-S-p") #'projectile-switch-project))
+(after 'projectile
+  (define-key projectile-mode-map (kbd "s-p") #'projectile-command-map))
 
 (after 'evil
   (define-key evil-normal-state-map (kbd "!") #'/eshell/new-window)

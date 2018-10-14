@@ -31,11 +31,17 @@
 
 (require-package 'expand-region)
 
+(defvar dotemacs-misc/aggressive-indent-hooks
+  '(cc-mode-hook
+    lisp-mode-hook
+    emacs-lisp-mode-hook
+    java-mode-hook)
+  "Hooks for major modes to activate `aggressive-indent-mode'.")
+
 (require-package 'aggressive-indent)
-;; (require 'aggressive-indent)
-(add-hook 'emacs-lisp-mode-hook #'aggressive-indent-mode)
-(add-hook 'lisp-mode-hook #'aggressive-indent-mode)
-(add-hook 'prog-mode-hook #'aggressive-indent-mode)
+
+(dolist (hook dotemacs-misc/aggressive-indent-hooks)
+  (add-hook hook #'aggressive-indent-mode))
 
 (require-package 'popwin)
 (require 'popwin)

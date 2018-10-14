@@ -6,11 +6,13 @@
 
 (defvar dotemacs-evil/emacs-state-major-modes
   '(calculator-mode
-    makey-key-mode)
+    makey-key-mode
+    dired-mode)
   "List of major modes that should default to Emacs state.")
 
 (defvar dotemacs-evil/emacs-state-minor-modes
-  '(magit-blame-mode)
+  '(magit-blame-mode
+    git-commit-mode)
   "List of minor modes that when active should switch to Emacs state.")
 
 (defvar dotemacs-evil/emacs-insert-mode nil
@@ -43,12 +45,19 @@
 (require-package 'evil)
 (evil-mode)
 
-(cl-loop for mode in dotemacs-evil/emacs-state-minor-modes
-         do (let ((hook (concat (symbol-name mode) "-hook")))
-              (add-hook (intern hook) (lambda ()
-                                        (if ,mode
-                                            (evil-emacs-state)
-                                          (evil-normal-state))))))
+;; (cl-loop for mode in dotemacs-evil/emacs-state-minor-modes
+;;          do (let ((hook (concat (symbol-name mode) "-hook")))
+;;               (add-hook (intern hook) (lambda ()
+;;                                         (if mode
+;;                                             (evil-emacs-state)
+;;                                           (evil-normal-state))))))
+
+(dolist (mode dotemacs-evil/emacs-state-minor-modes)
+  (let ((hook (concat (symbol-name mode) "-hook")))
+    (add-hook (intern hook) `(lambda ()
+                              (if ,mode
+                                  (evil-emacs-state)
+                                (evil-normal-state))))))
 
 (cl-loop for hook in dotemacs-evil/emacs-state-hooks
          do (add-hook hook #'evil-emacs-state))
