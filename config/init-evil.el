@@ -22,7 +22,7 @@
   '(git-commit-mode)
   "List of minor modes that when active should switch to Insert state.")
 
-(defvar dotemacs-evil/emacs-insert-mode t
+(defvar dotemacs-evil/emacs-insert-mode nil
   "If non-nil, insert mode will act as Emacs state.")
 
 (setq evil-search-module 'isearch-regexp)
@@ -34,6 +34,7 @@
 (setq evil-want-C-u-scroll t)
 (setq evil-want-fine-undo nil)
 (setq evil-want-integration nil)
+(setq evil-want-keybinding nil)
 (setq evil-want-abbrev-on-insert-exit nil)
 (setq evil-want-abbrev-expand-on-insert-exit nil)
 ;; move evil tag to beginning of modeline
@@ -96,8 +97,7 @@
 (unless (display-graphic-p)
   (evil-esc-mode 1))
 
-(require-package 'evil-nerd-commenter)
-(evilnc-default-hotkeys)
+(require-package 'evil-ediff)
 
 (after 'magit
   (require-package 'evil-magit)
