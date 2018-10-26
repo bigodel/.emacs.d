@@ -100,6 +100,12 @@
 (put 'narrow-to-region 'disabled nil)
 
 ;; dired
+(setq wdired-allow-to-change-permissions t)
+(setq wdired-allow-to-redirect-links t)
+(setq wdired-use-interactive-rename t)
+(setq wdired-confirm-overwrite t)
+
+(require 'wdired)
 ;; dired-x is a library to add extra functionality to dired, for more info refer
 ;; to the GNU manual [https://www.gnu.org/software/emacs/manual/html_node/dired-x/]
 (after 'dired

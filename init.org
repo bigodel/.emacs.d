@@ -646,6 +646,12 @@ every time it loads.
   (put 'narrow-to-region 'disabled nil)
 
   ;; dired
+  (setq wdired-allow-to-change-permissions t)
+  (setq wdired-allow-to-redirect-links t)
+  (setq wdired-use-interactive-rename t)
+  (setq wdired-confirm-overwrite t)
+
+  (require 'wdired)
   ;; dired-x is a library to add extra functionality to dired, for more info refer
   ;; to the GNU manual [https://www.gnu.org/software/emacs/manual/html_node/dired-x/]
   (after 'dired
@@ -830,8 +836,29 @@ Here is where I store configuration for specific languages.
 
 Configuration regarding C/C++ and some packages.
 
+This is the default number of spaces that a tab should be (I use space instead
+of tabs). Also, whenever using a =.inl= file, it should be opened with =c++-mode=.
+
 #+BEGIN_SRC emacs-lisp :tangle config/langs/lang-c-cpp.el
   (setq-default c-basic-offset (symbol-value 'tab-width))
+
+  (add-to-list 'auto-mode-alist '("\\.inl$" . c++-mode))
+#+END_SRC
+
+Here we configure =company= to use =company-clang= instead of the default
+=company-semantic=.
+
+#+BEGIN_SRC emacs-lisp :tangle config/langs/lang-c-cpp.el
+  (after 'company
+    (setq company-backends (delete 'company-semantic company-backends))
+    (setq company-clang-arguments '("-I../"
+                                    "-I./"))
+
+    (require-package 'company-c-headers)
+    (require 'company-c-headers)
+    (add-to-list 'company-backends 'company-c-headers)
+    (add-to-list 'company-c-headers-path-system "/usr/include/c++/v1/")
+    (add-to-list 'company-c-headers-path-system "/usr/local/include/c++/4.9.4/"))
 #+END_SRC
 
 *** Java
@@ -857,7 +884,7 @@ Emacs. Then we set the =haskell-mode= to be the major mode for the =.ghci= file.
 #+BEGIN_SRC emacs-lisp :tangle config/langs/lang-haskell.el
   (require-package 'haskell-mode)
 
-  (/boot/lazy-major-mode "\\.ghci\\'" 'haskell-mode)
+  (/boot/lazy-major-mode "\\.ghci$" 'haskell-mode)
 #+END_SRC
 
 [[https://github.com/commercialhaskell/intero][=intero=]] is a /"complete interactive development program for Haskell"/. It
@@ -1939,6 +1966,15 @@ conflicts.
     (setq magit-display-buffer-function #'magit-display-buffer-traditional)
 
     (add-hook 'magit-mode-hook #'hl-line-mode)
+#+END_SRC
+
+Here is where I set some default arguments for some of git's commands, like
+=--no-ff= for mering, also =magit-todos= is a package to highlight TODO's on the
+files been tracked by git and show them on the =magit= popup.
+
+#+BEGIN_SRC emacs-lisp :tangle config/init-vcs.el
+    ;; default merge arguments
+    (setq magit-merge-arguments '("--no-ff"))
 
     (require-package 'magit-todos)
     (add-hook 'prog-mode-hook #'hl-todo-mode)

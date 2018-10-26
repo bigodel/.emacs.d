@@ -1,7 +1,7 @@
 
 (require-package 'haskell-mode)
 
-(/boot/lazy-major-mode "\\.ghci\\'" 'haskell-mode)
+(/boot/lazy-major-mode "\\.ghci$" 'haskell-mode)
 
 ;; (when (maybe-require-package 'intero)
 ;;   (after 'haskell-mode

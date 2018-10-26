@@ -19,6 +19,9 @@
 
   (add-hook 'magit-mode-hook #'hl-line-mode)
 
+;; default merge arguments
+  (setq magit-merge-arguments '("--no-ff"))
+
   (require-package 'magit-todos)
   (add-hook 'prog-mode-hook #'hl-todo-mode)
   (setq magit-todos-fontify-org nil)
