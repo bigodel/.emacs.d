@@ -779,11 +779,16 @@ custom variable we defined above and set some variables value.
   (setq eval-expression-print-level nil)
 #+END_SRC
 
-These are some configurations regarding indentation.
+These are some configurations regarding indentation. Makefiles require you to
+use tabs, otherwise it won't work. The function =/core/infer-indentation-style=
+infers if the current file is using spaces of tabs to indent and changes the
+variable accordingly.
 
 #+BEGIN_SRC emacs-lisp :tangle config/init-core.el
   (setq-default indent-tabs-mode nil) ;; spaces instead of tabs
   (setq-default tab-width 4)
+
+  (add-hook 'makefile-mode-hook '(setq indent-tabs-mode nil))
 
   (defun /core/infer-indentation-style ()
     (interactive)
@@ -2548,11 +2553,22 @@ environment for working with both TeX and LaTeX. Here are its configurations.
   (setq LaTeX-indent-level 4)
   (setq tex-fontify-script nil)
   (setq font-latex-fontify-script nil)
+  (setq TeX-auto-save t)
+  (setq TeX-view-program-selection
+        '((output-pdf "Zathura")
+          (output-dvi "xdvi")))
+  ;; compile to pdf by default
+  (setq TeX-pdf-mode t)
 
   (require-package 'auctex)
   (require-package 'company-auctex)
 
   (company-auctex-init)
+
+  (after 'auctex
+    (add-hook 'LaTeX-mode-hook 'LaTeX-math-mode)
+    (add-hook 'LaTeX-mode-hook 'turn-on-reftex)
+    (setq reftex-plug-into-AUCTeX t))
 #+END_SRC
 
 ** COMMENT Emms

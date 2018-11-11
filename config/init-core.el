@@ -230,6 +230,8 @@
 (setq-default indent-tabs-mode nil) ;; spaces instead of tabs
 (setq-default tab-width 4)
 
+(add-hook 'makefile-mode-hook '(setq indent-tabs-mode nil))
+
 (defun /core/infer-indentation-style ()
   (interactive)
   "If our source file uses tabs, we use tabs, if spaces spaces,
