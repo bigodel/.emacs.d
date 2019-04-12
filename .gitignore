@@ -12,3 +12,6 @@
 !core
 !custom
 !alias
+!newInit.el
+!newConfig/
+
