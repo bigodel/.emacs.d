@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# contributor: Peter Urbak <peter@dragonwasrobot.com>
+# key: fa
+# group: misc
+# name: forall
+# --
+forall ($1 : $2), $0

@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# contributor: Peter Urbak <peter@dragonwasrobot.com>
+# key: rw
+# group: tactics
+# name: rewrite
+# --
+rewrite $0.

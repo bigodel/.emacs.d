@@ -1,0 +1,4 @@
+alias l ls -lAh $*
+alias rd rm -rdv $*
+alias q exit
+alias clr clear

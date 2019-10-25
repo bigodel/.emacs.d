@@ -1,0 +1,108 @@
+l
+gmake Basics.vo
+gmake Lists.vo
+l
+which ls
+ls -la
+alias l='ls -la'
+l
+alias
+which alias
+l
+ls -la
+ls -la ~/.emacs.d/
+cd ~/.emacs.d
+which rm
+l
+l
+l eshell
+rm -d games
+which rd
+rm -rd games
+l
+rm recentf\~ 
+l
+cat TODO 
+l auto-save-list/
+alias rd='rm -rdv'
+rd auto-save-list/
+alias
+alias rd 'rm -rdv $*'
+alias
+rd auto-save-list/
+l
+cat abbrev_defs 
+less abbrev_defs 
+l
+l transient/
+cat transient/history.el 
+l url
+rd url
+l
+l
+rd evil-test/
+l
+l
+cd relatory/
+l
+rm *.aux *.log *.bcf *.xml *.toc
+l
+ls -la
+cat log.org
+cat log.org | less
+vim
+(message "oi")
+python thread_communication.py 
+python thread_communication.py 
+python thread_communication.py 
+python thread_communication.py 
+python thread_communication.py 
+clear
+clear
+clear
+less  config-evil.el
+less config-evil.el
+l
+l
+l ~
+l
+ls
+which e
+alias | rg e
+alias
+exit
+which  l
+l
+ls
+la
+ls
+ls -lFA
+ls
+clr
+alias
+alias q 'exit'
+cat .emacs.d/alias 
+alias clr 'clear'
+q
+ls
+alias
+alias l 'ls -lFAh'
+l
+ls -la
+ls -lFa
+ls -lA
+ls -lAh
+alias l ls -lAh
+l
+l ~
+alias l ls -lAh $*
+l ~
+alais
+alias
+alias l 'ls -lAh $*'
+l
+l ~
+l ~/.config/mpd/
+ls -lF ~/.config/mpd/
+clr
+q

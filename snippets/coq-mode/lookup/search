@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# contributor: Peter Urbak <peter@dragonwasrobot.com>
+# key: S
+# group: lookup
+# name: Search
+# --
+Search $1.
+$0

@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# contributor: Peter Urbak <peter@dragonwasrobot.com>
+# key: CoFixp
+# group: definitions
+# name: CoFixpoint
+# --
+CoFixpoint $1 ($2 : $3) : $4 :=
+  $0.

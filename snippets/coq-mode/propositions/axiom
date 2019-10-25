@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# contributor: Peter Urbak <peter@dragonwasrobot.com>
+# key: Axi
+# group: propositions
+# name: Axiom
+# expand-env: ((yas-indent-line 'fixed))
+# --
+Axiom $1 :
+  $0.

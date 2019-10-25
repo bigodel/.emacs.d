@@ -1,0 +1,12 @@
+/*
+/*/
+!.gitignore
+!TODO
+!abbrevs
+!config/
+!core/
+!custom.el
+!early-init.el
+!eshell/
+!init.el
+!snippets/

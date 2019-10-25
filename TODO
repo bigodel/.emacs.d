@@ -1,0 +1,2 @@
+- Create a bindings/ directory on the top level and put all the bindings there
+- Create a sparse keymap and assign it to SPC in evil normal state for hydras

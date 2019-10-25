@@ -1,0 +1,8 @@
+# -*- mode: snippet; require-final-newline: nil -*-
+# name: setter
+# key: s
+# --
+public void set${1:Field}(${2:int} ${3:field})
+{
+    this.$3 = $3;$0
+}
