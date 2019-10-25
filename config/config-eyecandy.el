@@ -61,7 +61,7 @@
 (set-face-attribute 'mode-line-inactive nil :underline nil)
 
 ;; default font
-(add-to-list 'default-frame-alist '(font . "monospace-14"))
+;; (add-to-list 'default-frame-alist '(font . "monospace-14"))
 
 ;;; line numbers (only available in Emacs 26+)
 (defvar dotemacs-eyecandy/line-numbers-disabled-hooks

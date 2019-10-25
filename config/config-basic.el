@@ -315,7 +315,7 @@ Also, if the file has '.min' in it, switch to `fundamental-mode'."
 (setvar mark-ring-max 64)               ; max number of marks
 (setvar global-mark-ring-max 128)       ; max number of global marks
 (setvar select-enable-clipboard t)      ; use clipboard for cutting and pasting
-(setvar save-interprogram-paste-before-kill t) ; save clipboard into kill-ring
+(setvar save-interprogram-paste-before-kill nil) ; save clipboard into kill-ring
 (setvar track-eol t)                    ; vertical motion at eol keeps at eol
 (setvar create-lockfiles t)             ; create lockfiles (see manual for info)
 (setvar enable-recursive-minibuffers t) ; recursive minibuffers (be careful)
