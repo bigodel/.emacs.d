@@ -82,9 +82,9 @@ involves searching.")
 
   ;;; load all of our configuration files
   (cl-loop for file in (append (reverse (directory-files-recursively
-                                         config-directory "\\.el\\'")))
-           ;; (reverse (directory-files-recursively
-           ;;           bindings-directory "\\.el$")))
+                                         config-directory "\\.el\\'"))
+                               (reverse (directory-files-recursively
+                                         bindings-directory "\\.el$")))
            do (condition-case ex
                   (load (file-name-sans-extension file))
                 ('error

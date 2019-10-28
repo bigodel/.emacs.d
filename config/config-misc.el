@@ -36,13 +36,6 @@
 (setvar undo-tree-visualizer-diff t)
 (add-hook 'after-init-hook #'global-undo-tree-mode)
 
-;;; show possible combinations of keys for prefix keys
-(require-package 'which-key)
-(setvar which-key-idle-delay 0.2)
-(setvar which-key-min-display-lines 3)
-(setvar which-key-allow-evil-operators t)
-(which-key-mode)
-
 ;;; `doc-view-mode'
 (setvar doc-view-continuous t)          ; continuous mode in `doc-view-mode'
 (setvar doc-view-resolution 200)        ; resolution of images

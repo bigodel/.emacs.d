@@ -79,12 +79,11 @@ inserted." t)
 ;;; fill column and auto fill
 (setvar fill-column 80)
 
-(defun /basic/comment-auto-fill ()
-  "Only `auto-fill' comments."
-  (setvar comment-auto-fill-only-comments t 'local)
-  (turn-on-auto-fill))
-
-(add-hook 'prog-mode-hook #'/basic/comment-auto-fill)
+(add-hook 'prog-mode-hook
+          (lambda ()
+            "Only `auto-fill' comments."
+            (setvar comment-auto-fill-only-comments t 'local)
+            (turn-on-auto-fill)))
 
 (add-hook 'text-mode-hook #'turn-on-auto-fill)
 
@@ -283,7 +282,7 @@ Set `dired-x' and `dired-aux' global variables here."
 ;;; tabs
 (setvar indent-tabs-mode nil) ; spaces instead of tabs
 ;; enable tabs instead of spaces in makefiles
-;; TODO: move this to lang-makefile.el maybe???
+;; TODO: move this to config-makefile.el maybe???
 (add-hook 'makefile-mode-hook '(setvar indent-tabs-mode t 'local))
 
 ;;; give me a clean *scratch* buffer upon startup

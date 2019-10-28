@@ -18,33 +18,33 @@
         (add-to-list 'load-path dir)))))
 
 ;; macro to measure the load time of each loaded package
-(defmacro measure-load (target &rest body)
-  "Measure load time of each file TARGET with its respective BODY."
-  (declare (indent defun))
-  `(let ((elapsed) (start (current-time)))
-     (prog1
-         ,@body
-       (with-current-buffer (get-buffer-create "*Load Times*")
-         (when (= 0 (buffer-size))
-           (insert
-            (format "| %-60s | %-23s | elapsed  |\n" "feature" "timestamp")))
-         (goto-char (point-max))
-         (setq elapsed (float-time (time-subtract (current-time) start)))
-         (insert (format "| %-60s | %s | %f |\n"
-                         ,target
-                         (format-time-string "%Y-%m-%d %H:%M:%S.%3N"
-                                             (current-time))
-                         elapsed))))))
-
-(defadvice load (around dotemacs activate)
-  "Wrap `measure-load' around `load'."
-  (measure-load file ad-do-it))
-
-(defadvice require (around dotemacs activate)
-  "Wrap `measure-load' around `require'."
-  (if (memq feature features)
-      ad-do-it
-    (measure-load feature ad-do-it)))
+;; (defmacro measure-load (target &rest body)
+;;   "Measure load time of each file TARGET with its respective BODY."
+;;   (declare (indent defun))
+;;   `(let ((elapsed) (start (current-time)))
+;;      (prog1
+;;          ,@body
+;;        (with-current-buffer (get-buffer-create "*Load Times*")
+;;          (when (= 0 (buffer-size))
+;;            (insert
+;;             (format "| %-60s | %-23s | elapsed  |\n" "feature" "timestamp")))
+;;          (goto-char (point-max))
+;;          (setq elapsed (float-time (time-subtract (current-time) start)))
+;;          (insert (format "| %-60s | %s | %f |\n"
+;;                          ,target
+;;                          (format-time-string "%Y-%m-%d %H:%M:%S.%3N"
+;;                                              (current-time))
+;;                          elapsed))))))
+;;
+;; (defadvice load (around dotemacs activate)
+;;   "Wrap `measure-load' around `load'."
+;;   (measure-load file ad-do-it))
+;;
+;; (defadvice require (around dotemacs activate)
+;;   "Wrap `measure-load' around `require'."
+;;   (if (memq feature features)
+;;       ad-do-it
+;;     (measure-load feature ad-do-it)))
 
 (defmacro bind (&rest commands)
   "Convenience macro to create lambda interactive COMMANDS."
@@ -97,9 +97,10 @@ FEATURE may be any one of:
     `(with-eval-after-load ,feature ,@body))))
 
 (defmacro setvar (var value &optional local comment)
-  "Set VAR to VALUE using `customize-save-variable'.
-It is also possible to add a COMMENT. This macro is just a
-wrapper around `custmize-save-variable' which sets VAR to VALUE
+  "Set VAR to VALUE using `customize-set-variable'.
+It is also possible to add a COMMENT, although it is not possible
+to add a COMMENT when LOCAL is non-nil. This macro is just a
+wrapper around `custmize-set-variable' which sets VAR to VALUE
 using `custom-set' if available and `set-default' otherwise. When
 LOCAL is not nil, use `setq-local' to change the value of the
 variable locally."
@@ -129,8 +130,7 @@ If DIR is provided, ask to create DIR."
                                  parent-directory)))
       (make-directory parent-directory t))))
 
-(add-to-list 'find-file-not-found-functions
-             #'create-non-existent-directory)
+(add-to-list 'find-file-not-found-functions #'create-non-existent-directory)
 
 (provide 'core-boot)
 ;;; core-boot.el ends here

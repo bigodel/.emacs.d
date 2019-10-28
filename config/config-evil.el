@@ -121,9 +121,9 @@
 (unless (display-graphic-p)
   (evil-esc-mode 1))
 
-(after 'magit
-  (require-package 'evil-magit)
-  (evil-magit-init))
+;; (after 'magit
+;;   (require-package 'evil-magit)
+;;   (evil-magit-init))
 
 (after 'org
   (require-package 'evil-org)
