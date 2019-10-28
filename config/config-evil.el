@@ -37,7 +37,7 @@
 
 ;;; variables
 (setvar evil-search-module 'evil-search) ; emulate vim's search
-(setvar evil-magic t)                    ; vim's magicness (for 'evil-search)
+(setvar evil-magic 'very-magic)          ; vim's magicness (for 'evil-search)
 (setvar evil-shift-width 4)              ; offset of < and >
 (setvar evil-regexp-search t)            ; whether to use regexp for search
 (setvar evil-search-wrap t)              ; whether searchs wraps around
@@ -46,7 +46,7 @@
 (setvar evil-want-fine-undo nil)         ; whether to undo like vim or emacs
 (setvar evil-want-integration t)         ; whether to load evil-integration.el
 (setvar evil-want-keybinding nil)        ; whether to load evil-keybindings.el
-;; (setvar evil-want-abbrev-expand-on-insert-exit nil)
+(setvar evil-want-abbrev-expand-on-insert-exit nil) ; expand abbrev with ESC
 (setvar evil-vsplit-window-right t)     ; vsplit creates window to the right
 (setvar evil-split-window-below t)      ; split creates window below
 (setvar evil-ex-search-vim-style-regexp t) ; vim-style \ codes are supported in
@@ -69,10 +69,6 @@
 ;; load `evil'
 (require-package 'evil)
 (evil-mode 1)
-
-;; load `evil-collection'
-;; (require-package 'evil-collection)
-;; (evil-collection-init)
 
 ;; emacs state in minor modes
 (dolist (mode dotemacs-evil/emacs-state-minor-modes)
@@ -120,10 +116,6 @@
 
 (unless (display-graphic-p)
   (evil-esc-mode 1))
-
-;; (after 'magit
-;;   (require-package 'evil-magit)
-;;   (evil-magit-init))
 
 (after 'org
   (require-package 'evil-org)

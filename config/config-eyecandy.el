@@ -13,42 +13,10 @@
 (when (fboundp 'horizontal-scroll-bar-mode) (horizontal-scroll-bar-mode -1))
 
 ;;; color theme
-;; install solarized theme
-;; (require-package 'solarized-theme)
-
-;; (setvar solarized-distinct-fringe-background nil) ; make the fringe stand out
-;; (setvar solarized-distinct-doc-face t)            ; make documentation stand out
-;; (setvar solarized-use-variable-pitch t)           ; all fonts same size
-;; (setvar solarized-high-contrast-mode-line t)      ; high contrast mode line
-;; (setvar solarized-use-more-italic t)              ; use more italics
-;; (setvar solarized-scale-org-headlines t) ; don't change size of org-mode
-
-;; solarized adds line spacing, I don't want it
-;; (setvar line-spacing nil)
-
-;; avoid all font-size changes
-;; (setvar solarized-height-minus-1 1.0)
-;; (setvar solarized-height-plus-1 1.0)
-;; (setvar solarized-height-plus-2 1.0)
-;; (setvar solarized-height-plus-3 1.0)
-;; (setvar solarized-height-plus-4 1.0)
-
-;; which func should be blue (solarized)
-;; (after 'which-func
-;;   (set-face-attribute 'which-func nil :foreground "midnight blue"))
-
 (load-theme 'manoj-dark t)
 
-;; darker solarized background
-;; (set-face-background 'default "#00181e")
-
-;; line numbers config
-;; (set-face-attribute 'line-number nil :background "grey8" :foreground "white")
-;; (set-face-attribute 'line-number-current-line nil :weight 'bold)
-
-;; change fringe background and foreground color
+;; make fringe same background color as line-number face
 (set-face-background 'fringe (face-background 'line-number))
-;; (set-face-foreground 'fringe (face-foreground 'line-number))
 
 ;; disable the bigger scale on bold function fonts (manoj-dark)
 (set-face-attribute 'font-lock-function-name-face nil :height 1.0)
@@ -66,7 +34,7 @@
 (add-to-list 'default-frame-alist '(font . "monospace-14"))
 
 ;;; line numbers (only available in Emacs 26+)
-(defvar dotemacs-eyecandy/line-numbers-disabled-hooks
+(defconst dotemacs-eyecandy/line-numbers-disabled-hooks
   '(eshell-mode-hook
     woman-mode-hook
     man-mode-hook
@@ -114,37 +82,6 @@
 (column-number-mode)
 (size-indication-mode)
 (which-function-mode)
-
-;; diminish modes from the mode line
-;; (require-package 'diminish)
-;; (require 'diminish)
-
-;; (diminish 'visual-line-mode)
-;; (diminish 'auto-fill-function)
-;; (after 'whitespace
-;;   (diminish 'global-whitespace-mode)
-;;   (diminish 'whitespace-mode))
-;; (after 'org-indent (diminish 'org-indent-mode))
-;; (after 'aggressive-indent (diminish 'aggressive-indent-mode))
-;; (after 'autorevert (diminish 'auto-revert-mode))
-;; (after 'abbrev (diminish 'abbrev-mode))
-;; (after 'color-identifiers-mode (diminish 'color-identifiers-mode))
-;; (after 'company (diminish 'company-mode))
-;; (after 'ivy (diminish 'ivy-mode))
-;; (after 'counsel (diminish 'counsel-mode))
-;; (after 'eldoc (diminish 'eldoc-mode))
-;; (after 'flycheck (diminish 'flycheck-mode))
-;; (after 'flyspell (diminish 'flyspell-mode))
-;; (after 'highlight-symbol (diminish 'highlight-symbol-mode))
-;; (after 'projectile (diminish 'projectile-mode))
-;; (after 'undo-tree (diminish 'undo-tree-mode))
-;; (after 'which-key (diminish 'which-key-mode))
-;; (after 'yasnippet (diminish 'yas-minor-mode))
-;; (after 'evil-org (diminish 'evil-org-mode))
-;; (after 'evil-vimish-fold (diminish 'evil-vimish-fold-mode))
-;; (after 'proof-site (diminish 'proof-active-buffer-fake-minor-mode))
-;; (after 'color-identifiers (diminish 'color-identifiers-mode))
-;; (after 'page-break-lines (diminish 'page-break-lines-mode))
 
 ;; hide all minor modes from mode line
 (require-package 'rich-minority)

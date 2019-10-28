@@ -7,6 +7,8 @@
 ;; Most (if not all,) of this configuration was inspired/copied from Bailey
 ;; Ling's Emacs configuration, found on https://github.com/bling/dotemacs
 ;;
+;; TODO: change all defvar's to defconst's
+;; TODO: check if whithout the provide's it makes it faster
 ;;; Code:
 ;; some common lisp functions
 (eval-when-compile (require 'cl))
@@ -72,6 +74,7 @@ involves searching.")
   (load (concat core-directory "core-boot"))
   ;; temporary -------
   (load (concat core-directory "core-util"))
+  ;; TODO: change all the instances of /bindings/ to bindings- and remove this
   (load (concat core-directory "core-bindings"))
   ;; temporary -------
 
@@ -81,6 +84,8 @@ involves searching.")
     (load custom-file))
 
   ;;; load all of our configuration files
+  ;; the bindings configuration needs to get loaded before every thing else,
+  ;; since it has the definitions for the macros of defining keys and what not.
   (cl-loop for file in (append (reverse (directory-files-recursively
                                          config-directory "\\.el\\'"))
                                (reverse (directory-files-recursively
