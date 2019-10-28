@@ -47,16 +47,16 @@
 (run-with-idle-timer 600 t #'recentf-save-list)
 
 ;; garbage collector
-(defun /basic/minibuffer-setup-hook ()
+(defun basic-minibuffer-setup-hook ()
   "Hook to optimize garbage collection when entering or exiting minibuffer."
   (setvar gc-cons-threshold most-positive-fixnum))
 
-(defun /basic/minibuffer-exit-hook ()
+(defun basic-minibuffer-exit-hook ()
   "Hook to optimize garbage collection when entering or exiting minibuffer."
   (setvar gc-cons-threshold (* 64 1024 1024)))
 
-(add-hook 'minibuffer-setup-hook #'/basic/minibuffer-setup-hook)
-(add-hook 'minibuffer-exit-hook #'/basic/minibuffer-exit-hook)
+(add-hook 'minibuffer-setup-hook #'basic-minibuffer-setup-hook)
+(add-hook 'minibuffer-exit-hook #'basic-minibuffer-exit-hook)
 
 ;;; hippie expand and abbrevs
 (setvar abbrev-mode t)                  ; start `abbrev-mode'
@@ -64,17 +64,14 @@
         (concat user-emacs-directory "abbrevs"))
 (setvar save-abbrevs 'silently)         ; save abbrev when file is saved
 
-(/bindings/define-key (current-global-map)
-  (kbd "M-/") #'hippie-expand)      ; `hippie-expand' instead of `abbrev-expand'
-
-(defun /basic/abbrev-dont-insert-char ()
+(defun basic-abbrev-dont-insert-char ()
   "Abbrev hook function, used for `define-abbrev'.
 Our use is to prevent inserting the char that triggered
 expansion. Put this function as a hook function whenever you
 don't want the character that triggered the expansion to be
 inserted." t)
 ;; we need to give the function the no-self-insert propertie
-(put '/basic/abbrev-dont-insert-char 'no-self-insert t)
+(put 'basic-abbrev-dont-insert-char 'no-self-insert t)
 
 ;;; fill column and auto fill
 (setvar fill-column 80)
@@ -156,7 +153,7 @@ Set `dired-x' and `dired-aux' global variables here."
         'ediff-setup-windows-plain) ; no extra frames
 
 ;;; ibuffer
-(add-hook 'ibuffer-mode-hook #'ibuffer-auto-mode)
+(add-hook 'ibuffer-mode-hook #'ibuffer-auto-mode) ; auto update ibuffer
 ;; don't ask for confirmation if the buffer isn't modified and some other things
 (setvar ibuffer-expert t)
 (setvar ibuffer-show-empty-filter-groups nil)
@@ -222,8 +219,6 @@ Set `dired-x' and `dired-aux' global variables here."
              ad-do-it
              (ibuffer-jump-to-buffer recent-buffer-name)))
 
-(/bindings/define-key (current-global-map) (kbd "C-x C-b") #'ibuffer)
-
 ;;; move auto-save to the cache
 (let ((dir (expand-file-name "auto-save/" dotemacs-cache-directory)))
   (setvar auto-save-list-file-prefix (concat dir "saves-"))
@@ -260,13 +255,13 @@ Set `dired-x' and `dired-aux' global variables here."
 (show-paren-mode t)
 
 ;;; don't kill important buffers
-(defun /basic/dont-kill-important-buffers ()
+(defun basic-dont-kill-important-buffers ()
   "Don't kill a buffer is its *scratch* or *Messages* or *Require Times*."
   (if (member (buffer-name (current-buffer))
               '("*scratch*" "*Messages*" "*Require Times*"))
       (progn (bury-buffer) nil)
     t))
-(add-hook 'kill-buffer-query-functions #'/basic/dont-kill-important-buffers)
+(add-hook 'kill-buffer-query-functions #'basic-dont-kill-important-buffers)
 
 ;;; ask y or n instead of yes or no
 (defalias 'yes-or-no-p 'y-or-n-p)
@@ -291,7 +286,7 @@ Set `dired-x' and `dired-aux' global variables here."
 (setvar initial-scratch-message nil)
 
 ;;; infer indentation
-(defun /basic/infer-indentation-style ()
+(defun basic-infer-indentation-style ()
   "If the file has more tabs than spaces, use tabs instead for indentation.
 If it has more spaces, use spaces instead of tabs."
   (interactive)
@@ -300,13 +295,13 @@ If it has more spaces, use spaces instead of tabs."
     (when (> tab-count space-count)
       (setvar indent-tabs-mode t 'local))))
 
-(defun /basic/find-file-hook ()
-  "Run `/basic/infer-indentation-style' after `find-file'.
+(defun basic-find-file-hook ()
+  "Run `basic-infer-indentation-style' after `find-file'.
 Also, if the file has '.min' in it, switch to `fundamental-mode'."
-  (/basic/infer-indentation-style)
+  (basic-infer-indentation-style)
   (when (string-match "\\.min\\." (buffer-file-name))
     (fundamental-mode)))
-(add-hook 'find-file-hook #'/basic/find-file-hook)
+(add-hook 'find-file-hook #'basic-find-file-hook)
 
 ;;; misc
 (setvar sentence-end-double-space nil)  ; setences don't end with double space
@@ -325,48 +320,6 @@ Also, if the file has '.min' in it, switch to `fundamental-mode'."
 (electric-indent-mode t)                ; indent automatically on some keys
 (delete-selection-mode t)               ; delete region and replace with text
 (random t)                              ; random number seed
-
-;;; bindings
-;; C-c bindings
-(/bindings/define-keys (current-global-map)
-  ((kbd "C-c s") #'/util/goto-scratch-buffer "go to scratch")
-  ((kbd "C-c e") #'/util/eval-and-replace "eval and replace")
-  ((kbd "C-c C-l") #'/util/reload-init-file))
-
-;; C-x bindings
-(/bindings/define-keys (current-global-map)
-  ((kbd "C-x C") #'compile)
-  ((kbd "C-x c") #'recompile)
-  ((kbd "C-x C-k") #'kill-this-buffer)
-  ((kbd "C-x K") #'/util/delete-current-buffer-file)
-  ((kbd "C-x C-S-f") #'/util/find-file-as-root))
-
-;; misc bindings
-(/bindings/define-keys (current-global-map)
-  ;; since I use a US international keyboard, ' is actually translated as
-  ;; <dead-acute> (it is a dead key) so I need to make Emacs understand
-  ;; <C-dead-acute> as C-'
-  ((kbd "<C-dead-acute>") (kbd "C-'"))
-  ((kbd "<M-next>") #'scroll-other-window)
-  ((kbd "<M-prior>") #'scroll-other-window-down))
-
-;; escape minibuffer with ESC
-;; (/bindings/define-key minibuffer-local-map
-;;   [escape] #'/util/minibuffer-keyboard-quit)
-;; (/bindings/define-key minibuffer-local-ns-map
-;;   [escape] #'/util/minibuffer-keyboard-quit)
-;; (/bindings/define-key minibuffer-local-completion-map
-;;   [escape] #'/util/minibuffer-keyboard-quit)
-;; (/bindings/define-key minibuffer-local-must-match-map
-;;   [escape] #'/util/minibuffer-keyboard-quit)
-;; (/bindings/define-key minibuffer-local-isearch-map
-;;   [escape] #'/util/minibuffer-keyboard-quit)
-
-;; mouse scrolling in terminal
-(unless (display-graphic-p)
-  (/bindings/define-keys (current-global-map)
-    ([mouse-4] (bind (scroll-down 1)))
-    ([mouse-5] (bind (scroll-up 1)))))
 
 (provide 'config-basic)
 ;;; config-basic.el ends here

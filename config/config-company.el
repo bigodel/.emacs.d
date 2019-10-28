@@ -47,7 +47,7 @@
 ;; start company
 (global-company-mode)
 
-(defun /company/add-backends (backends &optional is-local)
+(defun company-add-backends (backends &optional is-local)
   "Add BACKENDS to `company-backends'. If `yasnippet' is
 installed, append \":with company-yasnippet\" to BACKENDS.
 
@@ -88,20 +88,5 @@ configuration available at `https://github.com/jpprime/.emacs.d'."
                        '(:with company-yasnippet))))
            company-backends)))
 
-;; `company' bindings
-(/bindings/define-keys company-active-map
-  ((kbd "C-n") #'company-complete-common-or-cycle)
-  ((kbd "C-p") #'company-select-previous)
-  ((kbd "TAB") #'company-complete-common-or-cycle)
-  ((kbd "<backtab>") #'company-select-previous)
-  ((kbd "RET") #'company-complete-selection))
-
-;; make `company' work like vim's autocompletion
-(after 'evil
-  (/bindings/define-keys evil-insert-state-map
-    ((kbd "<C-tab>") #'company-yasnippet)
-    ((kbd "C-n") #'company-complete)
-    ((kbd "C-p") #'company-complete)))
-
 (provide 'config-company)
-;;; config-company ends here
+;;; config-company.el ends here

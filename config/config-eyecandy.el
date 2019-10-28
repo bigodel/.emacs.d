@@ -49,7 +49,7 @@
   "Modes to disable `display-line-numbers-mode'.")
 
 (when (fboundp 'display-line-numbers-mode)
-  (setvar display-line-numbers t)
+  (setvar display-line-numbers nil)
   (setvar display-line-numbers-current-absolute t)
 
   (dolist (hook dotemacs-eyecandy/line-numbers-disabled-hooks)

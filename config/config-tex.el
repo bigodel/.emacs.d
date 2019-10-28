@@ -57,7 +57,7 @@
        "Add `company-latex-commands' and
 `company-math-symbols-latex' to `company-backends' in
 `TeX-mode'."
-       (/company/add-backends
+       (company-add-backends
         '(company-math-symbols-latex company-latex-commands) t))))
 
   ;;; abbrev-mode

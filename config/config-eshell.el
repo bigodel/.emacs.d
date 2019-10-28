@@ -72,24 +72,24 @@
     (magit-status (pop args) nil)
     (eshell/echo)))
 
-(defun /eshell/new-window ()
+(defun eshell/new-window ()
   "Opens up a new shell in the directory associated with the
-  current buffer's file. The eshell is renamed to match that
-  directory to make multiple eshell windows easier."
+current buffer's file. The eshell is renamed to match that
+directory to make multiple eshell windows easier."
   (interactive)
   (let* ((parent (if (buffer-file-name)
                      (file-name-directory (buffer-file-name))
                    default-directory))
-         ;; (height (/ (window-total-height) 2))
-         (width (/ (window-total-height) 2))
+         (height (/ (window-total-height) 3))
+         ;; (width (/ (window-total-height) 2))
          (name   (car (last (split-string parent "/" t)))))
-    ;; (split-window-vertically (- height))
-    (split-window-horizontally)
+    (split-window-vertically (- height))
+    ;; (split-window-horizontally)
     (other-window 1)
     (eshell "new")
     (rename-buffer (concat "*eshell: " name "*"))
 
-    (insert (concat "ls"))
+    (insert "ls")
     (eshell-send-input)))
 
 (defun eshell/ec (&rest args)
@@ -106,7 +106,7 @@
              (eshell-parse-command (car l) (cdr l))))))
 (put 'eshell/ec 'eshell-no-numeric-conversions t)
 
-(defun /eshell/view-file (file)
+(defun eshell/view-file (file)
   "View FILE. A version of `view-file' which properly rets the
 eshell prompt."
   (interactive "fView file: ")
@@ -124,23 +124,16 @@ eshell prompt."
         (view-mode-enter (cons (selected-window) (cons nil undo-window))
                          'kill-buffer)))))
 
-;; (defun eshell/less (&rest args)
-;;   "Invoke `view-file' on a file (ARGS). \"less +42 foo\" will go
-;; to line 42 in the buffer for foo."
-;;   (while args
-;;     (if (string-match "\\`\\+\\([0-9]+\\)\\'" (car args))
-;;         (let* ((line (string-to-number (match-string 1 (pop args))))
-;;                (file (pop args)))
-;;           (/eshell/view-file file)
-;;           (forward-line line))
-;;       (/eshell/view-file (pop args)))))
-
-;;; bindings
-;; global
-(/bindings/define-keys (current-global-map)
-  ((kbd "M-!") #'eshell-command)
-  ((kbd "C-!") #'/eshell/new-window)
-  ((kbd "C-c t") #'/eshell/new-window))
+(defun eshell/less (&rest args)
+  "Invoke `view-file' on a file (ARGS). \"less +42 foo\" will go
+to line 42 in the buffer for foo."
+  (while args
+    (if (string-match "\\`\\+\\([0-9]+\\)\\'" (car args))
+        (let* ((line (string-to-number (match-string 1 (pop args))))
+               (file (pop args)))
+          (eshell/view-file file)
+          (forward-line line))
+      (eshell/view-file (pop args)))))
 
 (provide 'config-eshell)
 ;;; config-eshell.el ends here
