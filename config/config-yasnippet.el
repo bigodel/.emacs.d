@@ -8,7 +8,6 @@
 ;;; install yasnippet and the snippets
 (require-package 'yasnippet)
 (require-package 'yasnippet-snippets)
-(require-package 'yasnippet-classic-snippets)
 
 ;;; variables
 (setvar yas-fallback-behaviour 'return-nil)
