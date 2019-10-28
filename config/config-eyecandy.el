@@ -5,8 +5,10 @@
 ;;; Commentary:
 
 ;;; Code:
+;; disable bars to have a as clean as possible interface
 (when (fboundp 'tool-bar-mode) (tool-bar-mode -1))
 (when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
+;; (unless (display-graphic-p) (menu-bar-mode -1)) ; enable in GUI Emacs
 (when (fboundp 'menu-bar-mode) (menu-bar-mode -1))
 (when (fboundp 'horizontal-scroll-bar-mode) (horizontal-scroll-bar-mode -1))
 
@@ -61,7 +63,7 @@
 (set-face-attribute 'mode-line-inactive nil :underline nil)
 
 ;; default font
-;; (add-to-list 'default-frame-alist '(font . "monospace-14"))
+(add-to-list 'default-frame-alist '(font . "monospace-14"))
 
 ;;; line numbers (only available in Emacs 26+)
 (defvar dotemacs-eyecandy/line-numbers-disabled-hooks
@@ -146,7 +148,8 @@
 
 ;; hide all minor modes from mode line
 (require-package 'rich-minority)
-(rich-minority-mode t)
+(unless rich-minority-mode
+  (rich-minority-mode t))
 (setf rm-blacklist "")
 
 ;; TODO: folding

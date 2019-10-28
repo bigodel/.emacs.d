@@ -9,7 +9,7 @@
 ;; configuration in https://github.com/bling/dotemacs.
 ;;
 ;;; Code:
-;; load custom elisp files in the elisp/ directory
+;;; load custom elisp files in the elisp/ directory
 (let ((base (concat user-emacs-directory "elisp/")))
   (when (file-directory-p base)
     (add-to-list 'load-path base)
@@ -18,17 +18,16 @@
         (add-to-list 'load-path dir)))))
 
 ;; macro to measure the load time of each loaded package
-(defmacro /boot/measure-load (target &rest body)
+(defmacro measure-load (target &rest body)
   "Measure load time of each file TARGET with its respective BODY."
   (declare (indent defun))
-  `(let ((elapsed)
-         (start (current-time)))
+  `(let ((elapsed) (start (current-time)))
      (prog1
          ,@body
        (with-current-buffer (get-buffer-create "*Load Times*")
          (when (= 0 (buffer-size))
-           (insert (format "| %-60s | %-23s | elapsed  |\n" "feature" "timestamp"))
-           (insert "|--------------------------------------------------------------+-------------------------+----------|\n"))
+           (insert
+            (format "| %-60s | %-23s | elapsed  |\n" "feature" "timestamp")))
          (goto-char (point-max))
          (setq elapsed (float-time (time-subtract (current-time) start)))
          (insert (format "| %-60s | %s | %f |\n"
@@ -38,14 +37,14 @@
                          elapsed))))))
 
 (defadvice load (around dotemacs activate)
-  "Wrap `/boot/measure-load' around `load'."
-  (/boot/measure-load file ad-do-it))
+  "Wrap `measure-load' around `load'."
+  (measure-load file ad-do-it))
 
 (defadvice require (around dotemacs activate)
-  "Wrap `/boot/measure-load' around `require'."
+  "Wrap `measure-load' around `require'."
   (if (memq feature features)
       ad-do-it
-    (/boot/measure-load feature ad-do-it)))
+    (measure-load feature ad-do-it)))
 
 (defmacro bind (&rest commands)
   "Convenience macro to create lambda interactive COMMANDS."
@@ -108,7 +107,7 @@ variable locally."
       `(setq-local ,var ,value)
     `(customize-set-variable ',var ,value ,comment)))
 
-(defmacro /boot/lazy-major-mode (pattern mode)
+(defmacro lazy-major-mode (pattern mode)
   "Define a new `major-mode' matched by PATTERN, install MODE if
 necessary, and activates it."
   `(add-to-list 'auto-mode-alist
@@ -116,11 +115,11 @@ necessary, and activates it."
                                (require-package (quote ,mode))
                                (,mode)))))
 
-(defmacro /boot/delayed-init (&rest body)
+(defmacro delayed-init (&rest body)
   "Run BODY after idle for a predetermined amount of time."
   `(run-with-idle-timer 0.5 nil (lambda () ,@body)))
 
-(defun /boot/create-non-existent-directory (&optional dir)
+(defun create-non-existent-directory (&optional dir)
   "When trying to access non-existing directories, ask to create them.
 If DIR is provided, ask to create DIR."
   (let ((parent-directory (or (bound-and-true-p dir)
@@ -131,7 +130,7 @@ If DIR is provided, ask to create DIR."
       (make-directory parent-directory t))))
 
 (add-to-list 'find-file-not-found-functions
-             #'/boot/create-non-existent-directory)
+             #'create-non-existent-directory)
 
 (provide 'core-boot)
 ;;; core-boot.el ends here

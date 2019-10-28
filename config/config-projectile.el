@@ -12,35 +12,37 @@
         (concat dotemacs-cache-directory "projectile.cache"))
 (setvar projectile-known-projects-file
         (concat dotemacs-cache-directory "projectile-bookmarks.eld"))
-(setvar projectile-indexing-method 'native)
+(setvar projectile-indexing-method 'alien)
 (setvar projectile-enable-caching t)
 (setvar projectile-completion-system 'ivy)
 (setvar projectile-project-compilation-cmd "")
 (setvar projectile-project-run-cmd "")
 
-;; default prefix key for projectile
-(/bindings/define-key (current-global-map) (kbd "C-c p") #'projectile-command-map)
-
 ;; start projectile
-(projectile-mode t)
+(projectile-mode)
 
-;; add ignored directories to projectile
-(dolist (dir dotemacs-globally-ignored-directories)
-  (add-to-list 'projectile-globally-ignored-directories dir))
+(after 'projectile
+  ;;; default prefix key for projectile
+  (/bindings/define-key projectile-mode-map
+    (kbd "C-c p") #'projectile-command-map)
 
-(cond
- ((executable-find "ag")
-  (setvar projectile-generic-command
-          (concat "ag -0 -l --nocolor"
-                  (mapconcat #'identity
-                             (cons "" projectile-globally-ignored-directories)
-                             " --ignore-dir="))))
- ((executable-find "ack")
-  (setvar projectile-generic-command
+  (dolist (dir dotemacs-globally-ignored-directories)
+    (add-to-list 'projectile-globally-ignored-directories dir))
+
+  ;;; projectile-generic-command
+  (cond
+   ((executable-find "rg")
+    (setq projectile-generic-command
+          (concat "rg -0 --files --color never "
+                  (mapconcat (lambda (dir) (concat "--glob " "'!" dir "'"))
+                             projectile-globally-ignored-directories " "))))
+   ((executable-find "ag")
+    (setq projectile-generic-command
+          (concat "ag -0 -l --nocolor "
+                  (mapconcat (lambda (dir) (concat "--ignore-dir=" dir))
+                             projectile-globally-ignored-directories " "))))
+   ((executable-find "ack")
+    (setq projectile-generic-command
           (concat "ack -f --print0"
-                  (mapconcat #'identity
-                             (cons "" projectile-globally-ignored-directories)
-                             " --ignore-dir=")))))
-
-(provide 'config-projectile)
-;;; config-projectile.el ends here
+                  (mapconcat (lambda (dir) (concat "--ignore-dir=" dir))
+                             projectile-globally-ignored-directories " "))))))

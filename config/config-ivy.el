@@ -69,20 +69,23 @@
   ((kbd "C-c c l") #'counsel-locate "locate")
   ((kbd "C-c c o") #'counsel-outline "jump to outline"))
 
-(if (executable-find "rg")
-    (/bindings/define-key (current-global-map)
-      (kbd "C-c c g") #'counsel-rg)
+;; try some searchers to see which to use; default to grep
+(cond
+ ((executable-find "rg")
+  (/bindings/define-key (current-global-map)
+    (kbd "C-c c g") #'counsel-rg))
 
-  (if (executable-find "ag")
-      (/bindings/define-key (current-global-map)
-        (kbd "C-c c g") #'counsel-ag)
+ ((executable-find "ag")
+  (/bindings/define-key (current-global-map)
+    (kbd "C-c c g") #'counsel-ag))
 
-    (when (executable-find "pt")
-      (/bindings/define-key (current-global-map)
-        (kbd "C-c c g") #'counsel-pt))
+ ((executable-find "pt")
+  (/bindings/define-key (current-global-map)
+    (kbd "C-c c g") #'counsel-pt))
 
-    (/bindings/define-key (current-global-map)
-      (kbd "C-c c g") #'counsel-grep)))
+ (t
+  (/bindings/define-key (current-global-map)
+    (kbd "C-c c g") #'counsel-grep)))
 
 (after 'yasnippet
   (/bindings/define-key (current-global-map)

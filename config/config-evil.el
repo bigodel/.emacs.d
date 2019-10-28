@@ -39,20 +39,22 @@
 (setvar evil-search-module 'evil-search) ; emulate vim's search
 (setvar evil-magic t)                    ; vim's magicness (for 'evil-search)
 (setvar evil-shift-width 4)              ; offset of < and >
-(setvar evil-regexp-search t)
-(setvar evil-search-wrap t)
-(setvar evil-want-C-i-jump t)
-(setvar evil-want-C-u-scroll t)
-(setvar evil-want-fine-undo nil)
-(setvar evil-want-integration t)
-(setvar evil-want-keybinding nil)
+(setvar evil-regexp-search t)            ; whether to use regexp for search
+(setvar evil-search-wrap t)              ; whether searchs wraps around
+(setvar evil-want-C-i-jump t)            ; whether C-i works like in vim
+(setvar evil-want-C-u-scroll t)          ; whether C-u works like in vim
+(setvar evil-want-fine-undo nil)         ; whether to undo like vim or emacs
+(setvar evil-want-integration t)         ; whether to load evil-integration.el
+(setvar evil-want-keybinding nil)        ; whether to load evil-keybindings.el
 ;; (setvar evil-want-abbrev-expand-on-insert-exit nil)
-(setvar evil-vsplit-window-right t)
-(setvar evil-split-window-below t)
-(setvar evil-ex-search-vim-style-regexp t)
+(setvar evil-vsplit-window-right t)     ; vsplit creates window to the right
+(setvar evil-split-window-below t)      ; split creates window below
+(setvar evil-ex-search-vim-style-regexp t) ; vim-style \ codes are supported in
+                                        ; search pattern (only has affectes if
+                                        ; evil-search-module is 'evil-search
 ;; move evil tag to beginning of modeline
 (setvar evil-mode-line-format '(before . mode-line-front-space))
-
+;; set the cursor for each state
 (setvar evil-emacs-state-cursor    '("red" box))
 (setvar evil-motion-state-cursor   '("white" box))
 (setvar evil-normal-state-cursor   '("magenta" box))

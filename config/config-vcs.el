@@ -5,34 +5,34 @@
 ;;; Commentary:
 
 ;;; Code:
+;;; vcs variables
 (setvar smerge-command-prefix "\C-cn")  ; the default value is "C-c ^"
 (setvar vc-make-backup-files t)         ; bakcup vcs files like other files
 (setvar auto-revert-check-vc-info t)    ; update vcs info when needed
 (setvar vc-follow-symlinks t)
 
 ;; i have a commit template and the first line is a comment
-(after 'evil
-  (add-hook 'git-commit-mode-hook
-            (lambda ()
-              (next-line)
+(add-hook 'git-commit-mode-hook
+          (lambda ()
+            (next-line)
+            (after 'evil
               (when (evil-normal-state-p)
                 (evil-insert-state)))))
 
+;;; packages
+(lazy-major-mode "\\.gitignore\\'" 'gitignore-mode)
+(lazy-major-mode "\\.gitconfig\\'" 'gitconfig-mode)
+(lazy-major-mode "\\.gitattributes\\'" 'gitattributes-mode)
+
 (require-package 'magit)
 
-(/boot/lazy-major-mode "\\.gitignore$" gitignore-mode)
-(/boot/lazy-major-mode "\\.gitattributes$" gitattributes-mode)
-
-;; magit variables
+;;; magit variables
 (after 'magit
   (setvar magit-section-show-child-couno t)
   (setvar magit-diff-arguments '("--histogram"))
   (setvar magit-ediff-dwim-show-on-hunks t)
   (setvar magit-display-buffer-function 'magit-display-buffer-traditional)
   (setvar magit-completing-read-function 'ivy-completing-read)
-
-  (add-hook 'magit-mode-hook #'hl-line-mode)
-
   ;; default merge arguments
   (setvar magit-merge-arguments '("--no-ff"))
 

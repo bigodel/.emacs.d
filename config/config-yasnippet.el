@@ -5,20 +5,18 @@
 ;;; Commentary:
 
 ;;; Code:
-;; install yasnippet and the snippets
+;;; install yasnippet and the snippets
 (require-package 'yasnippet)
 (require-package 'yasnippet-snippets)
 (require-package 'yasnippet-classic-snippets)
 
-;; variables
+;;; variables
 (setvar yas-fallback-behaviour 'return-nil)
 (setvar yas-also-auto-indent-first-line t)
 
 ;; active yasnippet globally
-(yas-global-mode)
-
-;; snippets folder
-(yas-load-directory (expand-file-name "snippets/" user-emacs-directory))
+(add-hook 'prog-mode-hook #'yas-minor-mode)
+(add-hook 'text-mode-hook #'yas-minor-mode)
 
 (provide 'config-yasnippet)
 ;;; config-yasnippet.el ends here
