@@ -34,28 +34,28 @@
 (add-to-list 'default-frame-alist '(font . "monospace-14"))
 
 ;;; line numbers (only available in Emacs 26+)
-;; (defconst eyecandy-line-numbers-disabled-hooks
-;;   '(eshell-mode-hook
-;;     woman-mode-hook
-;;     man-mode-hook
-;;     helpful-mode-hook
-;;     help-mode-hook
-;;     treemacs-mode-hook
-;;     dired-mode-hook
-;;     doc-view-mode-hook
-;;     pdf-view-mode-hook
-;;     proof-goals-mode-hook
-;;     proof-response-mode-hook)
-;;   "Modes to disable `display-line-numbers-mode'.")
+(defconst eyecandy-line-numbers-disabled-hooks
+  '(eshell-mode-hook
+    woman-mode-hook
+    man-mode-hook
+    helpful-mode-hook
+    help-mode-hook
+    treemacs-mode-hook
+    dired-mode-hook
+    doc-view-mode-hook
+    pdf-view-mode-hook
+    proof-goals-mode-hook
+    proof-response-mode-hook)
+  "Modes to disable `display-line-numbers-mode'.")
 
-;; (when (fboundp 'display-line-numbers-mode)
-;;   (setvar display-line-numbers nil)
-;;   (setvar display-line-numbers-current-absolute t)
+(when (fboundp 'display-line-numbers-mode)
+  (setvar display-line-numbers t)
+  (setvar display-line-numbers-current-absolute t)
 
-;;   (dolist (hook eyecandy-line-numbers-disabled-hooks)
-;;     (add-hook hook (lambda ()
-;;                      "Disable `display-line-numbers-mode'."
-;;                      (display-line-numbers-mode -1)))))
+  (dolist (hook eyecandy-line-numbers-disabled-hooks)
+    (add-hook hook (lambda ()
+                     "Disable `display-line-numbers-mode'."
+                     (display-line-numbers-mode -1)))))
 
 ;;; whitespace-mode
 (setvar whitespace-style

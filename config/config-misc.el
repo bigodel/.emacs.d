@@ -61,7 +61,7 @@
 ;; bindings
 (after 'pdf-tools
   (/bindings/define-keys pdf-view-mode-map
-    ((kbd "q") #'/util/window-killer)
+    ((kbd "q") #'utils-window-killer)
     ((kbd "k") nil)
     ((kbd "j") #'pdf-view-next-line-or-next-page)
     ((kbd "k") #'pdf-view-previous-line-or-previous-page)

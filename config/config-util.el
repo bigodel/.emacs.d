@@ -5,12 +5,12 @@
 ;;; Commentary:
 
 ;;; Code:
-(defun /util/reload-init-file ()
+(defun utils-reload-init-file ()
   "Reload Emacs configurations."
   (interactive)
   (load-file user-init-file))
 
-(defun /util/window-killer ()
+(defun utils-window-killer ()
   "Close the window, and delete the buffer if it's the last window open."
   (interactive)
   (if (> buffer-display-count 1)
@@ -19,7 +19,7 @@
         (delete-window))
     (kill-buffer-and-window)))
 
-(defun /util/minibuffer-keyboard-quit ()
+(defun utils-minibuffer-keyboard-quit ()
   "Abort recursive edit.
 In Delete Selection mode, if the mark is active, just deactivate it;
 then it takes a second \\[keyboard-quit] to abort the minibuffer."
@@ -29,12 +29,12 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
     (when (get-buffer "*Completions*") (delete-windows-on "*Completions*"))
     (abort-recursive-edit)))
 
-(defun /util/set-transparency (alpha)
+(defun utils-set-transparency (alpha)
   "Set the transparency of the current frame to ALPHA."
   (interactive "nAlpha: ")
   (set-frame-parameter nil 'alpha alpha))
 
-(defun /util/copy-file-name-to-clipboard ()
+(defun utils-copy-file-name-to-clipboard ()
   "Copy the current buffer file name to the clipboard."
   (interactive)
   (let ((filename (if (equal major-mode 'dired-mode)
@@ -44,7 +44,7 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
       (kill-new filename)
       (message "Copied buffer file name '%s' to the clipboard." filename))))
 
-(defun /util/eval-and-replace ()
+(defun utils-eval-and-replace ()
   "Replace the preceding sexp with its value."
   (interactive)
   (let ((value (eval (elisp--preceding-sexp))))
@@ -59,7 +59,7 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
     (backward-kill-sexp)
     (insert (format "%s" value))))
 
-(defun /util/rename-buffer-file (buffer)
+(defun utils-rename-buffer-file (buffer)
   "Rename file associated to BUFFER."
   (interactive "bBuffer: ")
   (let ((filename (if (bufferp buffer)
@@ -78,12 +78,12 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
             (set-visited-file-name new-name t t)
             (set-buffer-modified-p nil))))))))
 
-(defun /util/rename-current-buffer-file ()
+(defun utils-rename-current-buffer-file ()
   "Rename current buffer and file it is visiting."
   (interactive)
-  (/util/rename-buffer-file (current-buffer)))
+  (utils-rename-buffer-file (current-buffer)))
 
-(defun /util/delete-current-buffer-file ()
+(defun utils-delete-current-buffer-file ()
   "Kill the current buffer and deletes the file it is visiting."
   (interactive)
   (let ((filename (buffer-file-name)))
@@ -96,28 +96,28 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
           (message "Deleted file %s" filename)
           (kill-buffer))))))
 
-(defun /util/goto-scratch-buffer ()
+(defun utils-goto-scratch-buffer ()
   "Create a new scratch buffer. If *scratch* already exists, switch to it."
   (interactive)
   (switch-to-buffer (get-buffer-create "*scratch*")))
 
-(defun /util/insert-last-kbd-macro ()
+(defun utils-insert-last-kbd-macro ()
   "Insert the last defined keyboard macro."
   (interactive)
   (name-last-kbd-macro 'my-last-macro)
   (insert-kbd-macro 'my-last-macro))
 
-(defun /util/set-buffer-to-unix-format ()
+(defun utils-set-buffer-to-unix-format ()
   "Convert the current buffer to UNIX file format."
   (interactive)
   (set-buffer-file-coding-system 'undecided-unix nil))
 
-(defun /util/set-buffer-to-dos-format ()
+(defun utils-set-buffer-to-dos-format ()
   "Convert the current buffer to DOS file format."
   (interactive)
   (set-buffer-file-coding-system 'undecided-dos nil))
 
-(defun /util/find-file-as-root (file)
+(defun utils-find-file-as-root (file)
   "Edit FILE as root."
   (interactive "f")
   (find-file-other-window (concat "/sudo::" file)))

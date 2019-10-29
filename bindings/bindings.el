@@ -99,9 +99,18 @@ nil. Check its documentation for more details."
 ;; SPC bindings
 (bindings-define-prefix-keys bindings-normal-space-leader-map "SPC"
   (" " #'execute-extended-command "M-x")
+  ("d" #'dired)
+  ("w" #'save-buffer)
   ("f" #'find-file)
   ("b" #'switch-to-buffer)
   ("B" #'ibuffer)
+  ;; hydras
+  ("t" #'hydras/toggles/body "toggle...") ; TODO
+  ("j" #'hydras/jumps/body "jump...")
+  ("s" #'hydras/search/body "search...")
+  ("F" #'hydras/files/body "files...")
+  ("i" #'hydras/ivy/body "ivy...")
+  ("g" #'hydras/magit/body "magit...")
   ;; TODO: put this in undo-tree or maybe in misc
   ("u" #'undo-tree-visualize)
   ("'" #'eshell/new-window "eshell")
@@ -115,14 +124,15 @@ nil. Check its documentation for more details."
   ((kbd "C-x C") #'compile)
   ((kbd "C-x c") #'recompile)
   ((kbd "C-x C-k") #'kill-this-buffer)
-  ((kbd "C-x K") #'/util/delete-current-buffer-file)
-  ((kbd "C-x C-S-f") #'/util/find-file-as-root))
+  ((kbd "C-x K") #'utils-delete-current-buffer-file)
+  ((kbd "C-x n") #'hydras/narrow/body)
+  ((kbd "C-x C-S-f") #'utils-find-file-as-root))
 
 ;; C-c bindings
 (bindings-define-keys (current-global-map)
-  ((kbd "C-c s") #'/util/goto-scratch-buffer "go to scratch")
-  ((kbd "C-c e") #'/util/eval-and-replace "eval and replace")
-  ((kbd "C-c C-l") #'/util/reload-init-file))
+  ((kbd "C-c s") #'utils-goto-scratch-buffer "go to scratch")
+  ((kbd "C-c e") #'utils-eval-and-replace "eval and replace")
+  ((kbd "C-c C-l") #'utils-reload-init-file))
 
 ;; misc bindings
 (bindings-define-keys (current-global-map)
@@ -143,15 +153,15 @@ nil. Check its documentation for more details."
 
 ;; escape minibuffer with ESC
 ;; (bindings-define-key minibuffer-local-map
-;;   [escape] #'/util/minibuffer-keyboard-quit)
+;;   [escape] #'utils-minibuffer-keyboard-quit)
 ;; (bindings-define-key minibuffer-local-ns-map
-;;   [escape] #'/util/minibuffer-keyboard-quit)
+;;   [escape] #'utils-minibuffer-keyboard-quit)
 ;; (bindings-define-key minibuffer-local-completion-map
-;;   [escape] #'/util/minibuffer-keyboard-quit)
+;;   [escape] #'utils-minibuffer-keyboard-quit)
 ;; (bindings-define-key minibuffer-local-must-match-map
-;;   [escape] #'/util/minibuffer-keyboard-quit)
+;;   [escape] #'utils-minibuffer-keyboard-quit)
 ;; (bindings-define-key minibuffer-local-isearch-map
-;;   [escape] #'/util/minibuffer-keyboard-quit)
+;;   [escape] #'utils-minibuffer-keyboard-quit)
 
 ;; mouse scrolling in terminal
 (unless (display-graphic-p)
