@@ -13,27 +13,6 @@
 ;; https://github.com/bling/dotemacs.
 ;;
 ;;; Code:
-;;; show possible combinations of keys for prefix keys
-(require-package 'which-key)
-(setvar which-key-idle-delay 1.0)       ; delay (in secs) for which-key pop up
-(setvar which-key-allow-evil-operators t) ; show evil operators with which key
-(which-key-mode)
-
-;;; hydra
-(setvar lv-use-separator t)
-(require-package 'hydra)
-(autoload 'hydra-default-pre "hydra")
-
-;; TODO: this package is part of magit, so maybe add this to the vcs
-;; configuration file (where magit configuration is)
-(require-package 'transient)
-(setvar transient-history-file (concat dotemacs-cache-directory
-                                       "transient/history.el"))
-(setvar transient-levels-file (concat dotemacs-cache-directory
-                                      "transient/levels.el"))
-(setvar transient-values-file (concat dotemacs-cache-directory
-                                      "transient/values.el"))
-
 ;;; macros for defining keys
 (defmacro bindings-define-prefix-keys (keymap prefix &rest body)
   "Define a PREFIX key for the KEYMAP.
@@ -88,6 +67,31 @@ nil. Check its documentation for more details."
   (declare (indent defun))
   `(bindings-define-prefix-keys ,keymap nil
      (,sequence ,binding ,description)))
+
+
+
+;;; show possible combinations of keys for prefix keys
+(require-package 'which-key)
+(setvar which-key-idle-delay 1.0)       ; delay (in secs) for which-key pop up
+(setvar which-key-allow-evil-operators t) ; show evil operators with which key
+(which-key-mode)
+
+;;; hydra
+(setvar lv-use-separator t)
+(require-package 'hydra)
+(autoload 'hydra-default-pre "hydra")
+
+;; TODO: this package is part of magit, so maybe add this to the vcs
+;; configuration file (where magit configuration is)
+(require-package 'transient)
+(setvar transient-history-file (concat dotemacs-cache-directory
+                                       "transient/history.el"))
+(setvar transient-levels-file (concat dotemacs-cache-directory
+                                      "transient/levels.el"))
+(setvar transient-values-file (concat dotemacs-cache-directory
+                                      "transient/values.el"))
+
+
 
 ;;; bindings
 ;; SPC as a prefix key

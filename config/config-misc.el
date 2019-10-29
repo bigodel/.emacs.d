@@ -27,7 +27,7 @@
   (evil-make-overriding-map disable-mouse-mode-map))
 
 ;;; undo like vim
-(require-package 'undo-tree)
+(package-install 'undo-tree)
 (setvar undo-tree-auto-save-history t)
 (setvar undo-tree-enable-undo-in-region nil)
 (setvar undo-tree-history-directory-alist

@@ -18,7 +18,7 @@
  '(ivy-wrap t)
  '(package-selected-packages
    (quote
-    (yasnippet-snippets yasnippet-classic-snippets yaml-mode which-key vimrc-mode toml-mode rich-minority proof-general pdf-tools page-break-lines ox-pandoc markdown-mode magit-todos lua-mode json-mode ivy-yasnippet ivy-hydra ivy-bibtex helpful gitignore-mode gitconfig-mode gitattributes-mode evil-org evil-matchit esh-help dumb-jump crontab-mode counsel-tramp counsel-projectile company-coq auctex amx aggressive-indent)))
+    (undo-tree yasnippet-snippets yasnippet-classic-snippets yaml-mode which-key vimrc-mode toml-mode rich-minority proof-general pdf-tools page-break-lines ox-pandoc markdown-mode magit-todos lua-mode json-mode ivy-yasnippet ivy-hydra ivy-bibtex helpful gitignore-mode gitconfig-mode gitattributes-mode evil-org evil-matchit esh-help dumb-jump crontab-mode counsel-tramp counsel-projectile company-coq auctex amx aggressive-indent)))
  '(pdf-view-midnight-colors (quote ("#ffffff" . "#000000")) t)
  '(pdf-view-resize-factor 1.1 t)
  '(projectile-cache-file "~/.emacs.d/.cache/projectile.cache")

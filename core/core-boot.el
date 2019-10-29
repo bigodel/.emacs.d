@@ -18,33 +18,33 @@
         (add-to-list 'load-path dir)))))
 
 ;; macro to measure the load time of each loaded package
-;; (defmacro measure-load (target &rest body)
-;;   "Measure load time of each file TARGET with its respective BODY."
-;;   (declare (indent defun))
-;;   `(let ((elapsed) (start (current-time)))
-;;      (prog1
-;;          ,@body
-;;        (with-current-buffer (get-buffer-create "*Load Times*")
-;;          (when (= 0 (buffer-size))
-;;            (insert
-;;             (format "| %-60s | %-23s | elapsed  |\n" "feature" "timestamp")))
-;;          (goto-char (point-max))
-;;          (setq elapsed (float-time (time-subtract (current-time) start)))
-;;          (insert (format "| %-60s | %s | %f |\n"
-;;                          ,target
-;;                          (format-time-string "%Y-%m-%d %H:%M:%S.%3N"
-;;                                              (current-time))
-;;                          elapsed))))))
-;;
-;; (defadvice load (around dotemacs activate)
-;;   "Wrap `measure-load' around `load'."
-;;   (measure-load file ad-do-it))
-;;
-;; (defadvice require (around dotemacs activate)
-;;   "Wrap `measure-load' around `require'."
-;;   (if (memq feature features)
-;;       ad-do-it
-;;     (measure-load feature ad-do-it)))
+(defmacro measure-load (target &rest body)
+  "Measure load time of each file TARGET with its respective BODY."
+  (declare (indent defun))
+  `(let ((elapsed) (start (current-time)))
+     (prog1
+         ,@body
+       (with-current-buffer (get-buffer-create "*Load Times*")
+         (when (= 0 (buffer-size))
+           (insert
+            (format "| %-60s | %-23s | elapsed  |\n" "feature" "timestamp")))
+         (goto-char (point-max))
+         (setq elapsed (float-time (time-subtract (current-time) start)))
+         (insert (format "| %-60s | %s | %f |\n"
+                         ,target
+                         (format-time-string "%Y-%m-%d %H:%M:%S.%3N"
+                                             (current-time))
+                         elapsed))))))
+
+(defadvice load (around dotemacs activate)
+  "Wrap `measure-load' around `load'."
+  (measure-load file ad-do-it))
+
+(defadvice require (around dotemacs activate)
+  "Wrap `measure-load' around `require'."
+  (if (memq feature features)
+      ad-do-it
+    (measure-load feature ad-do-it)))
 
 (defmacro bind (&rest commands)
   "Convenience macro to create lambda interactive COMMANDS."

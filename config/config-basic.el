@@ -10,26 +10,22 @@
 (setvar user-mail-address "jpedrodeamorim@gmail.com")
 
 ;;; server
-(require 'server)
-(defvar dotemacs-basic/server-directory
+(defconst dotemacs-server-directory
   (format "%s/emacs%d/" (or (getenv "TMPDIR") "/tmp") (user-uid))
   "The storage location for the socket file used to connect to the daemon.")
 (setvar server-socket-dir               ; dir for the server socket
-        dotemacs-basic/server-directory)
+        dotemacs-server-directory)
 (setvar server-auth-dir                 ; dir for the authentication files
-        (expand-file-name "server" dotemacs-basic/server-directory))
-;; start server if its not already running
-(unless (server-running-p)
-  (server-start))
+        (concat dotemacs-server-directory "server"))
 
 ;;; move cursor to the last position upon open
-(setvar save-place-file (expand-file-name "places" dotemacs-cache-directory))
+(setvar save-place-file (concat dotemacs-cache-directory "places"))
 (save-place-mode t)
 
 ;;; savehist (minibuffer history)
-(setvar savehist-file (expand-file-name "savehist" dotemacs-cache-directory))
+(setvar savehist-file (concat dotemacs-cache-directory "savehist"))
 (setvar savehist-additional-variables '(search ring regexp-search-ring))
-(setvar savehist-autosave-interval 60)
+(setvar savehist-autosave-interval nil)
 (setvar history-length 100)
 (savehist-mode t)
 
@@ -46,7 +42,7 @@
 
 (run-with-idle-timer 600 t #'recentf-save-list)
 
-;; garbage collector
+;;; garbage collector
 (defun basic-minibuffer-setup-hook ()
   "Hook to optimize garbage collection when entering or exiting minibuffer."
   (setvar gc-cons-threshold most-positive-fixnum))
@@ -58,7 +54,7 @@
 (add-hook 'minibuffer-setup-hook #'basic-minibuffer-setup-hook)
 (add-hook 'minibuffer-exit-hook #'basic-minibuffer-exit-hook)
 
-;;; hippie expand and abbrevs
+;;; abbrev
 (setvar abbrev-mode t)                  ; start `abbrev-mode'
 (setvar abbrev-file-name                ; default abbrevs file
         (concat user-emacs-directory "abbrevs"))
@@ -84,11 +80,16 @@ inserted." t)
 
 (add-hook 'text-mode-hook #'turn-on-auto-fill)
 
-;; ignore case when doing file name completion
+;;; ignore case when doing file name completion
 (setvar pcomplete-ignore-case t)
 
 ;;; comint
-(setvar comint-scroll-to-bottom-on-input 'this)
+(setvar comint-scroll-to-bottom-on-input 'this) ; scroll to bottom on input
+(setvar comint-move-point-for-output t) ; output moves point to the end of it
+
+;;; compilation
+(setvar compilation-always-kill t)      ; always kill compilation process
+(setvar compilation-ask-about-save nil) ; save without asking
 
 ;;; dired
 ;; wdired
@@ -126,37 +127,30 @@ Set `dired-x' and `dired-aux' global variables here."
   (if (executable-find "gls")
       (setvar insert-directory-program (executable-find "gls"))
     (setvar dired-use-ls-dired nil)
-    (setvar ls-lisp-use-insert-directory-program nil)
-    (require 'ls-lisp)))
+    (setvar ls-lisp-use-insert-directory-program nil)))
 
 ;;; tramp
-(setvar tramp-persistency-file-name
-        (expand-file-name "tramp" dotemacs-cache-directory))
-(setvar tramp-default-method "ssh")
-(setvar remote-file-name-inhibit-cache nil)
-(setvar vc-ignore-dir-regexp (format "%s\\|%s"
-                                     vc-ignore-dir-regexp
-                                     tramp-file-name-regexp))
+(setvar tramp-persistency-file-name (concat dotemacs-cache-directory "tramp"))
+
 ;;; bookmarks
-(setvar bookmark-default-file
-        (expand-file-name "bookmarks" dotemacs-cache-directory))
-(setvar bookmark-save-flag 1) ;; save after every change
+(setvar bookmark-default-file (concat dotemacs-cache-directory "bookmarks"))
 
 ;;; fringe
 (when (display-graphic-p)
-  (fringe-mode '(8 . 8)))
+  (fringe-mode 8))
 
 ;;; ediff
 (setvar ediff-split-window-function
-        'split-window-horizontally) ; side-by-side diffs
+        'split-window-horizontally)     ; side-by-side diffs
 (setvar ediff-window-setup-function
-        'ediff-setup-windows-plain) ; no extra frames
+        'ediff-setup-windows-plain)     ; no extra frames
 
 ;;; ibuffer
 (add-hook 'ibuffer-mode-hook #'ibuffer-auto-mode) ; auto update ibuffer
-;; don't ask for confirmation if the buffer isn't modified and some other things
+;; don't ask for confirmation if the buffer isn't modified
 (setvar ibuffer-expert t)
-(setvar ibuffer-show-empty-filter-groups nil)
+(setvar ibuffer-show-empty-filter-groups nil) ; show empty filter groups
+(setvar ibuffer-use-other-window t)           ; use other window
 ;; define filter groups
 (setvar ibuffer-saved-filter-groups
         (quote (("Home"
@@ -214,27 +208,29 @@ Set `dired-x' and `dired-aux' global variables here."
                 filename-and-process)))
 
 (defadvice ibuffer (around ibuffer-point-to-most-recent) ()
-           "Open ibuffer with cursor pointed to most recent buffer name."
+           "Open ibuffer with cursor pointed to most recent
+buffer name."
            (let ((recent-buffer-name (buffer-name)))
              ad-do-it
              (ibuffer-jump-to-buffer recent-buffer-name)))
 
-;;; move auto-save to the cache
-(let ((dir (expand-file-name "auto-save/" dotemacs-cache-directory)))
+;;; move auto-save to cache directory
+(let ((dir (concat dotemacs-cache-directory "auto-save/")))
   (setvar auto-save-list-file-prefix (concat dir "saves-"))
   (setvar auto-save-file-name-transforms `((".*" ,(concat dir "save-") t))))
 
-;;; multiple-backups
+;;; multiple backups
 (setvar backup-directory-alist
-        `((".*" . ,(expand-file-name "backups/" dotemacs-cache-directory))))
+        `((".*" . ,(expand-file-name
+                    (concat dotemacs-cache-directory "backups/")))))
 (setvar backup-by-copying t)
 (setvar version-control t)
-(setvar kept-old-versions 2)
+(setvar kept-old-versions 0)
 (setvar kept-new-versions 20)
 (setvar delete-old-versions t)
 
-;;; scrolling
-(setvar scroll-conservatively 0)
+;;; scrolling (like in Vim)
+(setvar scroll-conservatively 9999)
 (setvar scroll-preserve-screen-position t)
 (setvar scroll-margin 1)
 
@@ -256,9 +252,9 @@ Set `dired-x' and `dired-aux' global variables here."
 
 ;;; don't kill important buffers
 (defun basic-dont-kill-important-buffers ()
-  "Don't kill a buffer is its *scratch* or *Messages* or *Require Times*."
+  "Don't kill a buffer is its *scratch* or *Messages* or *Load Times*."
   (if (member (buffer-name (current-buffer))
-              '("*scratch*" "*Messages*" "*Require Times*"))
+              '("*scratch*" "*Messages*" "*Load Times*"))
       (progn (bury-buffer) nil)
     t))
 (add-hook 'kill-buffer-query-functions #'basic-dont-kill-important-buffers)
@@ -285,25 +281,7 @@ Set `dired-x' and `dired-aux' global variables here."
 (setvar inhibit-startup-echo-area-message t)
 (setvar initial-scratch-message nil)
 
-;;; infer indentation
-(defun basic-infer-indentation-style ()
-  "If the file has more tabs than spaces, use tabs instead for indentation.
-If it has more spaces, use spaces instead of tabs."
-  (interactive)
-  (let ((space-count (how-many "^    " (point-min) (point-max)))
-        (tab-count (how-many "^\t" (point-min) (point-max))))
-    (when (> tab-count space-count)
-      (setvar indent-tabs-mode t 'local))))
-
-(defun basic-find-file-hook ()
-  "Run `basic-infer-indentation-style' after `find-file'.
-Also, if the file has '.min' in it, switch to `fundamental-mode'."
-  (basic-infer-indentation-style)
-  (when (string-match "\\.min\\." (buffer-file-name))
-    (fundamental-mode)))
-(add-hook 'find-file-hook #'basic-find-file-hook)
-
-;;; misc
+;;; misc variables
 (setvar sentence-end-double-space nil)  ; setences don't end with double space
 (setvar ring-bell-function 'ignore)     ; disable annoying bell
 (setvar mark-ring-max 64)               ; max number of marks
@@ -316,9 +294,7 @@ Also, if the file has '.min' in it, switch to `fundamental-mode'."
 (setvar truncate-lines nil)             ; display or not continuous lines
 (setvar mouse-yank-at-point t)          ; don't move point to mouse paste
 (xterm-mouse-mode t)                    ; mouse on in xterm compatible terminals
-(global-auto-revert-mode t)             ; revert buffer when file changes
 (electric-indent-mode t)                ; indent automatically on some keys
-(delete-selection-mode t)               ; delete region and replace with text
 (random t)                              ; random number seed
 
 (provide 'config-basic)

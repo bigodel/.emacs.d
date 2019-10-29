@@ -8,25 +8,37 @@
 ;; installed with Emacs, like `vimrc-mode'.
 ;;
 ;;; Code:
-(after 'prog-mode
-  ;;; highlight TODO in prog-mode
-  (require-package 'hl-todo)
-  (add-hook 'prog-mode-hook #'hl-todo-mode)
+;;; infer indentation
+(defun infer-indentation-style ()
+  "If the file has more tabs than (four) spaces, use tabs instead
+for indentation. If it has more spaces, use spaces instead of
+tabs."
+  (interactive)
+  (let ((space-count (how-many "^    " (point-min) (point-max)))
+        (tab-count (how-many "^\t" (point-min) (point-max))))
+    (when (> tab-count space-count)
+      (setvar indent-tabs-mode t 'local))))
+
+(add-hook 'prog-mode-hook #'infer-indentation-style)
+
+;;; highlight TODO in prog-mode
+(require-package 'hl-todo)
+(add-hook 'prog-mode-hook #'hl-todo-mode)
 
   ;;; jump to definitions
-  (require-package 'dumb-jump)
-  (setvar dumb-jump-mode-selector 'ivy)
-  (if (executable-find "rg")
-      (setvar dumb-jump-prefer-searcher 'rg)
-    (when (executable-find "ag")
-      (setvar dumb-jump-prefer-searcher 'ag)))
+;; (require-package 'dumb-jump)
+;; (setvar dumb-jump-mode-selector 'ivy)
+;; (if (executable-find "rg")
+;;     (setvar dumb-jump-prefer-searcher 'rg)
+;;   (when (executable-find "ag")
+;;     (setvar dumb-jump-prefer-searcher 'ag)))
 
-  (after [evil dumb-jump]
-    (/bindings/define-key evil-normal-state-map (kbd "g d") #'dumb-jump-go)
-    (defadvice dumb-jump-go (before dotemacs activate)
-      (evil-set-jump)))
+;; (after [evil dumb-jump]
+;;   (/bindings/define-key evil-normal-state-map (kbd "g d") #'dumb-jump-go)
+;;   (defadvice dumb-jump-go (before dotemacs activate)
+;;     (evil-set-jump)))
 
-  (dumb-jump-mode))
+;; (dumb-jump-mode))
 
 ;;; bunch of modes that don't come with emacs
 (lazy-major-mode "\\.toml\\'" toml-mode)

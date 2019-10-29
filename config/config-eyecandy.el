@@ -13,49 +13,49 @@
 (when (fboundp 'horizontal-scroll-bar-mode) (horizontal-scroll-bar-mode -1))
 
 ;;; color theme
-(load-theme 'manoj-dark t)
+;; (load-theme 'manoj-dark t)
 
 ;; make fringe same background color as line-number face
 (set-face-background 'fringe (face-background 'line-number))
 
 ;; disable the bigger scale on bold function fonts (manoj-dark)
-(set-face-attribute 'font-lock-function-name-face nil :height 1.0)
+;; (set-face-attribute 'font-lock-function-name-face nil :height 1.0)
 
 ;; make comments grey (manoj-dark and default)
 (set-face-foreground 'font-lock-comment-face "dimgray")
 (set-face-foreground 'font-lock-comment-delimiter-face "dimgray")
 
 ;; change mode-line's face (manoj-dark)
-(set-face-attribute 'mode-line nil :height 1.0 :underline nil)
-(set-face-attribute 'mode-line-buffer-id nil :height 1.0)
-(set-face-attribute 'mode-line-inactive nil :underline nil)
+;; (set-face-attribute 'mode-line nil :height 1.0 :underline nil)
+;; (set-face-attribute 'mode-line-buffer-id nil :height 1.0)
+;; (set-face-attribute 'mode-line-inactive nil :underline nil)
 
 ;; default font
 (add-to-list 'default-frame-alist '(font . "monospace-14"))
 
 ;;; line numbers (only available in Emacs 26+)
-(defconst dotemacs-eyecandy/line-numbers-disabled-hooks
-  '(eshell-mode-hook
-    woman-mode-hook
-    man-mode-hook
-    helpful-mode-hook
-    help-mode-hook
-    treemacs-mode-hook
-    dired-mode-hook
-    doc-view-mode-hook
-    pdf-view-mode-hook
-    proof-goals-mode-hook
-    proof-response-mode-hook)
-  "Modes to disable `display-line-numbers-mode'.")
+;; (defconst eyecandy-line-numbers-disabled-hooks
+;;   '(eshell-mode-hook
+;;     woman-mode-hook
+;;     man-mode-hook
+;;     helpful-mode-hook
+;;     help-mode-hook
+;;     treemacs-mode-hook
+;;     dired-mode-hook
+;;     doc-view-mode-hook
+;;     pdf-view-mode-hook
+;;     proof-goals-mode-hook
+;;     proof-response-mode-hook)
+;;   "Modes to disable `display-line-numbers-mode'.")
 
-(when (fboundp 'display-line-numbers-mode)
-  (setvar display-line-numbers nil)
-  (setvar display-line-numbers-current-absolute t)
+;; (when (fboundp 'display-line-numbers-mode)
+;;   (setvar display-line-numbers nil)
+;;   (setvar display-line-numbers-current-absolute t)
 
-  (dolist (hook dotemacs-eyecandy/line-numbers-disabled-hooks)
-    (add-hook hook (lambda ()
-                     "Disable `display-line-numbers-mode'."
-                     (display-line-numbers-mode -1)))))
+;;   (dolist (hook eyecandy-line-numbers-disabled-hooks)
+;;     (add-hook hook (lambda ()
+;;                      "Disable `display-line-numbers-mode'."
+;;                      (display-line-numbers-mode -1)))))
 
 ;;; whitespace-mode
 (setvar whitespace-style
