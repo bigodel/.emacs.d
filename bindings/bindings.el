@@ -95,15 +95,16 @@ nil. Check its documentation for more details."
 
 ;;; bindings
 ;; SPC as a prefix key
-(setvar bindings-normal-space-leader-map (make-sparse-keymap))
+(setvar bindings-space-map (make-sparse-keymap))
 ;; SPC bindings
-(bindings-define-prefix-keys bindings-normal-space-leader-map "SPC"
+(bindings-define-prefix-keys bindings-space-map "SPC"
   (" " #'execute-extended-command "M-x")
   ("d" #'dired)
   ("w" #'save-buffer)
   ("f" #'find-file)
   ("b" #'switch-to-buffer)
   ("B" #'ibuffer)
+  ("h" help-map "help")
   ;; hydras
   ("t" #'hydras/toggles/body "toggle...") ; TODO
   ("j" #'hydras/jumps/body "jump...")
@@ -114,9 +115,9 @@ nil. Check its documentation for more details."
   ;; TODO: put this in undo-tree or maybe in misc
   ("u" #'undo-tree-visualize)
   ("'" #'eshell/new-window "eshell")
-  ("v" vc-prefix-map)
-  ("4" ctl-x-4-map)
-  ("5" ctl-x-5-map))
+  ("v" vc-prefix-map "vc-prefix-map")
+  ("4" ctl-x-4-map "other window")
+  ("5" ctl-x-5-map "other frame"))
 
 ;; C-x bindings
 (bindings-define-keys (current-global-map)
@@ -136,6 +137,8 @@ nil. Check its documentation for more details."
 
 ;; misc bindings
 (bindings-define-keys (current-global-map)
+  ([next] #'next-buffer)
+  ([prior] #'previous-buffer)
   ((kbd "M-/") #'hippie-expand)
   ;; since I use a US international keyboard, ' is actually translated as
   ;; <dead-acute> (it is a dead key) so I need to make Emacs understand
@@ -152,16 +155,19 @@ nil. Check its documentation for more details."
     ((kbd "C-c t") #'eshell/new-window)))
 
 ;; escape minibuffer with ESC
-;; (bindings-define-key minibuffer-local-map
-;;   [escape] #'utils-minibuffer-keyboard-quit)
-;; (bindings-define-key minibuffer-local-ns-map
-;;   [escape] #'utils-minibuffer-keyboard-quit)
-;; (bindings-define-key minibuffer-local-completion-map
-;;   [escape] #'utils-minibuffer-keyboard-quit)
-;; (bindings-define-key minibuffer-local-must-match-map
-;;   [escape] #'utils-minibuffer-keyboard-quit)
-;; (bindings-define-key minibuffer-local-isearch-map
-;;   [escape] #'utils-minibuffer-keyboard-quit)
+(bindings-define-key minibuffer-local-map
+  [escape] #'utils-minibuffer-keyboard-quit)
+(bindings-define-key minibuffer-local-ns-map
+  [escape] #'utils-minibuffer-keyboard-quit)
+(bindings-define-key minibuffer-local-completion-map
+  [escape] #'utils-minibuffer-keyboard-quit)
+(bindings-define-key minibuffer-local-must-match-map
+  [escape] #'utils-minibuffer-keyboard-quit)
+(bindings-define-key minibuffer-local-isearch-map
+  [escape] #'utils-minibuffer-keyboard-quit)
+;; TODO: move this to bindings-ivy.el
+(after 'ivy
+  (bindings-define-key ivy-mode-map [escape] (kbd "C-g")))
 
 ;; mouse scrolling in terminal
 (unless (display-graphic-p)

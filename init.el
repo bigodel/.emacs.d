@@ -73,7 +73,7 @@ involves searching.")
   ;;; load some core stuff
   (load (concat core-directory "core-boot"))
   ;; temporary -------
-  ;; TODO: change all the instances of /bindings/ to bindings- and remove this
+  ;; NEXT: change all the instances of /bindings/ to bindings- and remove this
   (load (concat core-directory "core-bindings"))
   ;; temporary -------
 
