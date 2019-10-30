@@ -101,6 +101,7 @@ PREFIX arg as nil. Check its documentation for more details."
 ;; SPC bindings
 (bindings-define-prefix-keys bindings-space-map "SPC"
   (" " #'execute-extended-command "M-x")
+  ("." #'dired-jump)
   ("d" #'dired)
   ("w" #'save-buffer)
   ("f" #'find-file)
