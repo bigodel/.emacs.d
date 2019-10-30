@@ -271,6 +271,7 @@ buffer name."
 
 ;;; tabs
 (setvar indent-tabs-mode nil) ; spaces instead of tabs
+(setvar tab-width 4)
 ;; enable tabs instead of spaces in makefiles
 ;; TODO: move this to config-makefile.el maybe???
 (add-hook 'makefile-mode-hook '(setvar indent-tabs-mode t 'local))

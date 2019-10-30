@@ -77,7 +77,6 @@
     emacs-lisp-mode-hook
     sh-mode-hook
     java-mode-hook
-    TeX-mode-hook
     python-mode-hook)
   "Hooks for major modes to activate `aggressive-indent-mode'.")
 

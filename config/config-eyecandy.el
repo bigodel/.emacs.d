@@ -6,11 +6,11 @@
 
 ;;; Code:
 ;; disable bars to have a as clean as possible interface
-(when (fboundp 'tool-bar-mode) (tool-bar-mode -1))
-(when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
+;; (when (fboundp 'tool-bar-mode) (tool-bar-mode -1))
+;; (when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
 ;; (unless (display-graphic-p) (menu-bar-mode -1)) ; enable in GUI Emacs
-(when (fboundp 'menu-bar-mode) (menu-bar-mode -1))
-(when (fboundp 'horizontal-scroll-bar-mode) (horizontal-scroll-bar-mode -1))
+;; (when (fboundp 'menu-bar-mode) (menu-bar-mode -1))
+;; (when (fboundp 'horizontal-scroll-bar-mode) (horizontal-scroll-bar-mode -1))
 
 ;;; color theme
 ;; (load-theme 'manoj-dark t)
@@ -38,7 +38,7 @@
 (load-theme 'tramp t)
 
 ;;; default font
-(add-to-list 'default-frame-alist '(font . "monospace-14"))
+(set-default-font "monospace-14")
 
 ;;; line numbers (only available in Emacs 26+)
 (defconst eyecandy-line-numbers-disabled-hooks

@@ -50,10 +50,10 @@
   ("a" counsel-ag)
   ("p" counsel-pt)
   ("g" counsel-grep)
-  ("R" projectile-ripgrep)
-  ("A" projectile-ag)
+  ("R" counsel-projectile-rg)
+  ("A" counsel-projectile-ag)
   ("P" projectile-pt)
-  ("G" projectile-grep)
+  ("G" counsel-projectile-grep)
   ("l" hydras/jumps/lambda-l-and-exit)
   ("L" hydras/jumps/lambda-L-and-exit))
 
@@ -69,11 +69,12 @@
 
 (defhydra hydras/files (:hint nil :exit t)
   "
-   files: _f_ → find files  _D_ → delete  _y_ → copy filename  _E_ → edit as root
-          _r_ → recentf     _R_ → rename  _c_ → copy file      _C_ → convert
+   files:  _f_ → find files  _D_ → delete  _y_ → copy filename  _E_ → edit as root
+           _r_ → recentf     _R_ → rename  _c_ → copy file      _C_ → convert
 "
-  ("D" utils-delete-current-buffer-file)
+  ;; TODO: ("D" utils-delete-buffer-file)
   ("R" utils-rename-current-buffer-file)
+  ("M" utils-rename-buffer-file)
   ("f" counsel-find-file)
   ("r" counsel-recentf)
   ("y" utils-copy-file-name-to-clipboard)
@@ -86,9 +87,9 @@
 ;; TODO: add more things to toggle
 (defhydra hydras/toggles (:hint nil :exit t)
   "
-   toggle: _a_ → aggressive indent   _s_ → flycheck   _r_ → read only      _t_ → truncate lines   _e_ → debug on error   ' → switch-engine
-           _f_ → auto-fill           _S_ → flyspell   _c_ → completion     _W_ → word wrap        _g_ → debug on quit
-           _w_ → whitespace          ^ ^              ^ ^                  _b_ → page break
+   toggle:  _a_ → aggressive indent   _s_ → flycheck   _r_ → read only      _t_ → truncate lines   _e_ → debug on error
+            _f_ → auto-fill           _S_ → flyspell   _c_ → completion     _W_ → word wrap        _g_ → debug on quit
+            _w_ → whitespace          ^ ^              ^ ^                  _b_ → page break
 "
   ("a" aggressive-indent-mode)
   ("c" company-mode)
@@ -107,9 +108,9 @@
 
 (defhydra hydras/ivy (:hint nil :exit t)
   "
-   ivy:   _b_ → mini       _y_ → kill-ring   _l_ → swiper
-          _e_ → recentf    _x_ → M-x         _L_ → swiper (multi)
-          _f_ → files
+   ivy:  _b_ → buffers    _y_ → kill-ring   _l_ → swiper
+         _e_ → recentf    _x_ → M-x         _L_ → swiper (multi)
+         _f_ → files
 "
   ;; TODO: maybe ivy-everything and maybe just ivy-switch-buffer
   ;; ("b" /ivy/everything)
@@ -130,9 +131,9 @@
 
 (defhydra hydras/magit (:hint nil :exit t)
   "
-  magit: _s_ → status  _l_ → log    _f_ → file   _a_ → stage file
-         _c_ → commit  _d_ → diff   _z_ → stash  _r_ → unstage file
-         _p_ → push    _b_ → blame  _m_ → merge
+   magit:  _s_ → status  _l_ → log    _f_ → file   _a_ → stage file
+           _c_ → commit  _d_ → diff   _z_ → stash  _r_ → unstage file
+           _p_ → push    _b_ → blame  _m_ → merge
 
 "
   ("s" magit-status)
@@ -162,6 +163,16 @@
   ("n" narrow-to-region)
   ("p" narrow-to-page)
   ("w" widen))
+
+
+
+;; TODO: this hydras/utils
+(defhydra hydras/utils (:hint nil :exit t)
+  "
+   utils:
+"
+  ("t" utils-goto-scratch-buffer))
+
 
 (provide 'bindings-hydras)
 ;;; bindings-hydras.el ends here

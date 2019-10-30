@@ -36,8 +36,10 @@ If no DESCRIPTION is given it defaults to the name of COMMAND.
 
 Here is an example of usage:
 
-  (binding-define-prefix-keys KEYMAP \"SPC\"
-    ((kbd \"SPC\") #'execute-extended-command \"extended command...\"))"
+  (bindings-define-prefix-keys KEYMAP \"SPC\"
+    ((kbd \"SPC\") #'execute-extended-command \"extended command...\"))
+
+This macro depends on `cl-macs'."
   (declare (indent defun))
   `(progn
      ,@(cl-loop for binding in body
@@ -55,15 +57,15 @@ Here is an example of usage:
 
 (defmacro bindings-define-keys (keymap &rest body)
   "Define bindings in BODY on KEYMAP.
-This macro uses the `bindings-define-prefix-keys' with the PREFIX arg as nil.
-Check its documentation for more details."
+This macro uses the `bindings-define-prefix-keys' with the PREFIX
+arg as nil. Check its documentation for more details."
   (declare (indent defun))
   `(bindings-define-prefix-keys ,keymap nil ,@body))
 
 (defmacro bindings-define-key (keymap sequence binding &optional description)
   "Define BINDING to be SEQUENCE on KEYMAP. DESCRIPTION is used in `which-key'.
-This macro uses the `bindings-define-prefix-keys' macro with the PREFIX arg as
-nil. Check its documentation for more details."
+This macro uses the `bindings-define-prefix-keys' macro with the
+PREFIX arg as nil. Check its documentation for more details."
   (declare (indent defun))
   `(bindings-define-prefix-keys ,keymap nil
      (,sequence ,binding ,description)))
@@ -102,18 +104,23 @@ nil. Check its documentation for more details."
   ("d" #'dired)
   ("w" #'save-buffer)
   ("f" #'find-file)
-  ("b" #'switch-to-buffer)
-  ("B" #'ibuffer)
+  ("b" (if (fboundp 'ivy-switch-to-buffer)
+           #'ivy-switch-to-buffer
+         #'switch-to-buffer))
+  ("I" #'ibuffer)
+  ((kbd "C-b") #'ibuffer)
+  ("B" #'buffer-menu)
   ("h" help-map "help")
   ;; hydras
-  ("t" #'hydras/toggles/body "toggle...") ; TODO
+  ("t" #'hydras/toggles/body "toggle...")
   ("j" #'hydras/jumps/body "jump...")
   ("s" #'hydras/search/body "search...")
   ("F" #'hydras/files/body "files...")
   ("i" #'hydras/ivy/body "ivy...")
   ("g" #'hydras/magit/body "magit...")
+  ("u" #'hydras/utils/body "utils...") ; TODO
   ;; TODO: put this in undo-tree or maybe in misc
-  ("u" #'undo-tree-visualize)
+  ("U" #'undo-tree-visualize)
   ("'" #'eshell/new-window "eshell")
   ("v" vc-prefix-map "vc-prefix-map")
   ("4" ctl-x-4-map "other window")

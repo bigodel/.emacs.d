@@ -69,7 +69,7 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
         (message "Buffer is not visiting a file!")
       (let ((new-name (read-file-name "New name: " filename)))
         (cond
-         ((vc-backend filename) (vc-renamce-file filename new-name))
+         ((vc-backend filename) (vc-rename-file filename new-name))
          (t
           (rename-file filename new-name 1)
           (save-excursion
@@ -83,6 +83,7 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
   (interactive)
   (utils-rename-buffer-file (current-buffer)))
 
+;; TODO: delete-buffer-file
 (defun utils-delete-current-buffer-file ()
   "Kill the current buffer and deletes the file it is visiting."
   (interactive)

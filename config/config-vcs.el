@@ -27,17 +27,24 @@
 
 
 ;;; magit
-(require-package 'magit)
+(when (executable-find "git")
+  (require-package 'magit))
 
 ;;; magit variables
 (after 'magit
-  (setvar magit-section-show-child-couno t)
+  ;; (setvar magit-section-show-child-couno t)
   (setvar magit-diff-arguments '("--histogram"))
-  (setvar magit-ediff-dwim-show-on-hunks t)
-  (setvar magit-display-buffer-function 'magit-display-buffer-traditional)
+  ;; (setvar magit-ediff-dwim-show-on-hunks t)
   (setvar magit-completing-read-function 'ivy-completing-read)
   ;; default merge arguments
   (setvar magit-merge-arguments '("--no-ff"))
+  (setvar magit-auto-revert-mode nil)
+
+  ;; TODO: understand this
+  (add-hook 'magit-post-display-buffer-hook
+            (lambda ()
+              (when (string-match "*magit:" (buffer-name))
+                (delete-other-windows))))
 
   (require-package 'magit-todos)
   (setvar magit-todos-fontify-org nil)
@@ -45,7 +52,7 @@
     (setvar magit-todos-scanner 'magit-todos--scan-with-rg))
   (magit-todos-mode t))
 
-;; TODO: move this to bindings-magit.el
+;; TODO: move this to bindings-vcs.el
 (/bindings/define-key (current-global-map)
   (kbd "C-x g") #'magit-status)
 
