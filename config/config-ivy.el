@@ -52,7 +52,7 @@
 
 (/bindings/define-keys (current-global-map)
   ((kbd "C-s") #'swiper)
-  ((kbd "C-S") #'swiper-all)
+  ((kbd "C-S-s") #'swiper-all)
   ((kbd "C-c C-r") #'ivy-resume "ivy-resume")
   ((kbd "M-x") #'counsel-M-x)
   ((kbd "C-x C-f") #'counsel-find-file)

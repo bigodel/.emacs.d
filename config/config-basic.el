@@ -292,7 +292,6 @@ buffer name."
 (setvar enable-recursive-minibuffers t) ; recursive minibuffers (be careful)
 (setvar truncate-lines nil)             ; display or not continuous lines
 (setvar mouse-yank-at-point t)          ; don't move point to mouse paste
-(global-auto-revert-mode t)             ; revert files on change
 (xterm-mouse-mode t)                    ; mouse on in xterm compatible terminals
 (electric-indent-mode t)                ; indent automatically on some keys
 (random t)                              ; random number seed

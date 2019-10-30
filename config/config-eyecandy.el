@@ -30,7 +30,14 @@
 ;; (set-face-attribute 'mode-line-buffer-id nil :height 1.0)
 ;; (set-face-attribute 'mode-line-inactive nil :underline nil)
 
-;; default font
+;; a custom theme to run on top of the other custom themes loaded (so it should
+;; be here, after (load-theme 'blah)) that shows the name of the host when in
+;; using tramp in the modeline alongside the buffer name. see
+;; `tramp-theme-face-remapping-alist' for customization options
+(require-package 'tramp-theme)
+(load-theme 'tramp t)
+
+;;; default font
 (add-to-list 'default-frame-alist '(font . "monospace-14"))
 
 ;;; line numbers (only available in Emacs 26+)
