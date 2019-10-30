@@ -20,6 +20,7 @@
     compilation-mode
     package-menu-mode
     profiler-report-mode
+    process-menu-mode
     treemacs-mode)
   "List of major modes that should default to Emacs state.")
 
