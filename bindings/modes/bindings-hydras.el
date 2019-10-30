@@ -69,7 +69,7 @@
 
 (defhydra hydras/files (:hint nil :exit t)
   "
-   files:  _f_ → find files  _D_ → delete  _y_ → copy filename  _E_ → edit as root
+   files:  _f_ → find files    → delete  _y_ → copy filename  _E_ → edit as root
            _r_ → recentf     _R_ → rename  _c_ → copy file      _C_ → convert
 "
   ;; TODO: ("D" utils-delete-buffer-file)
