@@ -24,8 +24,7 @@
   "List of major modes that should default to Emacs state.")
 
 (defconst dotemacs-evil/emacs-state-minor-modes
-  '(git-commit-mode
-    magit-blame-mode)
+  '(magit-blame-mode)
   "List of minor modes that when active should switch to Emacs state.")
 
 

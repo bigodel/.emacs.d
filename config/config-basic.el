@@ -9,24 +9,23 @@
 (setvar user-full-name "João Pedro de Amorim Paula")
 (setvar user-mail-address "jpedrodeamorim@gmail.com")
 
+;;; ask for confirmation before killing emacs
+(setvar confirm-kill-emacs 'y-or-n-p)
+
 ;;; server
-(defconst dotemacs-server-directory
-  (format "%s/emacs%d/" (or (getenv "TMPDIR") "/tmp") (user-uid))
-  "The storage location for the socket file used to connect to the daemon.")
-(setvar server-socket-dir               ; dir for the server socket
-        dotemacs-server-directory)
-(setvar server-auth-dir                 ; dir for the authentication files
-        (concat dotemacs-server-directory "server"))
+(setvar server-auth-dir (concat dotemacs-cache-directory "server"))
+(require 'server)
+(unless (server-running-p)
+  (server-start))
 
 ;;; move cursor to the last position upon open
 (setvar save-place-file (concat dotemacs-cache-directory "places"))
 (save-place-mode t)
 
-;;; savehist (minibuffer history)
+;;; savehist
 (setvar savehist-file (concat dotemacs-cache-directory "savehist"))
 (setvar savehist-additional-variables '(search ring regexp-search-ring))
-(setvar savehist-autosave-interval nil)
-(setvar history-length 100)
+(setvar history-length 1000)
 (savehist-mode t)
 
 ;;; recent files
@@ -230,9 +229,9 @@ buffer name."
 (setvar delete-old-versions t)
 
 ;;; scrolling (like in Vim)
-(setvar scroll-conservatively 9999)
+(setvar scroll-conservatively most-positive-fixnum)
 (setvar scroll-preserve-screen-position t)
-(setvar scroll-margin 1)
+(setvar scroll-margin 0)
 
 ;;; better buffer names for duplicates
 (setvar uniquify-buffer-name-style 'forward)
@@ -293,6 +292,7 @@ buffer name."
 (setvar enable-recursive-minibuffers t) ; recursive minibuffers (be careful)
 (setvar truncate-lines nil)             ; display or not continuous lines
 (setvar mouse-yank-at-point t)          ; don't move point to mouse paste
+(global-auto-revert-mode t)             ; revert files on change
 (xterm-mouse-mode t)                    ; mouse on in xterm compatible terminals
 (electric-indent-mode t)                ; indent automatically on some keys
 (random t)                              ; random number seed

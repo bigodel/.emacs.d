@@ -68,10 +68,13 @@
 (add-hook 'prog-mode-hook #'whitespace-mode)
 (add-hook 'text-mode-hook #'whitespace-mode)
 
+(set-face-attribute 'trailing-whitespace nil
+                    :foreground (face-foreground 'default)
+                    :background "gray15")
 (after 'whitespace
   (set-face-attribute 'whitespace-trailing nil
-                      :foreground (face-foreground 'default)
-                      :background "gray15"))
+                      :foreground (face-foreground 'trailing-whitespace)
+                      :background (face-background 'trailing-whitespace)))
 
 ;;; misc
 ;; stop blinking cursor

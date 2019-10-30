@@ -8,22 +8,25 @@
 ;;; vcs variables
 (setvar smerge-command-prefix "\C-cn")  ; the default value is "C-c ^"
 (setvar vc-make-backup-files t)         ; bakcup vcs files like other files
-(setvar auto-revert-check-vc-info t)    ; update vcs info when needed
-(setvar vc-follow-symlinks t)
+(setvar vc-follow-symlinks t)           ; automatically follow symlinks
 
 ;; i have a commit template and the first line is a comment
 (add-hook 'git-commit-mode-hook
           (lambda ()
             (next-line)
             (after 'evil
-              (when (evil-normal-state-p)
-                (evil-insert-state)))))
+              (evil-insert-state))))
+
+
 
 ;;; packages
 (lazy-major-mode "\\.gitignore\\'" 'gitignore-mode)
 (lazy-major-mode "\\.gitconfig\\'" 'gitconfig-mode)
 (lazy-major-mode "\\.gitattributes\\'" 'gitattributes-mode)
 
+
+
+;;; magit
 (require-package 'magit)
 
 ;;; magit variables
@@ -42,9 +45,9 @@
     (setvar magit-todos-scanner 'magit-todos--scan-with-rg))
   (magit-todos-mode t))
 
-;; bindings
+;; TODO: move this to bindings-magit.el
 (/bindings/define-key (current-global-map)
   (kbd "C-x g") #'magit-status)
 
 (provide 'config-vcs)
-;;; config-vsc.el ends here
+;;; config-vcs.el ends here
