@@ -26,15 +26,16 @@
 (after 'evil
   (evil-make-overriding-map disable-mouse-mode-map))
 
-;;; undo like vim
-(package-install 'undo-tree)
-(setvar undo-tree-auto-save-history t)
-(setvar undo-tree-enable-undo-in-region nil)
-(setvar undo-tree-history-directory-alist
-        `(("." . ,(concat dotemacs-cache-directory "undo/"))))
-(setvar undo-tree-visualizer-timestamps t)
-(setvar undo-tree-visualizer-diff t)
-(add-hook 'after-init-hook #'global-undo-tree-mode)
+;;; undo like vim (only needed if using evil-mode)
+(after 'evil
+  (package-install 'undo-tree)
+  (setvar undo-tree-auto-save-history t)
+  (setvar undo-tree-enable-undo-in-region nil)
+  (setvar undo-tree-history-directory-alist
+          `(("." . ,(concat dotemacs-cache-directory "undo/"))))
+  (setvar undo-tree-visualizer-timestamps t)
+  (setvar undo-tree-visualizer-diff t)
+  (add-hook 'after-init-hook #'global-undo-tree-mode))
 
 ;;; `doc-view-mode'
 (setvar doc-view-continuous t)          ; continuous mode in `doc-view-mode'

@@ -7,6 +7,7 @@
 ;; Most (if not all,) of this configuration was inspired/copied from Bailey
 ;; Ling's Emacs configuration, found on https://github.com/bling/dotemacs
 ;;
+;; NEXT: flycheck and flyspell!!!
 ;; TODO: change all defvar's to defconst's
 ;; TODO: check if whithout the provide's it makes it faster
 ;;; Code:
@@ -54,9 +55,9 @@ involves searching.")
   ;;; packages
   (setq package-archives
         '(("melpa-stable" . "https://stable.melpa.org/packages/")
-          ("melpa" . "http://melpa.org/packages/")
-          ("org" . "http://orgmode.org/elpa/")
-          ("gnu" . "http://elpa.gnu.org/packages/")))
+          ("melpa" . "https://melpa.org/packages/")
+          ("org" . "https://orgmode.org/elpa/")
+          ("gnu" . "https://elpa.gnu.org/packages/")))
 
   ;; set the priorities when installing packages
   (setq package-archive-priorities
