@@ -7,6 +7,7 @@
 ;;; Code:
 ;;; vcs variables
 (setvar smerge-command-prefix "\C-cn")  ; the default value is "C-c ^"
+(setvar vc-handled-backends (delq 'Git vc-handled-backends)) ; no vc for git
 (setvar vc-make-backup-files t)         ; bakcup vcs files like other files
 (setvar vc-follow-symlinks t)           ; automatically follow symlinks
 

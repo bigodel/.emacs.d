@@ -103,6 +103,7 @@ PREFIX arg as nil. Check its documentation for more details."
   (" " #'execute-extended-command "M-x")
   ("." #'dired-jump)
   ("d" #'dired)
+  ;; TODO: maybe this is not needed
   ("w" #'save-buffer)
   ("f" #'find-file)
   ("b" (if (fboundp 'ivy-switch-to-buffer)
@@ -112,6 +113,7 @@ PREFIX arg as nil. Check its documentation for more details."
   ((kbd "C-b") #'ibuffer)
   ("B" #'buffer-menu)
   ("h" help-map "help")
+  ;; TODO: put this in bindings-hydra.el
   ;; hydras
   ("t" #'hydras/toggles/body "toggle...")
   ("j" #'hydras/jumps/body "jump...")

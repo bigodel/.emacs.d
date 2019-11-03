@@ -16,7 +16,7 @@
     ("] " (bind (evil-insert-newline-below) (forward-line -1))))
 
   ;; normal and visual state bindings
-  (evil-define-key '(normal visual) 'global
+  (evil-define-key '(normal visual motion) 'global
     " " bindings-space-map
     "gr" #'revert-buffer
     "[b" #'previous-buffer

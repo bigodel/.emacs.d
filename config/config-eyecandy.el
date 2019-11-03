@@ -34,8 +34,8 @@
 ;; be here, after (load-theme 'blah)) that shows the name of the host when in
 ;; using tramp in the modeline alongside the buffer name. see
 ;; `tramp-theme-face-remapping-alist' for customization options
-(require-package 'tramp-theme)
-(load-theme 'tramp t)
+;; (require-package 'tramp-theme)
+;; (load-theme 'tramp t)
 
 ;;; default font
 (set-default-font "monospace-14")

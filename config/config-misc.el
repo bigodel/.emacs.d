@@ -54,8 +54,7 @@
 (add-hook 'doc-view-mode-hook
           (lambda ()
             "Lambda function to use `pdf-tools' in
-`doc-view-mode' when in a pdf file. Also, disable
-`display-line-numbers' if it is enabled."
+`doc-view-mode' when in a pdf file."
             (require 'pdf-tools)
             (pdf-tools-install)
             (pdf-view-mode)))

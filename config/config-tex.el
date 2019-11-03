@@ -9,23 +9,52 @@
   (require-package 'auctex)
 
   ;;; variables
-  (setvar tex-fontify-script nil)         ; fontify super and subscript
-  (setvar font-latex-fontify-script nil)  ; fontify super and subscript
-  (setvar TeX-master "main")              ; master file for the current buffer
-  (setvar TeX-auto-save t)                ; enable parse on save
-  (setvar TeX-parse-self t)               ; enable parse on load
-  (setvar TeX-save-query nil)             ; don't ask for permission to save
+  (setvar tex-fontify-script nil)        ; fontify super and subscript
+  (setvar font-latex-fontify-script nil) ; fontify super and subscript
+  (setvar TeX-master 'dwim)              ; master file for the current buffer
+  (setvar TeX-auto-save t)               ; enable parse on save
+  (setvar TeX-parse-self t)              ; enable parse on load
+  (setvar TeX-save-query nil)            ; don't ask for permission to save
   (setvar TeX-view-program-selection
-          '((output-pdf "PDF Tools")
-            (output-pdf "Zathura")
-            (output-dvi "xdvi")))         ; list of predicates and viewers
-  (setvar TeX-view-program-list
-          '(("PDF Tools" TeX-pdf-tools-sync-view))) ; list of viewers
-  (setvar TeX-show-compilation t)         ; show output of TeX compilation
+          '((output-pdf "Zathura")
+            (output-dvi "xdvi")))       ; list of predicates and viewers
+  (setvar TeX-show-compilation t)       ; show output of TeX compilation
+  (setvar TeX-after-compilation-finished-functions
+          '(TeX-revert-document-buffer  ; if using doc-view, revert pdf buffer
+            ;; TODO: maybe put this in a defun instead of using lambda
+            (lambda (_output)
+              "Close compilation buffer if there are no errors.
+This function actually checks the values of `TeX-debug-bad-boxes'
+and `TeX-debug-warnings' and only closes the buffer if there are
+no bad-boxes or warnings, according to the value of the
+variables.
+
+Add this function to `TeX-after-compilation-finished-functions'.
+
+Got this from: https://emacs.stackexchange.com/q/38258 and made
+just a few changes."
+              (let ((buf (TeX-active-buffer)))
+                (when (buffer-live-p (TeX-active-buffer))
+                  (with-current-buffer (TeX-active-buffer)
+                    (when (progn (TeX-parse-all-errors)
+                                 (if TeX-debug-bad-boxes
+                                     (if TeX-debug-warnings
+                                         (null TeX-error-list)
+                                       (and
+                                        (null (assoc 'bad-box TeX-error-list))
+                                        (null (assoc 'error TeX-error-list))))
+                                   (if TeX-debug-warnings
+                                       (and
+                                        (null (assoc 'warning TeX-error-list))
+                                        (null (assoc 'error TeX-error-list)))
+                                     (null (assoc 'error TeX-error-list)))))
+                      (cl-loop for win in (window-list)
+                               if (eq (window-buffer win) (current-buffer))
+                               do (delete-window win)))))))))
   (setvar TeX-source-correlate-mode t)    ; forward and reverse search
   (setvar TeX-PDF-mode t)                 ; compile to pdf by default
   (setvar TeX-interactive-mode t)         ; pause with error prompt
-  (setvar TeX-debug-bad-boxes t)          ; overfull/underfull box warnings
+  (setvar TeX-debug-bad-boxes nil)        ; overfull/underfull box warnings
   (setvar TeX-debug-warnings t)           ; treat warnings as errors
   (setvar LaTeX-math-abbrev-prefix "C-;") ; latex-math prefix
 
@@ -85,22 +114,25 @@ backslash character '\' as part of it."
 
   ;;; TeX mode bindings
   ;; auxiliary functions
-  (defun /tex/TeX-command-run-all-this-window (arg)
-    "`TeX-command-run-all' that compiles and stays on the same window.
-ARG is passed to `TeX-command-run-all' and works the same way."
-    (interactive "P")
-    (save-selected-window
-      (TeX-command-run-all arg)))
+  ;;   (defun /tex/TeX-command-run-all-this-window (arg)
+  ;;     "`TeX-command-run-all' that compiles and stays on the same window.
+  ;; ARG is passed to `TeX-command-run-all' and works the same way.
+
+  ;; This is only effective if using `doc-view-mode' or
+  ;; `pdf-view-mode' as the default pdf viewer for Emacs, since when
+  ;; it compiles it moves us to the other window."
+  ;;     (interactive "P")
+  ;;     (save-selected-window
+  ;;       (TeX-command-run-all arg)))
 
   (defun /tex/TeX-mode-hook ()
     "Bindings to apply to `Tex-mode' when its loaded. Disable
-`prettify-symbols-mode' on `TeX-mode' and enable `hl-todo-mode'
-if it is installed."
-    (/bindings/define-key TeX-mode-map
-      [remap TeX-command-run-all] #'/tex/TeX-command-run-all-this-window)
+  `prettify-symbols-mode' on `TeX-mode' and enable `hl-todo-mode'
+  if it is installed."
+    ;; (/bindings/define-key TeX-mode-map
+    ;;   [remap TeX-command-run-all] #'/tex/TeX-command-run-all-this-window)
     (when (package-installed-p 'hl-todo)
-      (hl-todo-mode))
-    (prettify-symbols-mode -1))
+      (hl-todo-mode)))
 
   (add-hook 'TeX-mode-hook #'/tex/TeX-mode-hook)
 
