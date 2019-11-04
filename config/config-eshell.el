@@ -6,7 +6,7 @@
 
 ;;; Code:
 ;;; variables
-(defvar dotemacs-eshell-visual-commands
+(defvar dotemacs-eshell/visual-commands
   '("ssh" "top" "tail" "less")
   "Command that present their output in a visual fashion.")
 
@@ -21,7 +21,7 @@
 
 ;; add some more commands to the visual commands
 (after 'em-term
-  (dolist (cmd dotemacs-eshell-visual-commands)
+  (dolist (cmd dotemacs-eshell/visual-commands)
     (add-to-list 'eshell-visual-commands cmd)))
 
 ;;; helper packages

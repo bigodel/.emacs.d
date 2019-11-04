@@ -41,7 +41,7 @@
 
   (defun evil-mouse-yank-primary ()
     "Insert the contents of primary selection into the location
-  of point."
+of point."
     (interactive)
     (let ((default-mouse-yank-at-point (symbol-value mouse-yank-at-point)))
       (setvar mouse-yank-at-point t)
