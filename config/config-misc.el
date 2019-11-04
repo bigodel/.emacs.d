@@ -58,15 +58,6 @@
             (require 'pdf-tools)
             (pdf-tools-install)
             (pdf-view-mode)))
-;; bindings
-(after 'pdf-tools
-  (/bindings/define-keys pdf-view-mode-map
-    ((kbd "q") #'utils-window-killer)
-    ((kbd "k") nil)
-    ((kbd "j") #'pdf-view-next-line-or-next-page)
-    ((kbd "k") #'pdf-view-previous-line-or-previous-page)
-    ((kbd "J") #'pdf-view-next-page)
-    ((kbd "K") #'pdf-view-previous-page)))
 
 ;;; aggressive indent
 (defvar dotemacs-misc/aggressive-indent-hooks
@@ -87,16 +78,6 @@
 (require-package 'helpful)
 (after [evil helpful]
   (evil-set-initial-state 'helpful-mode 'motion))
-(/bindings/define-keys (current-global-map)
-  ((kbd "C-h f") #'helpful-callable "describe function")
-  ((kbd "C-h v") #'helpful-variable "describe variable")
-  ((kbd "C-h F") #'helpful-command "describe command")
-  ((kbd "C-h k") #'helpful-key "describe key")
-  ((kbd "C-c C-d") #'helpful-at-point "help for symbol at point"))
-(after 'helpful
-  (/bindings/define-keys helpful-mode-map
-    ((kbd "q") #'quit-window)
-    ((kbd "<tab>") #'forward-button)))
 
 (provide 'config-misc)
 ;;; config-misc.el ends here
