@@ -7,7 +7,6 @@
 ;;; Code:
 ;;; vcs variables
 (setvar smerge-command-prefix "\C-cn")  ; the default value is "C-c ^"
-(setvar vc-handled-backends (delq 'Git vc-handled-backends)) ; no vc for git
 (setvar vc-make-backup-files t)         ; bakcup vcs files like other files
 (setvar vc-follow-symlinks t)           ; automatically follow symlinks
 
@@ -33,13 +32,14 @@
 
 ;;; magit variables
 (after 'magit
+  (setvar vc-handled-backends (delq 'Git vc-handled-backends)) ; no vc for git
   ;; (setvar magit-section-show-child-couno t)
   (setvar magit-diff-arguments '("--histogram"))
   ;; (setvar magit-ediff-dwim-show-on-hunks t)
   (setvar magit-completing-read-function 'ivy-completing-read)
   ;; default merge arguments
   (setvar magit-merge-arguments '("--no-ff"))
-  (setvar magit-auto-revert-mode nil)
+  (setvar magit-auto-revert-mode t)
 
   ;; TODO: understand this
   (add-hook 'magit-post-display-buffer-hook
