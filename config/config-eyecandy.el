@@ -45,6 +45,7 @@
   '(eshell-mode-hook
     woman-mode-hook
     man-mode-hook
+    Man-mode-hook
     helpful-mode-hook
     help-mode-hook
     treemacs-mode-hook
