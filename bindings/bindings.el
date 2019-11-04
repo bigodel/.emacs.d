@@ -78,11 +78,6 @@ PREFIX arg as nil. Check its documentation for more details."
 (setvar which-key-allow-evil-operators t) ; show evil operators with which key
 (which-key-mode)
 
-;;; hydra
-(setvar lv-use-separator t)
-(require-package 'hydra)
-(autoload 'hydra-default-pre "hydra")
-
 ;; TODO: this package is part of magit, so maybe add this to the vcs
 ;; configuration file (where magit configuration is)
 (require-package 'transient)
@@ -136,7 +131,6 @@ PREFIX arg as nil. Check its documentation for more details."
   ((kbd "C-x c") #'recompile)
   ((kbd "C-x C-k") #'kill-this-buffer)
   ((kbd "C-x K") #'utils-delete-current-buffer-file)
-  ((kbd "C-x n") #'hydras/narrow/body)
   ((kbd "C-x C-S-f") #'utils-find-file-as-root))
 
 ;; C-c bindings

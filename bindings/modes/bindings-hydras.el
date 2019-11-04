@@ -8,7 +8,13 @@
 ;; configuration in https://github.com/bling/dotemacs.
 ;;
 ;;; Code:
-;; TODO: maybe add a quit button
+;;; install hydra
+(setvar lv-use-separator t)
+(require-package 'hydra)
+(autoload 'hydra-default-pre "hydra")
+
+
+
 (defhydra hydras/errors (:hint nil)
   "
    errors:  navigation                 flycheck
@@ -16,10 +22,15 @@
             _j_ → next error             _l_ → list errors
             _k_ → previous error         _?_ → describe checker
 "
-  ("j" flycheck-next-error)
-  ("k" flycheck-previous-error)
+  ("j" (if (fboundp 'flycheck-next-error)
+           (call-interactively #'flycheck-next-error)
+         (call-interactively #'next-error)))
+  ("k" (if (fboundp 'flycheck-previous-error)
+           (call-interactively #'flycheck-previous-error)
+         (call-interactively #'previous-error)))
   ("?" flycheck-describe-checker)
-  ("l" flycheck-list-errors :exit t))
+  ("l" flycheck-list-errors :exit t)
+  ("q" nil "quit" :exit t))
 
 
 
@@ -173,6 +184,22 @@
 "
   ("t" utils-goto-scratch-buffer))
 
+
+
+;;; bindings
+;; SPC bindings
+(bindings-define-prefix-keys bindings-space-map "SPC"
+  ("t" #'hydras/toggles/body "toggle...")
+  ("j" #'hydras/jumps/body "jump...")
+  ("s" #'hydras/search/body "search...")
+  ("F" #'hydras/files/body "files...")
+  ("i" #'hydras/ivy/body "ivy...")
+  ("g" #'hydras/magit/body "magit...")
+  ("u" #'hydras/utils/body "utils...")) ; TODO
+
+;; global bindings
+(bindings-define-keys (current-global-map)
+  ((kbd "C-x n") #'hydras/narrow/body))
 
 (provide 'bindings-hydras)
 ;;; bindings-hydras.el ends here
