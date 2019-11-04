@@ -91,38 +91,37 @@ PREFIX arg as nil. Check its documentation for more details."
 
 
 ;;; bindings
-;; SPC as a prefix key
+;; create a keymap to use SPC as the prefix key for the keymap
 (setvar bindings-space-map (make-sparse-keymap))
-;; SPC bindings
+;; bind a bunch of stuff to SPC-key
 (bindings-define-prefix-keys bindings-space-map "SPC"
   (" " #'execute-extended-command "M-x")
+  ("x" ctl-x-map)
+  ("xr" ctl-x-r-map)
   ("." #'dired-jump)
   ("d" #'dired)
-  ;; TODO: maybe this is not needed
-  ("w" #'save-buffer)
+  ("w" #'save-buffer)                   ; TODO: maybe this is not needed
   ("f" #'find-file)
-  ("b" (if (fboundp 'ivy-switch-to-buffer)
-           #'ivy-switch-to-buffer
-         #'switch-to-buffer))
+  ("b" #'switch-to-buffer "switch buffer")
   ("I" #'ibuffer)
   ((kbd "C-b") #'ibuffer)
   ("B" #'buffer-menu)
+  ("k" #'kill-buffer)
+  ((kbd "C-k") #'kill-this-buffer)
   ("h" help-map "help")
-  ;; TODO: put this in bindings-hydra.el
-  ;; hydras
-  ("t" #'hydras/toggles/body "toggle...")
-  ("j" #'hydras/jumps/body "jump...")
-  ("s" #'hydras/search/body "search...")
-  ("F" #'hydras/files/body "files...")
-  ("i" #'hydras/ivy/body "ivy...")
-  ("g" #'hydras/magit/body "magit...")
-  ("u" #'hydras/utils/body "utils...") ; TODO
-  ;; TODO: put this in undo-tree or maybe in misc
+  ;; TODO: put this in bindinds-misc.el
   ("U" #'undo-tree-visualize)
-  ("'" #'eshell/new-window "eshell")
+  ("'" (if (fboundp 'eshell/new-window) ; if `config-eshell.el' was not loaded,
+           #'eshell/new-window          ; eshell/new-window is not defined
+         #'eshell) "eshell")
   ("v" vc-prefix-map "vc-prefix-map")
   ("4" ctl-x-4-map "other window")
   ("5" ctl-x-5-map "other frame"))
+
+;; create a keymap to use RET as the prefix key for the keymap
+(setvar bindings-return-map (make-sparse-keymap))
+;; bind a bunch of stuff to RET-key TODO: think of stuff to add here
+(bindings-define-prefix-keys bindings-return-map "RET")
 
 ;; C-x bindings
 (bindings-define-keys (current-global-map)
