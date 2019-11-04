@@ -32,7 +32,6 @@
 
 ;; `counsel' wrapper for tramp
 (require-package 'counsel-tramp)
-(/bindings/define-key (current-global-map) (kbd "C-c c t") #'counsel-tramp)
 
 ;; make swiper faster
 (after 'swiper
@@ -44,52 +43,6 @@
 (after 'projectile
   (require-package 'counsel-projectile)
   (counsel-projectile-mode t))
-
-;; ivy bindings
-(/bindings/define-keys ivy-minibuffer-map
-  ((kbd "M-m") #'ivy-mark)
-  ((kbd "M-u") #'ivy-unmark))
-
-(/bindings/define-keys (current-global-map)
-  ((kbd "C-s") #'swiper)
-  ((kbd "C-S-s") #'swiper-all)
-  ((kbd "C-c C-r") #'ivy-resume "ivy-resume")
-  ((kbd "M-x") #'counsel-M-x)
-  ((kbd "C-x C-f") #'counsel-find-file)
-  ((kbd "C-h S") #'counsel-info-lookup-symbol "lookup symbol")
-  ((kbd "C-h u") #'counsel-unicode-char "unicode char")
-  ((kbd "M-y") #'counsel-yank-pop)
-  ((kbd "C-c c L") #'counsel-load-library "load library")
-  ((kbd "C-c c P") #'counsel-package)
-  ((kbd "C-c c f") #'counsel-find-library "find library")
-  ((kbd "C-c c T") #'counsel-load-theme "load theme")
-  ((kbd "C-c c h") #'counsel-command-history "command history")
-  ((kbd "C-c c C") #'counsel-colors-emacs "colors emacs")
-  ((kbd "C-c c c") #'counsel-colors-web "colors web")
-  ((kbd "C-c c l") #'counsel-locate "locate")
-  ((kbd "C-c c o") #'counsel-outline "jump to outline"))
-
-;; try some searchers to see which to use; default to grep
-(cond
- ((executable-find "rg")
-  (/bindings/define-key (current-global-map)
-    (kbd "C-c c g") #'counsel-rg))
-
- ((executable-find "ag")
-  (/bindings/define-key (current-global-map)
-    (kbd "C-c c g") #'counsel-ag))
-
- ((executable-find "pt")
-  (/bindings/define-key (current-global-map)
-    (kbd "C-c c g") #'counsel-pt))
-
- (t
-  (/bindings/define-key (current-global-map)
-    (kbd "C-c c g") #'counsel-grep)))
-
-(after 'yasnippet
-  (/bindings/define-key (current-global-map)
-    (kbd "C-c c y") #'ivy-yasnippet))
 
 (provide 'config-ivy)
 ;;; config-ivy.el ends here

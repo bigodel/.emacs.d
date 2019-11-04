@@ -175,9 +175,6 @@ PREFIX arg as nil. Check its documentation for more details."
   [escape] #'utils-minibuffer-keyboard-quit)
 (bindings-define-key minibuffer-local-isearch-map
   [escape] #'utils-minibuffer-keyboard-quit)
-;; TODO: move this to bindings-ivy.el
-(after 'ivy
-  (bindings-define-key ivy-mode-map [escape] (kbd "C-g")))
 
 ;; mouse scrolling in terminal
 (unless (display-graphic-p)
