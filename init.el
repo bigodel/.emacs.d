@@ -12,15 +12,15 @@
 ;; TODO: check if whithout the provide's it makes it faster
 ;;; Code:
 ;; some common lisp functions
-(eval-when-compile (require 'cl))
+(eval-when-compile (require 'cl-lib))
 
-;;; log Emacs startup time in *Messages*
-(lexical-let ((emacs-start-time (current-time)))
-  (add-hook 'emacs-startup-hook
-            (lambda ()
-              (let ((elapsed (float-time (time-subtract (current-time)
-                                                        emacs-start-time))))
-                (message "[Emacs initialized in %.3fs]" elapsed)))))
+;;; log Emacs startup time in *Messages*. this adds about 0.2 secs to init time
+;; (lexical-let ((emacs-start-time (current-time)))
+;;   (add-hook 'emacs-startup-hook
+;;             (lambda ()
+;;               (let ((elapsed (float-time (time-subtract (current-time)
+;;                                                         emacs-start-time))))
+;;                 (message "[Emacs initialized in %.3fs]" elapsed)))))
 
 ;;; let
 ;; we wrap our whole initializatino inside this let because we set some
@@ -78,10 +78,10 @@ involves searching.")
   (load (concat core-directory "core-bindings"))
   ;; temporary -------
 
-  ;;; set and load custom file
+  ;;;flycheck-previous-error set and load custom file
   (setq custom-file (concat user-emacs-directory "custom.el"))
-  (when (file-exists-p custom-file)
-    (load custom-file))
+  ;; (when (file-exists-p custom-file)
+  ;;   (load custom-file))
 
   ;;; load all of our configuration files
   ;; the bindings configuration needs to get loaded before every thing else,
