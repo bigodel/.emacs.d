@@ -6,12 +6,12 @@
 
 ;;; Code:
 ;;; constants
-(defconst dotemacs-evil/emacs-state-hooks
+(defconst dotemacs-evil-emacs-state-hooks
   '(org-log-buffer-setup-hook
     org-capture-mode-hook)
   "List of hooks to automatically start up in Evil Emacs state.")
 
-(defconst dotemacs-evil/emacs-state-major-modes
+(defconst dotemacs-evil-emacs-state-major-modes
   '(ibuffer-mode
     bookmark-bmenu-mode
     calculator-mode
@@ -24,7 +24,7 @@
     treemacs-mode)
   "List of major modes that should default to Emacs state.")
 
-(defconst dotemacs-evil/emacs-state-minor-modes
+(defconst dotemacs-evil-emacs-state-minor-modes
   '(magit-blame-mode)
   "List of minor modes that when active should switch to Emacs state.")
 
@@ -57,15 +57,15 @@
 (evil-mode 1)
 
 ;; emacs state hooks
-(cl-loop for hook in dotemacs-evil/emacs-state-hooks
+(cl-loop for hook in dotemacs-evil-emacs-state-hooks
          do (add-hook hook #'evil-emacs-state))
 
 ;; emacs state in major modes
-(cl-loop for mode in dotemacs-evil/emacs-state-major-modes
+(cl-loop for mode in dotemacs-evil-emacs-state-major-modes
          do (evil-set-initial-state mode 'emacs))
 
 ;; emacs state in minor modes
-(cl-loop for mode in dotemacs-evil/emacs-state-minor-modes
+(cl-loop for mode in dotemacs-evil-emacs-state-minor-modes
          do (let ((hook (concat (symbol-name mode) "-hook")))
               (add-hook (intern hook) `(lambda ()
                                          "Start minor mode in Emacs state."
