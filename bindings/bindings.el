@@ -91,53 +91,46 @@ PREFIX arg as nil. Check its documentation for more details."
 
 
 ;;; bindings
-;; SPC as a prefix key
+;;; SPC as a prefix key
 (setvar bindings-space-map (make-sparse-keymap))
 ;; SPC bindings
 (bindings-define-prefix-keys bindings-space-map "SPC"
   (" " #'execute-extended-command "M-x")
-  ("." #'dired-jump)
+  ("C-j" #'dired-jump)
   ("d" #'dired)
   ;; TODO: maybe this is not needed
   ("w" #'save-buffer)
   ("f" #'find-file)
-  ("b" (if (fboundp 'ivy-switch-to-buffer)
-           #'ivy-switch-to-buffer
-         #'switch-to-buffer))
+  ("b" #'switch-to-buffer)
   ("I" #'ibuffer)
   ((kbd "C-b") #'ibuffer)
   ("B" #'buffer-menu)
   ("h" help-map "help")
-  ;; TODO: put this in bindings-hydra.el
-  ;; hydras
-  ("t" #'hydras/toggles/body "toggle...")
-  ("j" #'hydras/jumps/body "jump...")
-  ("s" #'hydras/search/body "search...")
-  ("F" #'hydras/files/body "files...")
-  ("i" #'hydras/ivy/body "ivy...")
-  ("g" #'hydras/magit/body "magit...")
-  ("u" #'hydras/utils/body "utils...") ; TODO
-  ;; TODO: put this in undo-tree or maybe in misc
-  ("U" #'undo-tree-visualize)
-  ("'" #'eshell/new-window "eshell")
+  ("'" (if (fboundp 'eshell/new-window)
+           #'eshell/new-window
+         #'eshell) "eshell")
   ("v" vc-prefix-map "vc-prefix-map")
   ("4" ctl-x-4-map "other window")
   ("5" ctl-x-5-map "other frame"))
 
-;; C-x bindings
+;;; C-x bindings
 (bindings-define-keys (current-global-map)
   ((kbd "C-x C-b") #'ibuffer)
   ((kbd "C-x C") #'compile)
   ((kbd "C-x c") #'recompile)
   ((kbd "C-x C-k") #'kill-this-buffer)
-  ((kbd "C-x K") #'utils-delete-current-buffer-file)
-  ((kbd "C-x C-S-f") #'utils-find-file-as-root))
+  ((kbd "C-x K") (if (fboundp 'utils-delete-current-buffer-file)
+                     #'utils-delete-current-buffer-file
+                   nil))
+  ((kbd "C-x C-S-f") (if (fboundp 'utils-find-file-as-root)
+                         #'utils-find-file-as-root
+                       nil)))
 
-;; C-c bindings
-(bindings-define-keys (current-global-map)
-  ((kbd "C-c s") #'utils-goto-scratch-buffer "go to scratch")
-  ((kbd "C-c e") #'utils-eval-and-replace "eval and replace")
-  ((kbd "C-c C-l") #'utils-reload-init-file))
+;;; C-c bindings
+(after 'config-utils
+  (bindings-define-keys (current-global-map)
+    ((kbd "C-c s") #'utils-goto-scratch-buffer "go to scratch")
+    ((kbd "C-c e") #'utils-eval-and-replace "eval and replace")))
 
 ;; misc bindings
 (bindings-define-keys (current-global-map)
@@ -146,7 +139,7 @@ PREFIX arg as nil. Check its documentation for more details."
   ((kbd "M-/") #'hippie-expand)
   ;; since I use a US international keyboard, ' is actually translated as
   ;; <dead-acute> (it is a dead key) so I need to make Emacs understand
-  ;; <C-dead-acute> as C-'
+  ;; <C-dead-aclute> as C-'
   ((kbd "<C-dead-acute>") (kbd "C-'"))
   ((kbd "<M-next>") #'scroll-other-window)
   ((kbd "<M-prior>") #'scroll-other-window-down))
@@ -155,20 +148,25 @@ PREFIX arg as nil. Check its documentation for more details."
 (after 'eshell
   (bindings-define-keys (current-global-map)
     ((kbd "M-!") #'eshell-command)
-    ((kbd "C-!") #'eshell/new-window)
-    ((kbd "C-c t") #'eshell/new-window)))
+    ((kbd "C-!") (if (fboundp 'eshell/new-window)
+                     #'eshell/new-window
+                   #'eshell) "eshell")
+    ((kbd "C-c t") (if (fboundp 'eshell/new-window)
+                       #'eshell/new-window
+                     #'eshell) "eshell")))
 
 ;; escape minibuffer with ESC
-(bindings-define-key minibuffer-local-map
-  [escape] #'utils-minibuffer-keyboard-quit)
-(bindings-define-key minibuffer-local-ns-map
-  [escape] #'utils-minibuffer-keyboard-quit)
-(bindings-define-key minibuffer-local-completion-map
-  [escape] #'utils-minibuffer-keyboard-quit)
-(bindings-define-key minibuffer-local-must-match-map
-  [escape] #'utils-minibuffer-keyboard-quit)
-(bindings-define-key minibuffer-local-isearch-map
-  [escape] #'utils-minibuffer-keyboard-quit)
+(after 'config-utils
+  (bindings-define-key minibuffer-local-map
+    [escape] #'utils-minibuffer-keyboard-quit)
+  (bindings-define-key minibuffer-local-ns-map
+    [escape] #'utils-minibuffer-keyboard-quit)
+  (bindings-define-key minibuffer-local-completion-map
+    [escape] #'utils-minibuffer-keyboard-quit)
+  (bindings-define-key minibuffer-local-must-match-map
+    [escape] #'utils-minibuffer-keyboard-quit)
+  (bindings-define-key minibuffer-local-isearch-map
+    [escape] #'utils-minibuffer-keyboard-quit))
 
 ;; mouse scrolling in terminal
 (unless (display-graphic-p)
