@@ -8,27 +8,48 @@
 ;; configuration in https://github.com/bling/dotemacs.
 ;;
 ;;; Code:
-;;; pdf-tools
+;;; pdf
+(after 'doc-view
+  (bindings-define-keys pdf-view-mode-map
+    ("q" (if (fboundp 'utils-window-killer)
+             #'utils-window-killer
+           #'delete-window))
+    ("k" nil)
+    ("j" (bind (doc-view-next-line-or-next-page 5)))
+    ("k" (bind (doc-view-previous-line-or-previous-page 5)))
+    ("J" #'doc-view-next-page)
+    ("K" #'doc-view-previous-page)))
+
 (after 'pdf-tools
   (bindings-define-keys pdf-view-mode-map
-    ("q" #'utils-window-killer)
+    ("q" (if (fboundp 'utils-window-killer)
+             #'utils-window-killer
+           #'delete-window))
     ("k" nil)
-    ("j" #'pdf-view-next-line-or-next-page)
-    ("k" #'pdf-view-previous-line-or-previous-page)
+    ("j" (bind (pdf-view-next-line-or-next-page 5)))
+    ("k" (bind (pdf-view-previous-line-or-previous-page 5)))
     ("J" #'pdf-view-next-page)
     ("K" #'pdf-view-previous-page)))
 
 ;;; helpful
-(bindings-define-keys (current-global-map)
-  ((kbd "C-h f") #'helpful-callable "describe function")
-  ((kbd "C-h v") #'helpful-variable "describe variable")
-  ((kbd "C-h F") #'helpful-command "describe command")
-  ((kbd "C-h k") #'helpful-key "describe key")
-  ((kbd "C-c C-d") #'helpful-at-point "help for symbol at point"))
+(after "helpful-autoloads"
+  (bindings-define-keys (current-global-map)
+    ((kbd "C-h f") #'helpful-callable "describe function")
+    ((kbd "C-h v") #'helpful-variable "describe variable")
+    ((kbd "C-h F") #'helpful-command "describe command")
+    ((kbd "C-h k") #'helpful-key "describe key")
+    ((kbd "C-c C-d") #'helpful-at-point "help for symbol at point")))
+
 (after 'helpful
   (bindings-define-keys helpful-mode-map
-    ("q" #'quit-window)
+    ("q" (if (fboundp 'utils-window-killer)
+             #'utils-window-killer
+           #'delete-window))
     ([tab] #'forward-button)))
+
+;;; undo-tree
+(bindings-define-prefix-keys bindings-space-map "SPC"
+  ("U" #'undo-tree-visualize))
 
 (provide 'bindings-misc)
 ;;; bindings-misc.el ends here
