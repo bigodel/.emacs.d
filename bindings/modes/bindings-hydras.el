@@ -201,5 +201,15 @@
 (bindings-define-keys (current-global-map)
   ((kbd "C-x n") #'hydras/narrow/body))
 
+;; space bidings
+(bindings-define-prefix-keys bindings-space-map "SPC"
+  ("t" #'hydras/toggles/body "toggle...")
+  ("j" #'hydras/jumps/body "jump...")
+  ("s" #'hydras/search/body "search...")
+  ("F" #'hydras/files/body "files...")
+  ("i" #'hydras/ivy/body "ivy...")
+  ("g" #'hydras/magit/body "magit...")
+  ("u" #'hydras/utils/body "utils..."))
+
 (provide 'bindings-hydras)
 ;;; bindings-hydras.el ends here
