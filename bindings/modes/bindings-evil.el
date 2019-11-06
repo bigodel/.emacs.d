@@ -12,8 +12,8 @@
   ;;; normal state maps
   (bindings-define-keys evil-normal-state-map
     ("gp" "`[v`]")
-    ("[ " (bind (evil-insert-newline-above) (forward-line)))
-    ("] " (bind (evil-insert-newline-below) (forward-line -1))))
+    ("[ " (bind (evil-insert-newline-above) (forward-line)) "new line up")
+    ("] " (bind (evil-insert-newline-below) (forward-line -1)) "new line down"))
 
   ;; normal and visual state bindings
   (evil-define-key '(normal visual motion) 'global

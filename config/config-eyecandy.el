@@ -99,6 +99,10 @@
   (rich-minority-mode t))
 (setf rm-blacklist "")
 
+;; highlight TODO
+(require-package 'hl-todo)
+(global-hl-todo-mode t)
+
 ;; TODO: folding
 
 ;; beautiful lines instead of ^L

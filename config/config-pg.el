@@ -7,36 +7,16 @@
 ;;; Code:
 (require-package 'proof-general)
 
-;; proof-general settings
+;;; proof-general variables
 (setvar proof-strict-read-only 'retract)
 (setvar proof-electric-terminator-enable t)
 (setvar proof-three-window-mode-policy 'smart)
 (setvar proof-splash-enable nil)
 (setvar proof-script-fly-past-comments t)
 
-;; coq settings
+;;; coq variables
 (setvar coq-compile-before-require t)
 ;; (setvar coq-one-command-per-line t)
-
-(after [evil proof-script]
-  (evil-ex-define-cmd "pr[ove]" 'proof-goto-point)
-  (/bindings/define-keys proof-mode-map
-    ((kbd "M-n") #'proof-assert-next-command-interactive "next command")
-    ((kbd "M-p") #'proof-undo-last-successful-command "undo command")))
-
-;; hooks
-(add-hook
- 'proof-mode-hook
- (lambda ()
-   "Enable `undo-tree-mode', `aggressive-indent-mode',
-`hl-todo-mode' and `flyspell-prog-mode' and disable
-`holes-mode' and `prettify-symbols-mode'."
-   (hl-todo-mode t)
-   (aggressive-indent-mode t)
-   (flyspell-prog-mode)
-   (undo-tree-mode t)
-   ;; (holes-mode -1)
-   (prettify-symbols-mode -1)))
 
 ;; install `company-coq'
 (after [company coq-mode]

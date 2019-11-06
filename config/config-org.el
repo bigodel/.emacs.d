@@ -72,12 +72,7 @@ Try again or remove the file `%s' from the config folder" load-file-name))))))
   ;; (setvar org-outline-path-complete-in-steps nil)
   ;; (setvar org-completion-use-ido t)
 
-  (add-hook 'org-babel-after-execute-hook #'org-redisplay-inline-images)
-
-  ;; (after 'org
-  ;;   (/bindings/define-keys (current-global-map)
-  ;;     ("C-c ")))
-  )
+  (add-hook 'org-babel-after-execute-hook #'org-redisplay-inline-images))
 
 (provide 'config-org)
 ;;; config-org.el ends here

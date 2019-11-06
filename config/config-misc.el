@@ -60,18 +60,19 @@
             (pdf-view-mode)))
 
 ;;; aggressive indent
-(defvar dotemacs-misc/aggressive-indent-hooks
+(defvar dotemacs-misc-aggressive-indent-hooks
   '(c-mode-hook
     cc-mode-hook
     lisp-mode-hook
     emacs-lisp-mode-hook
     sh-mode-hook
     java-mode-hook
-    python-mode-hook)
+    python-mode-hook
+    proof-mode-hook)
   "Hooks for major modes to activate `aggressive-indent-mode'.")
 
 (require-package 'aggressive-indent)
-(dolist (hook dotemacs-misc/aggressive-indent-hooks)
+(dolist (hook dotemacs-misc-aggressive-indent-hooks)
   (add-hook hook #'aggressive-indent-mode))
 
 ;;; better help

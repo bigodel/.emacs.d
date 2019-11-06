@@ -1,4 +1,4 @@
-;;; core-util.el --- Some useful functions
+;;; config-utils.el --- Some useful functions
 
 ;; Author: João Pedro de A. Paual <maybe_email_here@later>
 
@@ -123,5 +123,5 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
   (interactive "f")
   (find-file-other-window (concat "/sudo::" file)))
 
-(provide 'core-util)
-;;; core-util.el ends here
+(provide 'config-utils)
+;;; config-utils.el ends here

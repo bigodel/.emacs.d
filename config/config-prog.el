@@ -21,11 +21,7 @@ tabs."
 
 (add-hook 'prog-mode-hook #'infer-indentation-style)
 
-;;; highlight TODO in prog-mode
-(require-package 'hl-todo)
-(add-hook 'prog-mode-hook #'hl-todo-mode)
-
-  ;;; jump to definitions
+;;; jump to definitions
 ;; (require-package 'dumb-jump)
 ;; (setvar dumb-jump-mode-selector 'ivy)
 ;; (if (executable-find "rg")

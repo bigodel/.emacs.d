@@ -16,7 +16,8 @@
   (setvar TeX-parse-self t)              ; enable parse on load
   (setvar TeX-save-query nil)            ; don't ask for permission to save
   (setvar TeX-view-program-selection
-          '((output-pdf "Zathura")
+          '((output-pdf "PDF Tools")
+            (output-pdf "Zathura")
             (output-dvi "xdvi")))       ; list of predicates and viewers
   (setvar TeX-show-compilation t)       ; show output of TeX compilation
   (setvar TeX-after-compilation-finished-functions
@@ -125,16 +126,8 @@ backslash character '\' as part of it."
   ;;     (save-selected-window
   ;;       (TeX-command-run-all arg)))
 
-  (defun /tex/TeX-mode-hook ()
-    "Bindings to apply to `Tex-mode' when its loaded. Disable
-  `prettify-symbols-mode' on `TeX-mode' and enable `hl-todo-mode'
-  if it is installed."
-    ;; (/bindings/define-key TeX-mode-map
-    ;;   [remap TeX-command-run-all] #'/tex/TeX-command-run-all-this-window)
-    (when (package-installed-p 'hl-todo)
-      (hl-todo-mode)))
-
-  (add-hook 'TeX-mode-hook #'/tex/TeX-mode-hook)
+  ;; (/bindings/define-key TeX-mode-map
+  ;;   [remap TeX-command-run-all] #'/tex/TeX-command-run-all-this-window)
 
   (defun /tex/LaTeX-insert-item ()
     "Like `LaTeX-insert-item', but always creates a blank newline

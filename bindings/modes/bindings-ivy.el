@@ -56,7 +56,7 @@
 
   ;; `counsel-tramp' doesn't get loaded, so i check if the function is bound
   ;; (which means the package is installed)
-  (when (fboundp 'counsel-tramp)
+  (after "counsel-tramp-autoloads"
     (bindings-define-key (current-global-map)
       (kbd "C-c c t") #'counsel-tramp)))
 
