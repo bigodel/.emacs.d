@@ -57,7 +57,7 @@ just a few changes."
   (setvar TeX-interactive-mode t)         ; pause with error prompt
   (setvar TeX-debug-bad-boxes nil)        ; overfull/underfull box warnings
   (setvar TeX-debug-warnings t)           ; treat warnings as errors
-  (setvar LaTeX-math-abbrev-prefix "C-;") ; latex-math prefix
+  (setvar LaTeX-math-abbrev-prefix "C-;") ; latex-math prefix, default is `
 
   ;;; reftex
   ;; start `reftex' and `LaTeX-math-mode' on `LaTeX-mode'
@@ -66,7 +66,7 @@ just a few changes."
   ;; `reftex' variables
   (setvar reftex-plug-into-AUCTeX t)      ; integrate reftex with AUCTeX
   (setvar reftex-idle-time 0.5)           ; time Emacs idles before redisplay
-  (setvar reftex-auto-recenter-toc t)     ; automatic recentering of *TOC* window
+  (setvar reftex-auto-recenter-toc t)     ; automatic recenter *TOC* window
 
   ;; initialize reftex toc mode in emacs state
   (after [evil reftex]

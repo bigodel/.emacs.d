@@ -178,11 +178,15 @@
 
 
 ;; TODO: this hydras/utils
-(defhydra hydras/utils (:hint nil :exit t)
-  "
+(after 'config-utils
+  (defhydra hydras/utils (:hint nil :exit t)
+    "
    utils:
 "
-  ("t" utils-goto-scratch-buffer))
+    ("t" utils-goto-scratch-buffer))
+
+  (bindings-define-prefix-keys bindings-space-map "SPC"
+    ("u" #'hydras/utils/body)))
 
 
 
@@ -194,8 +198,7 @@
   ("s" #'hydras/search/body "search...")
   ("F" #'hydras/files/body "files...")
   ("i" #'hydras/ivy/body "ivy...")
-  ("g" #'hydras/magit/body "magit...")
-  ("u" #'hydras/utils/body "utils...")) ; TODO
+  ("g" #'hydras/magit/body "magit..."))
 
 ;; global bindings
 (bindings-define-keys (current-global-map)

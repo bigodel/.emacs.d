@@ -10,11 +10,7 @@
 ;;; Code:
 ;;; pdf
 (after 'doc-view
-  (bindings-define-keys pdf-view-mode-map
-    ("q" (if (fboundp 'utils-window-killer)
-             #'utils-window-killer
-           #'delete-window))
-    ("k" nil)
+  (bindings-define-keys doc-view-mode-map
     ("j" (bind (doc-view-next-line-or-next-page 5)))
     ("k" (bind (doc-view-previous-line-or-previous-page 5)))
     ("J" #'doc-view-next-page)
@@ -22,10 +18,6 @@
 
 (after 'pdf-tools
   (bindings-define-keys pdf-view-mode-map
-    ("q" (if (fboundp 'utils-window-killer)
-             #'utils-window-killer
-           #'delete-window))
-    ("k" nil)
     ("j" (bind (pdf-view-next-line-or-next-page 5)))
     ("k" (bind (pdf-view-previous-line-or-previous-page 5)))
     ("J" #'pdf-view-next-page)
