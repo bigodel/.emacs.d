@@ -18,6 +18,7 @@
   ;; normal and visual state bindings
   (evil-define-key '(normal visual motion) 'global
     " " bindings-space-map
+    " w" evil-window-map
     "gr" #'revert-buffer
     "[b" #'previous-buffer
     "]b" #'next-buffer
