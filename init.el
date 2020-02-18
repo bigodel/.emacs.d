@@ -12,7 +12,7 @@
 ;; TODO: check if whithout the provide's it makes it faster
 ;;; Code:
 ;; some common lisp functions
-(eval-when-compile (require 'cl-lib))
+(require 'cl)
 
 ;;; log Emacs startup time in *Messages*. this adds about 0.2 secs to init time
 ;; (lexical-let ((emacs-start-time (current-time)))

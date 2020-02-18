@@ -6,17 +6,21 @@
 
 ;;; Code:
 ;; disable bars to have a as clean as possible interface
-;; (when (fboundp 'tool-bar-mode) (tool-bar-mode -1))
-;; (when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
+(when (fboundp 'tool-bar-mode) (tool-bar-mode -1))
+(when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
 ;; (unless (display-graphic-p) (menu-bar-mode -1)) ; enable in GUI Emacs
-;; (when (fboundp 'menu-bar-mode) (menu-bar-mode -1))
-;; (when (fboundp 'horizontal-scroll-bar-mode) (horizontal-scroll-bar-mode -1))
+(when (fboundp 'menu-bar-mode) (menu-bar-mode -1))
+(when (fboundp 'horizontal-scroll-bar-mode) (horizontal-scroll-bar-mode -1))
+
+(set-face-foreground 'default "white")
+(set-face-background 'default "black")
 
 ;;; color theme
 ;; (load-theme 'manoj-dark t)
 
 ;; make fringe same background color as line-number face
-(set-face-background 'fringe (face-background 'line-number))
+(when (version<= "26" emacs-version)
+  (set-face-background 'fringe (face-background 'line-number)))
 
 ;; disable the bigger scale on bold function fonts (manoj-dark)
 ;; (set-face-attribute 'font-lock-function-name-face nil :height 1.0)
