@@ -54,17 +54,18 @@ involves searching.")
 
   ;;; packages
   (setq package-archives
-        '(("melpa-stable" . "https://stable.melpa.org/packages/")
-          ("melpa" . "https://melpa.org/packages/")
+        '(("melpa" . "https://melpa.org/packages/")
+          ("melpa-stable" . "https://stable.melpa.org/packages/")
           ("org" . "https://orgmode.org/elpa/")
           ("gnu" . "https://elpa.gnu.org/packages/")))
 
   ;; set the priorities when installing packages
   (setq package-archive-priorities
-        '(("melpa-stable" . 4)
-          ("melpa" . 3)
+        '(("melpa" . 4)
+          ("melpa-stable" . 3)
           ("org" . 2)
           ("gnu" . 1)))
+
   ;; activate installed packages when Emacs starts
   ;; we set this to nil to stop Emacs from starting it twice
   (setq package-enable-at-startup nil)
