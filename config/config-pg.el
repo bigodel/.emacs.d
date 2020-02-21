@@ -23,14 +23,14 @@
   (require-package 'company-coq)
   (setvar company-coq-disabled-features '(smart-subscripts prettify-symbols))
 
-  (defun /proof/coq-mode-hook ()
-    "Add `company-coq' to `company-backends' and start `company-coq-mode'."
-    (add-hook 'company-coq-mode-hook
-              (lambda ()
-                (setvar company-idle-delay 0.5 'local)))
-    (company-coq-mode t))
-
-  (add-hook 'coq-mode-hook #'/proof/coq-mode-hook))
+  (add-hook 'coq-mode-hook (lambda ()
+                             "Add `company-coq' to
+`company-backends' and start `company-coq-mode'."
+                             (add-hook
+                              'company-coq-mode-hook
+                              (lambda ()
+                                (setvar company-idle-delay 0.5 'local)))
+                             (company-coq-mode t))))
 
 (provide 'config-pg)
 ;;; config-pg.el ends here

@@ -114,6 +114,7 @@ PREFIX arg as nil. Check its documentation for more details."
 
 ;;; C-x bindings
 (bindings-define-keys (current-global-map)
+  ((kbd "C-x C-j") #'dired-jump)
   ((kbd "C-x C-b") #'ibuffer)
   ((kbd "C-x C") #'compile)
   ((kbd "C-x c") #'recompile)
