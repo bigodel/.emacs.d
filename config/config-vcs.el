@@ -53,9 +53,5 @@
     (setvar magit-todos-scanner 'magit-todos--scan-with-rg))
   (magit-todos-mode t))
 
-;; TODO: move this to bindings-vcs.el
-(/bindings/define-key (current-global-map)
-  (kbd "C-x g") #'magit-status)
-
 (provide 'config-vcs)
 ;;; config-vcs.el ends here

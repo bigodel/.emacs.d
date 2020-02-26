@@ -73,13 +73,9 @@ involves searching.")
   (package-initialize)
 
   ;;; load some core stuff
-  (load (concat core-directory "core-boot"))
-  ;; temporary -------
-  ;; NEXT: change all the instances of /bindings/ to bindings- and remove this
-  (load (concat core-directory "core-bindings"))
-  ;; temporary -------
+  (load (concat user-emacs-directory "core"))
 
-  ;;;flycheck-previous-error set and load custom file
+  ;;; set and load custom file
   (setq custom-file (concat user-emacs-directory "custom.el"))
   ;; (when (file-exists-p custom-file)
   ;;   (load custom-file))

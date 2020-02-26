@@ -105,12 +105,13 @@ PREFIX arg as nil. Check its documentation for more details."
   ((kbd "C-b") #'ibuffer)
   ("B" #'buffer-menu)
   ("h" help-map "help")
-  ("'" (if (fboundp 'eshell/new-window)
-           #'eshell/new-window
-         #'eshell) "eshell")
   ("v" vc-prefix-map "vc-prefix-map")
   ("4" ctl-x-4-map "other window")
   ("5" ctl-x-5-map "other frame"))
+
+;; might not have my eshell config
+(after 'config-eshell
+  (bindings-define-key bindings-space-map "'" #'eshell/new-window))
 
 ;;; C-x bindings
 (bindings-define-keys (current-global-map)
@@ -118,13 +119,18 @@ PREFIX arg as nil. Check its documentation for more details."
   ((kbd "C-x C-b") #'ibuffer)
   ((kbd "C-x C") #'compile)
   ((kbd "C-x c") #'recompile)
-  ((kbd "C-x C-k") #'kill-this-buffer)
-  ((kbd "C-x K") (if (fboundp 'utils-delete-current-buffer-file)
-                     #'utils-delete-current-buffer-file
-                   nil))
-  ((kbd "C-x C-S-f") (if (fboundp 'utils-find-file-as-root)
-                         #'utils-find-file-as-root
-                       nil)))
+  ((kbd "C-x C-k") #'kill-this-buffer))
+
+;; might not have my utils installed
+(after 'config-utils
+  (bindings-define-keys (current-global-map)
+    ((kbd "C-x K") #'utils-delete-current-buffer-file)
+    ((kbd "C-x C-S-f") #'utils-find-file-as-root)))
+
+;; might not have magit installed
+(after 'magit
+  (bindings-define-keys (current-global-map)
+    ((kbd "C-x g") #'magit-status)))
 
 ;;; C-c bindings
 (after 'config-utils
