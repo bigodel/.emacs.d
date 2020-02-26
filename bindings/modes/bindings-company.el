@@ -9,9 +9,9 @@
   (bindings-define-keys company-active-map
     ((kbd "C-n") #'company-complete-common-or-cycle)
     ((kbd "C-p") #'company-select-previous)
-    ((kbd "TAB") #'company-complete-common-or-cycle)
+    ((kbd "<tab>") #'company-complete-common-or-cycle)
     ((kbd "<backtab>") #'company-select-previous)
-    ((kbd "RET") #'company-complete-selection))
+    ((kbd "<return>") #'company-complete-selection))
 
   ;; make `company' work like vim's autocompletion
   (after 'evil

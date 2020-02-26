@@ -5,6 +5,7 @@
 ;;; Commentary:
 
 ;;; Code:
+;;; install proof-general
 (require-package 'proof-general)
 
 ;;; proof-general variables
@@ -21,16 +22,13 @@
 ;; install `company-coq'
 (after [company coq-mode]
   (require-package 'company-coq)
-  (setvar company-coq-disabled-features '(smart-subscripts prettify-symbols))
+  ;; deactivate some features
+  (setvar company-coq-disabled-features '(smart-subscripts ; self explanatory
+                                          prettify-symbols ; self explanatory
+                                          company-defaults)) ; some company conf
 
-  (add-hook 'coq-mode-hook (lambda ()
-                             "Add `company-coq' to
-`company-backends' and start `company-coq-mode'."
-                             (add-hook
-                              'company-coq-mode-hook
-                              (lambda ()
-                                (setvar company-idle-delay 0.5 'local)))
-                             (company-coq-mode t))))
+  ;; activate company-coq
+  (add-hook 'coq-mode-hook #'company-coq-mode))
 
 (provide 'config-pg)
 ;;; config-pg.el ends here
