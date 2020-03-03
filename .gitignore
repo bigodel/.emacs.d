@@ -4,7 +4,7 @@
 !TODO
 !abbrevs
 !config/
-!core/
+!core.el
 !custom.el
 !early-init.el
 !eshell/alias
