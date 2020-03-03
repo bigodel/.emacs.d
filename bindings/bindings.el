@@ -128,7 +128,7 @@ PREFIX arg as nil. Check its documentation for more details."
     ((kbd "C-x C-S-f") #'utils-find-file-as-root)))
 
 ;; might not have magit installed
-(after 'magit
+(after "magit-autoloads"
   (bindings-define-keys (current-global-map)
     ((kbd "C-x g") #'magit-status)))
 
