@@ -42,7 +42,7 @@
 ;; (load-theme 'tramp t)
 
 ;;; default font
-(set-default-font "monospace-14")
+(set-default-font "monospace-13")
 
 ;;; line numbers (only available in Emacs 26+)
 (defconst eyecandy-line-numbers-disabled-hooks
