@@ -101,7 +101,7 @@
 (require-package 'rich-minority)
 (unless rich-minority-mode
   (rich-minority-mode t))
-(setf rm-blacklist "")
+(setvar rm-whitelist "FlyC")            ; minor modes to show
 
 ;; highlight TODO
 (require-package 'hl-todo)

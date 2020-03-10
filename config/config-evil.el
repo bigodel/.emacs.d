@@ -21,7 +21,8 @@
     package-menu-mode
     profiler-report-mode
     process-menu-mode
-    treemacs-mode)
+    treemacs-mode
+    flycheck-error-list-mode)
   "List of major modes that should default to Emacs state.")
 
 (defconst dotemacs-evil-emacs-state-minor-modes

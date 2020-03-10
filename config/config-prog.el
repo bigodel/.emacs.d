@@ -19,7 +19,7 @@ tabs."
     (when (> tab-count space-count)
       (setvar indent-tabs-mode t 'local))))
 
-(add-hook 'prog-mode-hook #'infer-indentation-style)
+(add-hook 'find-file-hook #'infer-indentation-style)
 
 ;;; jump to definitions
 ;; (require-package 'dumb-jump)

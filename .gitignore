@@ -1,11 +1,9 @@
 /*
 /*/
 !.gitignore
-!TODO
 !abbrevs
 !config/
 !core.el
-!early-init.el
 !eshell/alias
 !init.el
 !snippets/
