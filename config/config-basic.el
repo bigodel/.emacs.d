@@ -9,9 +9,6 @@
 (setvar user-full-name "João Pedro de Amorim Paula")
 (setvar user-mail-address "jpedrodeamorim@gmail.com")
 
-;;; ask for confirmation before killing emacs
-(setvar confirm-kill-emacs 'y-or-n-p)
-
 ;;; server
 (setvar server-auth-dir (concat dotemacs-cache-directory "server"))
 (require 'server)
@@ -187,7 +184,7 @@ inserted." t)
                 filename-and-process)))
 
 (defadvice ibuffer (around ibuffer-point-to-most-recent) ()
-           "Open ibuffer with cursor pointed to most recent
+           "Open Ibuffer with cursor pointed to most recent
 buffer name."
            (let ((recent-buffer-name (buffer-name)))
              ad-do-it

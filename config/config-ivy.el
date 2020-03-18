@@ -32,6 +32,7 @@
 
 ;; `counsel' wrapper for tramp
 (require-package 'counsel-tramp)
+(setvar counsel-tramp-custom-connections '(/doas:root@localhost:/))
 
 ;; make swiper faster
 (after 'swiper

@@ -121,7 +121,10 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 (defun utils-find-file-as-root (file)
   "Edit FILE as root."
   (interactive "f")
-  (find-file-other-window (concat "/sudo::" file)))
+  (find-file-other-window
+   (if (string-equal system-type "berkley-unix")
+       (concat "/doas::" file)
+     (concat "/doas::" file))))
 
 (provide 'config-utils)
 ;;; config-utils.el ends here
