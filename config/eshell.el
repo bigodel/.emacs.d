@@ -6,7 +6,7 @@
 
 ;;; Code:
 ;;; variables
-(defvar dotemacs-eshell/visual-commands
+(defconst dotemacs-eshell-visual-commands
   '("ssh" "top" "tail" "less")
   "Command that present their output in a visual fashion.")
 

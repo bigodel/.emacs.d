@@ -60,7 +60,7 @@
             (pdf-view-mode)))
 
 ;;; aggressive indent
-(defvar dotemacs-misc-aggressive-indent-hooks
+(defconst dotemacs-misc-aggressive-indent-hooks
   '(c-mode-hook
     cc-mode-hook
     lisp-mode-hook

@@ -7,8 +7,8 @@
 ;; Most (if not all,) of this configuration was inspired/copied from Bailey
 ;; Ling's Emacs configuration, found on https://github.com/bling/dotemacs
 ;;
-;; NEXT: flycheck and flyspell!!!
-;; TODO: change all defvar's to defconst's
+;; NEXT: flyspell!!!
+;; NEXT: lsp!!!!!!!!!!!
 ;; TODO: check if whithout the provide's it makes it faster
 ;;; Code:
 ;; some common lisp functions
