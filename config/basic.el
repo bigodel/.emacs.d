@@ -259,6 +259,7 @@ buffer name."
 (setvar initial-scratch-message nil)
 
 ;;; misc variables
+(setvar debug-on-error t)               ; enter debug if error is signaled
 (setvar sentence-end-double-space nil)  ; setences don't end with double space
 (setvar ring-bell-function 'ignore)     ; disable annoying bell
 (setvar mark-ring-max 64)               ; max number of marks
