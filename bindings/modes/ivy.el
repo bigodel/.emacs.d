@@ -49,11 +49,6 @@
     (bindings-define-key (current-global-map)
       (kbd "C-c c g") #'counsel-grep)))
 
-  ;;; TODO: this; bindings for aditional packages
-  (after 'yasnippet
-    (bindings-define-key (current-global-map)
-      (kbd "C-c c y") #'ivy-yasnippet))
-
   ;; `counsel-tramp' doesn't get loaded, so i check if the function is bound
   ;; (which means the package is installed)
   (after "counsel-tramp-autoloads"
