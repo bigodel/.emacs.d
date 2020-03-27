@@ -22,6 +22,7 @@ tabs."
 (add-hook 'find-file-hook #'infer-indentation-style)
 
 ;;; jump to definitions
+;; TODO: maybe don't use this or if using move bindigns to appropriate file
 ;; (require-package 'dumb-jump)
 ;; (setvar dumb-jump-mode-selector 'ivy)
 ;; (if (executable-find "rg")

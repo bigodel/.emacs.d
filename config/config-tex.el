@@ -73,6 +73,7 @@ just a few changes."
     (evil-set-initial-state 'reftex-toc-mode 'emacs))
 
   ;; install `ivy-bibtex' if `ivy' is installed
+  ;; TODO: move this to bindings/bindings-tex.el
   (after [ivy tex]
     (require-package 'ivy-bibtex)
     (/bindings/define-key tex-mode-map (kbd "C-c c B") #'ivy-bibtex)
@@ -88,7 +89,7 @@ just a few changes."
 `company-math-symbols-latex' to `company-backends' in
 `TeX-mode'."
        (company-add-backends
-        '(company-math-symbols-latex company-latex-commands) t))))
+        '(company-latex-commands company-math-symbols-latex) t))))
 
   ;;; abbrev-mode
   ;; this is needed so that I can sepcify that on *TeX backslashes are treated
@@ -152,16 +153,19 @@ instead of breaking where the point is at."
     (after [abbrev LaTeX]
       (abbrev-table-put latex-mode-abbrev-table
                         :regexp "\\(\\\\[a-z0-9@]+\\)"))
+
+    ;; TODO: move this to bindings/bindings-tex.el
     (/bindings/define-keys LaTeX-mode-map
-      ([remap LaTeX-insert-item] #'/tex/LaTeX-insert-item)
-      ([remap LaTeX-insert-left-brace] #'self-insert-command)))
+                           ([remap LaTeX-insert-item] #'/tex/LaTeX-insert-item)
+                           ([remap LaTeX-insert-left-brace] #'self-insert-command)))
 
   (add-hook 'LaTeX-mode-hook #'/tex/LaTeX-mode-hook)
 
   ;; `pdf-view-mode' bindings
   (after 'pdf-view-mode
+    ;; TODO: move this to bindings/bindings-tex.el
     (/bindings/define-key TeX-mode-map
-      (kbd "C-c C-g") #'pdf-sync-forward-search)))
+                          (kbd "C-c C-g") #'pdf-sync-forward-search)))
 
 (provide 'lang-tex)
 ;;; lang-tex.el ends here
