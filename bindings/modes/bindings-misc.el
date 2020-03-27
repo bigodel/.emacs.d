@@ -34,10 +34,9 @@
 
 (after 'helpful
   (bindings-define-keys helpful-mode-map
-    ("q" (if (fboundp 'utils-window-killer)
-             #'utils-window-killer
-           #'delete-window))
-    ([tab] #'forward-button)))
+    ("q" #'quit-window)
+    ((kbd "<tab>") #'forward-button)
+    ((kbd "TAB") #'forward-button)))
 
 ;;; undo-tree
 (bindings-define-prefix-keys bindings-space-map "SPC"
