@@ -15,7 +15,8 @@
           (lambda ()
             (next-line)
             (after 'evil
-              (evil-insert-state))))
+              (evil-insert-state))
+            (setvar fill-column 72 'local)))
 
 
 
