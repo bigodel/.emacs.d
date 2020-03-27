@@ -39,6 +39,7 @@
 (setvar evil-want-fine-undo nil)     ; whether to undo like vim or emacs
 (setvar evil-want-keybinding nil)    ; whether to load evil-keybindings.el
 (setvar evil-want-abbrev-expand-on-insert-exit nil) ; expand abbrev with ESC
+(setvar evil-insert-state-bindings nil) ; use emacs editing bindings in insert
 ;; move evil tag to beginning of modeline
 (setvar evil-mode-line-format '(before . mode-line-front-space))
 ;; set the cursor for each state

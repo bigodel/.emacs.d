@@ -35,7 +35,6 @@
            company-etags
            company-keywords)
           company-abbrev
-          company-ispell
           company-dabbrev))
 
 (setvar company-global-modes             ; ignored modes

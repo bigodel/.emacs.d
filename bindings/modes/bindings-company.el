@@ -23,9 +23,9 @@
       ((kbd "<tab>") #'company-indent-or-complete-common)
       ((kbd "TAB") #'company-indent-or-complete-common)
       ((kbd "<C-tab>") #'company-yasnippet) ; this doesn't work on terminal
-      ((kbd "C-TAB") #'company-yasnippet) ; this doesn't work on terminal
-      ((kbd "C-n") #'company-complete)
-      ((kbd "C-p") #'company-complete))))
+      ((kbd "C-TAB") #'company-yasnippet)   ; this doesn't work on terminal
+      ((kbd "M-n") #'company-complete)      ; use M-{n,p} to force company
+      ((kbd "M-p") #'company-complete))))
 
 (provide 'bindings-company)
 ;;; bindings-company.el ends here
