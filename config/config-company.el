@@ -11,45 +11,52 @@
 ;; complete unicode mathematical symbols with `company-mode'
 (require-package 'company-math)
 
-;; variables
+;;; variables
 (setvar company-tooltip-align-annotations t) ; align annotations to the right
-(setvar company-tooltip-limit 12)        ; limit of completions per pop up
-(setvar company-idle-delay nil)          ; only complete when I want to
-(setvar company-echo-delay 0)            ; disable blinking
-(setvar company-minimum-prefix-length 2) ; minimum chars to start completion
+(setvar company-tooltip-limit 12)            ; limit of completions per pop up
+(setvar company-idle-delay 0.5)          ; idle time to show completion. if set
+                                        ; to nil then only complete when asked
+(setvar company-show-numbers t)         ; show numbers for quick nav with M-num
+(setvar company-echo-delay 0)           ; disable blinking
+(setvar company-minimum-prefix-length 1) ; minimum chars to start completion
 (setvar company-require-match nil)       ; can quit company without completing
 (setvar company-selection-wrap-around t) ; wrap when no more candidates
+(setvar company-dabbrev-other-buffers nil) ; only words of the current buffer
 (setvar company-backends                 ; default company backends
-        '(;; main completion
-          (company-files
-           company-keywords
-           company-capf)
-          ;; plain text
-          (company-abbrev
-           company-dabbrev
-           company-ispell)
-          ;; code
+        '(company-eclim                  ; completion for eclim
+          company-semantic               ; CEDET semantic
+          company-clang                  ; clang
+          company-xcode                  ; Xcode
+          company-cmake                 ; CMake
+          company-capf                  ; Emacs' completion-at-point-functions
+          company-files                 ; files (absolute and relative)
           (company-dabbrev-code
-           company-semantic
-           company-gtags)
-          ;; programming languages
-          (company-eclim
-           company-clang
-           company-elisp
-           company-css)
-          ;; build tools
-          (company-xcode
-           company-cmake)
-          company-bbdb))
-(setvar company-global-modes             ; ignored modes
-        '(not eshell-mode comint-mode))
+           company-gtags
+           company-etags
+           company-keywords)
+          company-abbrev
+          company-ispell
+          company-dabbrev))
 
-;; start company
+(setvar company-global-modes             ; ignored modes
+        '(not eshell-mode
+              comint-mode))
+
+;;; start company
 (global-company-mode)
 
+;; helper functions
+(defun company-backend-with-yasnippet (backend)
+  "Set up the yasnippet backend with BACKEND."
+  (if (and (listp backend) (member 'company-yasnippet backend))
+      backend
+    (append (if (consp backend) backend (list backend))
+            '(:with company-yasnippet))))
+
 (defun company-add-backends (backends &optional is-local)
-  "Add BACKENDS to `company-backends'. If `yasnippet' is
-installed, append \":with company-yasnippet\" to BACKENDS.
+  "Add BACKENDS to `company-backends' at the top of the list.
+If `yasnippet' is installed, append \":with company-yasnippet\"
+each of the to BACKENDS.
 
 If IS-LOCAL is non-nil, only change the value of
 `company-backends' on this buffer, otherwise change it globally.
@@ -66,27 +73,20 @@ configuration available at `https://github.com/jpprime/.emacs.d'."
       ;; if we want it to be a local change
       (if is-local
           (setvar company-backends
-                  (append
-                   (list (append backends '(:with company-yasnippet)))
-                   company-backends) 'local)
+                  (mapcar #'company-backend-with-yasnippet
+                          (append backends company-backends)) 'local)
         (setvar company-backends
-                (append
-                 (list (append backends '(:with company-yasnippet)))
-                 company-backends)))
+                (mapcar #'company-backend-with-yasnippet
+                        (append backends company-backends))))
+    ;; yasnippet not installed
     (if is-local
-        (setvar company-backends (append backends company-backends) 'local)
-      (setvar company-backends (append backends company-backends)))))
+        (setvar company-backends (cons backends company-backends) 'local)
+      (setvar company-backends (cons backends company-backends)))))
 
 ;; add yasnippet as a backend for all backends
 (after 'yasnippet
   (setvar company-backends
-          (mapcar
-           (lambda (backend)
-             (if (and (listp backend) (member 'company-yasnippet backend))
-                 backend
-               (append (if (consp backend) backend (list backend))
-                       '(:with company-yasnippet))))
-           company-backends)))
+          (mapcar #'company-backend-with-yasnippet company-backends)))
 
 (provide 'config-company)
 ;;; config-company.el ends here
