@@ -20,15 +20,17 @@
 
 
 ;;; packages
-(lazy-major-mode "\\.gitignore\\'" 'gitignore-mode)
-(lazy-major-mode "\\.gitconfig\\'" 'gitconfig-mode)
-(lazy-major-mode "\\.gitattributes\\'" 'gitattributes-mode)
+(lazy-major-mode "\\.gitignore\\'" gitignore-mode)
+(lazy-major-mode "\\.gitconfig\\'" gitconfig-mode)
+(lazy-major-mode "\\.gitattributes\\'" gitattributes-mode)
 
 
 
 ;;; magit
 (when (executable-find "git")
-  (require-package 'magit))
+  (require-package 'magit)
+  (require-package 'git-gutter+)
+  (global-git-gutter+-mode))
 
 ;;; magit variables
 (after 'magit
