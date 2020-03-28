@@ -9,7 +9,7 @@
 ;;
 ;;; Code:
 ;;; install hydra
-(setvar lv-use-separator t)
+(setvar 'lv-use-separator t)
 (require-package 'hydra)
 (autoload 'hydra-default-pre "hydra")
 

@@ -8,8 +8,8 @@
 ;; install flycheck
 (require-package 'flycheck)
 
-(setvar flycheck-display-errors-function ; only display errors if the error list
-        #'flycheck-display-error-messages-unless-error-list) ; is not on
+(setvar 'flycheck-display-errors-function ; only display errors if the error
+        #'flycheck-display-error-messages-unless-error-list) ; list is not on
 
 ;; not really sure what this does
 ;; (after "web-mode-autoloads"

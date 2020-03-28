@@ -17,18 +17,18 @@ tabs."
   (let ((space-count (how-many "^    " (point-min) (point-max)))
         (tab-count (how-many "^\t" (point-min) (point-max))))
     (when (> tab-count space-count)
-      (setvar indent-tabs-mode t 'local))))
+      (setvar 'indent-tabs-mode t 'local))))
 
 (add-hook 'find-file-hook #'infer-indentation-style)
 
 ;;; jump to definitions
 ;; TODO: maybe don't use this or if using move bindigns to appropriate file
 ;; (require-package 'dumb-jump)
-;; (setvar dumb-jump-mode-selector 'ivy)
+;; (setvar 'dumb-jump-mode-selector 'ivy)
 ;; (if (executable-find "rg")
-;;     (setvar dumb-jump-prefer-searcher 'rg)
+;;     (setvar 'dumb-jump-prefer-searcher 'rg)
 ;;   (when (executable-find "ag")
-;;     (setvar dumb-jump-prefer-searcher 'ag)))
+;;     (setvar 'dumb-jump-prefer-searcher 'ag)))
 
 ;; (after [evil dumb-jump]
 ;;   (/bindings/define-key evil-normal-state-map (kbd "g d") #'dumb-jump-go)
@@ -47,3 +47,6 @@ tabs."
 (lazy-major-mode "\\.lua\\'" lua-mode)
 (lazy-major-mode "\\.csv\\'" csv-mode)
 (lazy-major-mode "\\.?cron\\() (tab\\)?\\'" crontab-mode)
+
+(provide 'config-prog.el)
+;;; config-prog.el ends here

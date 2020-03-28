@@ -13,15 +13,15 @@
 (ivy-mode t)
 
 ;; variables
-(setvar ivy-use-virtual-buffers t) ; recentf & bookmarks in `ivy-switch-buffer'
-(setvar ivy-count-format "%d/%d ")
-(setvar ivy-wrap t)
-(setvar ivy-height 16)
-(setvar ivy-initial-inputs-alist nil)
+(setvar 'ivy-use-virtual-buffers t) ; recentf & bookmarks in `ivy-switch-buffer'
+(setvar 'ivy-count-format "%d/%d ")
+(setvar 'ivy-wrap t)
+(setvar 'ivy-height 16)
+(setvar 'ivy-initial-inputs-alist nil)
 
 ;; `counsel' automatically uses `amx' as the M-x package
-(setvar amx-history-length 10)
-(setvar amx-save-file (expand-file-name "amx-items" dotemacs-cache-directory))
+(setvar 'amx-history-length 10)
+(setvar 'amx-save-file (expand-file-name "amx-items" dotemacs-cache-directory))
 (require-package 'amx)
 (amx-mode)
 
@@ -32,7 +32,7 @@
 
 ;; `counsel' wrapper for tramp
 (require-package 'counsel-tramp)
-(setvar counsel-tramp-custom-connections '(/doas:root@localhost:/))
+(setvar 'counsel-tramp-custom-connections '(/doas:root@localhost:/))
 
 ;; make swiper faster
 (after 'swiper

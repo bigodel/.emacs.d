@@ -6,10 +6,10 @@
 
 ;;; Code:
 ;; wdired
-(setvar wdired-allow-to-change-permissions t)
-(setvar wdired-allow-to-redirect-links t)
-(setvar wdired-use-interactive-rename t)
-(setvar wdired-confirm-overwrite t)
+(setvar 'wdired-allow-to-change-permissions t)
+(setvar 'wdired-allow-to-redirect-links t)
+(setvar 'wdired-use-interactive-rename t)
+(setvar 'wdired-confirm-overwrite t)
 ;; dired-x is a library to add extra functionality to dired, for more info refer
 ;; to the GNU manual
 ;; https://www.gnu.org/software/emacs/manual/html_node/dired-x/
@@ -20,8 +20,8 @@ Set `dired-x' and `dired-aux' global variables here."
             (require 'dired-x)
             (require 'dired-aux)
             ;; Set dired-x and dired-aux global variables here. For example:
-            ;; (setvar dired-guess-shell-gnutar "gtar")
-            ;; (setvar dired-x-hands-off-my-keys nil)
+            ;; (setvar 'dired-guess-shell-gnutar "gtar")
+            ;; (setvar 'dired-x-hands-off-my-keys nil)
             ))
 (add-hook 'dired-mode-hook
           (lambda ()
@@ -38,10 +38,13 @@ Set `dired-x' and `dired-aux' global variables here."
 ;; we use Emacs's own emulation of 'ls'
 (when (string= system-type "berkeley-unix")
   (if (executable-find "gls")
-      (setvar insert-directory-program (executable-find "gls"))
-    (setvar dired-use-ls-dired nil)
-    (setvar ls-lisp-use-insert-directory-program nil)))
+      (setvar 'insert-directory-program (executable-find "gls"))
+    (setvar 'dired-use-ls-dired nil)
+    (setvar 'ls-lisp-use-insert-directory-program nil)))
 
 ;; dired-subtree configuration
 (after 'dired
   (require-package 'dired-subtree))
+
+(provide 'config-dired)
+;;; config-dired.el ends here

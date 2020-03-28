@@ -29,12 +29,12 @@
 ;;; undo like vim (only needed if using evil-mode)
 (after 'evil
   (package-install 'undo-tree)
-  (setvar undo-tree-auto-save-history t)
-  (setvar undo-tree-enable-undo-in-region nil)
-  (setvar undo-tree-history-directory-alist
+  (setvar 'undo-tree-auto-save-history t)
+  (setvar 'undo-tree-enable-undo-in-region nil)
+  (setvar 'undo-tree-history-directory-alist
           `(("." . ,(concat dotemacs-cache-directory "undo/"))))
-  (setvar undo-tree-visualizer-timestamps t)
-  (setvar undo-tree-visualizer-diff t)
+  (setvar 'undo-tree-visualizer-timestamps t)
+  (setvar 'undo-tree-visualizer-diff t)
   (add-hook 'after-init-hook #'global-undo-tree-mode))
 
 ;;; treemacs
@@ -45,15 +45,15 @@
   (require-pacakge 'treemacs-magit))
 
 ;;; `doc-view-mode'
-(setvar doc-view-continuous t)          ; continuous mode in `doc-view-mode'
-(setvar doc-view-resolution 200)        ; resolution of images
+(setvar 'doc-view-continuous t)          ; continuous mode in `doc-view-mode'
+(setvar 'doc-view-resolution 200)        ; resolution of images
 
 ;;; `pdf-view-mode'
 (require-package 'pdf-tools)
 ;; variables
-(setvar pdf-view-resize-factor 1.1)
+(setvar 'pdf-view-resize-factor 1.1)
 ;; midnight mode colors for `pdf-view-mode'
-(setvar pdf-view-midnight-colors '("#ffffff" . "#000000")) ;
+(setvar 'pdf-view-midnight-colors '("#ffffff" . "#000000")) ;
 ;; enable some pdf-view related minor-modes
 (add-hook 'pdf-tools-enabled-hook #'pdf-view-midnight-minor-mode)
 (add-hook 'pdf-tools-enabled-hook #'pdf-view-auto-slice-minor-mode)

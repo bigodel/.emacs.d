@@ -1,4 +1,4 @@
-;;; lang-tex.el --- TeX configuration
+;;; config-tex.el --- TeX configuration
 
 ;; Author: João Pedro de Amorim Paula <maybe_add_email@later>
 
@@ -9,18 +9,18 @@
   (require-package 'auctex)
 
   ;;; variables
-  (setvar tex-fontify-script nil)        ; fontify super and subscript
-  (setvar font-latex-fontify-script nil) ; fontify super and subscript
-  (setvar TeX-master 'dwim)              ; master file for the current buffer
-  (setvar TeX-auto-save t)               ; enable parse on save
-  (setvar TeX-parse-self t)              ; enable parse on load
-  (setvar TeX-save-query nil)            ; don't ask for permission to save
-  (setvar TeX-view-program-selection
+  (setvar 'tex-fontify-script nil)        ; fontify super and subscript
+  (setvar 'font-latex-fontify-script nil) ; fontify super and subscript
+  (setvar 'TeX-master 'dwim)              ; master file for the current buffer
+  (setvar 'TeX-auto-save t)               ; enable parse on save
+  (setvar 'TeX-parse-self t)              ; enable parse on load
+  (setvar 'TeX-save-query nil)            ; don't ask for permission to save
+  (setvar 'TeX-view-program-selection
           '((output-pdf "PDF Tools")
             (output-pdf "Zathura")
             (output-dvi "xdvi")))       ; list of predicates and viewers
-  (setvar TeX-show-compilation t)       ; show output of TeX compilation
-  (setvar TeX-after-compilation-finished-functions
+  (setvar 'TeX-show-compilation t)       ; show output of TeX compilation
+  (setvar 'TeX-after-compilation-finished-functions
           '(TeX-revert-document-buffer  ; if using doc-view, revert pdf buffer
             ;; TODO: maybe put this in a defun instead of using lambda
             (lambda (_output)
@@ -52,21 +52,21 @@ just a few changes."
                       (cl-loop for win in (window-list)
                                if (eq (window-buffer win) (current-buffer))
                                do (delete-window win)))))))))
-  (setvar TeX-source-correlate-mode t)    ; forward and reverse search
-  (setvar TeX-PDF-mode t)                 ; compile to pdf by default
-  (setvar TeX-interactive-mode t)         ; pause with error prompt
-  (setvar TeX-debug-bad-boxes nil)        ; overfull/underfull box warnings
-  (setvar TeX-debug-warnings t)           ; treat warnings as errors
-  (setvar LaTeX-math-abbrev-prefix "C-;") ; latex-math prefix, default is `
+  (setvar 'TeX-source-correlate-mode t)    ; forward and reverse search
+  (setvar 'TeX-PDF-mode t)                 ; compile to pdf by default
+  (setvar 'TeX-interactive-mode t)         ; pause with error prompt
+  (setvar 'TeX-debug-bad-boxes nil)        ; overfull/underfull box warnings
+  (setvar 'TeX-debug-warnings t)           ; treat warnings as errors
+  (setvar 'LaTeX-math-abbrev-prefix "C-;") ; latex-math prefix, default is `
 
   ;;; reftex
   ;; start `reftex' and `LaTeX-math-mode' on `LaTeX-mode'
   (add-hook 'LaTeX-mode-hook #'LaTeX-math-mode)
   (add-hook 'LaTeX-mode-hook #'turn-on-reftex)
   ;; `reftex' variables
-  (setvar reftex-plug-into-AUCTeX t)      ; integrate reftex with AUCTeX
-  (setvar reftex-idle-time 0.5)           ; time Emacs idles before redisplay
-  (setvar reftex-auto-recenter-toc t)     ; automatic recenter *TOC* window
+  (setvar 'reftex-plug-into-AUCTeX t)      ; integrate reftex with AUCTeX
+  (setvar 'reftex-idle-time 0.5)           ; time Emacs idles before redisplay
+  (setvar 'reftex-auto-recenter-toc t)     ; automatic recenter *TOC* window
 
   ;; initialize reftex toc mode in emacs state
   (after [evil reftex]
@@ -167,5 +167,5 @@ instead of breaking where the point is at."
     (/bindings/define-key TeX-mode-map
                           (kbd "C-c C-g") #'pdf-sync-forward-search)))
 
-(provide 'lang-tex)
-;;; lang-tex.el ends here
+(provide 'config-tex)
+;;; config-tex.el ends here

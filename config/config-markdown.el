@@ -1,4 +1,4 @@
-;;; lang-markdown.el --- Markdown configurations.
+;;; config-markdown.el --- Markdown configurations.
 
 ;; Author: João Pedro de Amorim Paula <maybe_add_later@gmail.com>
 
@@ -14,7 +14,10 @@
 
 (after 'markdown-mode
   ;;; variables
-  (setvar markdown-italic-underscore t) ; use _ instead of * for italic
-  (setvar markdown-enable-math t)       ; syntax highlighting for inline LaTeX
-  (setvar markdown-asymmetric-header t) ; place header only on the left side
-  (setvar markdown-fontify-code-blocks-natively t)) ; fontify code blocks
+  (setvar 'markdown-italic-underscore t) ; use _ instead of * for italic
+  (setvar 'markdown-enable-math t)       ; syntax highlighting for inline LaTeX
+  (setvar 'markdown-asymmetric-header t) ; place header only on the left side
+  (setvar 'markdown-fontify-code-blocks-natively t)) ; fontify code blocks
+
+(provide 'config-markdown)
+;;; config-markdown.el ends here

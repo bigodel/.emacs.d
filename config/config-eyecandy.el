@@ -60,8 +60,8 @@
   "Modes to disable `display-line-numbers-mode'.")
 
 (when (fboundp 'display-line-numbers-mode)
-  (setvar display-line-numbers t)
-  (setvar display-line-numbers-current-absolute t)
+  (setvar 'display-line-numbers t)
+  (setvar 'display-line-numbers-current-absolute t)
 
   (dolist (hook eyecandy-line-numbers-disabled-hooks)
     (add-hook hook (lambda ()
@@ -69,7 +69,7 @@
                      (display-line-numbers-mode -1)))))
 
 ;;; whitespace-mode
-(setvar whitespace-style
+(setvar 'whitespace-style
         '(face trailing tabs tab-mark lines-tail))
 
 (add-hook 'after-save-hook #'whitespace-cleanup)
@@ -101,7 +101,7 @@
 (require-package 'rich-minority)
 (unless rich-minority-mode
   (rich-minority-mode t))
-(setvar rm-whitelist "FlyC")            ; minor modes to show
+(setvar 'rm-whitelist "FlyC")            ; minor modes to show
 
 ;; highlight TODO
 (require-package 'hl-todo)

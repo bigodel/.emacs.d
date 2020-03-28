@@ -105,8 +105,8 @@ using `custom-set' if available and `set-default' otherwise. When
 LOCAL is not nil, use `setq-local' to change the value of the
 variable locally."
   (if local
-      `(setq-local ,var ,value)
-    `(customize-set-variable ',var ,value ,comment)))
+      `(setq-local ,(eval var) ,value)
+    `(customize-set-variable ,var ,value ,comment)))
 
 (defmacro lazy-major-mode (pattern mode)
   "Define a new `major-mode' matched by PATTERN, install MODE if

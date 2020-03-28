@@ -8,15 +8,15 @@
 (require-package 'projectile)
 
 ;; variables
-(setvar projectile-cache-file
+(setvar 'projectile-cache-file
         (concat dotemacs-cache-directory "projectile.cache"))
-(setvar projectile-known-projects-file
+(setvar 'projectile-known-projects-file
         (concat dotemacs-cache-directory "projectile-bookmarks.eld"))
-(setvar projectile-indexing-method 'alien)
-(setvar projectile-enable-caching t)
-(setvar projectile-completion-system 'ivy)
-(setvar projectile-project-compilation-cmd "")
-(setvar projectile-project-run-cmd "")
+(setvar 'projectile-indexing-method 'alien)
+(setvar 'projectile-enable-caching t)
+(setvar 'projectile-completion-system 'ivy)
+(setvar 'projectile-project-compilation-cmd "")
+(setvar 'projectile-project-run-cmd "")
 
 ;; start projectile
 (projectile-mode)

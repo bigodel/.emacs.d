@@ -32,24 +32,24 @@
 
 
 ;;; variables
-(setvar evil-search-module 'isearch) ; search like in isearch
-(setvar evil-magic 'very-magic)      ; vim's magicness (for 'evil-search)
-(setvar evil-want-C-i-jump t)        ; whether C-i works like in vim
-(setvar evil-want-C-u-scroll t)      ; whether C-u works like in vim
-(setvar evil-want-fine-undo nil)     ; whether to undo like vim or emacs
-(setvar evil-want-keybinding nil)    ; whether to load evil-keybindings.el
-(setvar evil-want-abbrev-expand-on-insert-exit nil) ; expand abbrev with ESC
-(setvar evil-insert-state-bindings nil) ; use emacs editing bindings in insert
+(setvar 'evil-search-module 'isearch) ; search like in isearch
+(setvar 'evil-magic 'very-magic)      ; vim's magicness (for 'evil-search)
+(setvar 'evil-want-C-i-jump t)        ; whether C-i works like in vim
+(setvar 'evil-want-C-u-scroll t)      ; whether C-u works like in vim
+(setvar 'evil-want-fine-undo nil)     ; whether to undo like vim or emacs
+(setvar 'evil-want-keybinding nil)    ; whether to load evil-keybindings.el
+(setvar 'evil-want-abbrev-expand-on-insert-exit nil) ; expand abbrev with ESC
+(setvar 'evil-insert-state-bindings nil) ; use emacs editing bindings in insert
 ;; move evil tag to beginning of modeline
-(setvar evil-mode-line-format '(before . mode-line-front-space))
+(setvar 'evil-mode-line-format '(before . mode-line-front-space))
 ;; set the cursor for each state
-(setvar evil-emacs-state-cursor    '("red" box))
-(setvar evil-motion-state-cursor   '("white" box))
-(setvar evil-normal-state-cursor   '("magenta" box))
-(setvar evil-visual-state-cursor   '("orange" box))
-(setvar evil-insert-state-cursor   '("red" bar))
-(setvar evil-replace-state-cursor  '("red" hbar))
-(setvar evil-operator-state-cursor '("magenta" hollow))
+(setvar 'evil-emacs-state-cursor    '("red" box))
+(setvar 'evil-motion-state-cursor   '("white" box))
+(setvar 'evil-normal-state-cursor   '("magenta" box))
+(setvar 'evil-visual-state-cursor   '("orange" box))
+(setvar 'evil-insert-state-cursor   '("red" bar))
+(setvar 'evil-replace-state-cursor  '("red" hbar))
+(setvar 'evil-operator-state-cursor '("magenta" hollow))
 
 ;; recenter after any jump in evil-mode
 (add-hook 'evil-jumps-post-jump-hook #'recenter)

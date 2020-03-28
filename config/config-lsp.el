@@ -18,12 +18,12 @@
   (after 'treemacs
     (require-package 'lsp-treemacs)))
 
-(setvar lsp-keymap-prefix "C-l")        ; change the default prefix for lsp
-(setvar lsp-auto-configure t)           ; will configure company, flycheck, ...
-(setvar lsp-log-io t)                   ; log msgs from the ls in *lsp-log*
-(setvar lsp-session-file                ; where to store the session file
+(setvar 'lsp-keymap-prefix "C-l")        ; change the default prefix for lsp
+(setvar 'lsp-auto-configure t)           ; will configure company, flycheck, ...
+(setvar 'lsp-log-io t)                   ; log msgs from the ls in *lsp-log*
+(setvar 'lsp-session-file                ; where to store the session file
         (concat dotemacs-cache-directory ".lsp-session-v1"))
-(setvar lsp-enable-semantic-highlighting t) ; experimental semantic highlighting
+(setvar 'lsp-enable-semantic-highlighting t) ; experimental semantic highlight
 
 
 ;; enable which key integration

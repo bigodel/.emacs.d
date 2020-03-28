@@ -10,14 +10,14 @@
   '("ssh" "top" "tail" "less")
   "Command that present their output in a visual fashion.")
 
-(setvar eshell-buffer-maximum-lines 20000)
-(setvar eshell-scroll-to-bottom-on-input 'this)
-(setvar eshell-buffer-shorthand t)
-(setvar eshell-glob-case-insensitive nil)
-(setvar eshell-error-if-no-glob t)
-(setvar eshell-history-size (* 10 1024))
-(setvar eshell-hist-ignoredups t)
-(setvar eshell-cmpl-ignore-case t)
+(setvar 'eshell-buffer-maximum-lines 20000)
+(setvar 'eshell-scroll-to-bottom-on-input 'this)
+(setvar 'eshell-buffer-shorthand t)
+(setvar 'eshell-glob-case-insensitive nil)
+(setvar 'eshell-error-if-no-glob t)
+(setvar 'eshell-history-size (* 10 1024))
+(setvar 'eshell-hist-ignoredups t)
+(setvar 'eshell-cmpl-ignore-case t)
 
 ;; add some more commands to the visual commands
 (after 'em-term
@@ -35,7 +35,7 @@
 
 (when (executable-find "fortune")
   (defadvice eshell (before dotemacs activate)
-    (setvar eshell-banner-message
+    (setvar 'eshell-banner-message
             (concat (shell-command-to-string "fortune") "\n"))
     "Display a little `fortune' at `eshell's startup."))
 

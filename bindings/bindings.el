@@ -74,25 +74,25 @@ PREFIX arg as nil. Check its documentation for more details."
 
 ;;; show possible combinations of keys for prefix keys
 (require-package 'which-key)
-(setvar which-key-idle-delay 1.0)       ; delay (in secs) for which-key pop up
-(setvar which-key-allow-evil-operators t) ; show evil operators with which key
+(setvar 'which-key-idle-delay 1.0)       ; delay (in secs) for which-key pop up
+(setvar 'which-key-allow-evil-operators t) ; show evil operators with which key
 (which-key-mode)
 
 ;; TODO: this package is part of magit, so maybe add this to the vcs
 ;; configuration file (where magit configuration is)
 (require-package 'transient)
-(setvar transient-history-file (concat dotemacs-cache-directory
-                                       "transient/history.el"))
-(setvar transient-levels-file (concat dotemacs-cache-directory
-                                      "transient/levels.el"))
-(setvar transient-values-file (concat dotemacs-cache-directory
-                                      "transient/values.el"))
+(setvar 'transient-history-file (concat dotemacs-cache-directory
+                                        "transient/history.el"))
+(setvar 'transient-levels-file (concat dotemacs-cache-directory
+                                       "transient/levels.el"))
+(setvar 'transient-values-file (concat dotemacs-cache-directory
+                                       "transient/values.el"))
 
 
 
 ;;; bindings
 ;;; SPC as a prefix key
-(setvar bindings-space-map (make-sparse-keymap))
+(setvar 'bindings-space-map (make-sparse-keymap))
 ;; SPC bindings
 (bindings-define-prefix-keys bindings-space-map "SPC"
   (" " #'execute-extended-command "M-x")

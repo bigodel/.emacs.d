@@ -45,9 +45,9 @@
 of point."
     (interactive)
     (let ((default-mouse-yank-at-point (symbol-value mouse-yank-at-point)))
-      (setvar mouse-yank-at-point t)
+      (setvar 'mouse-yank-at-point t)
       (mouse-yank-primary nil)
-      (setvar mouse-yank-at-point default-mouse-yank-at-point)))
+      (setvar 'mouse-yank-at-point default-mouse-yank-at-point)))
 
   (evil-define-key '(insert normal visual) 'global
     (kbd "<S-insert>") #'evil-mouse-yank-primary))

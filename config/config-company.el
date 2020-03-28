@@ -12,17 +12,17 @@
 (require-package 'company-math)
 
 ;;; variables
-(setvar company-tooltip-align-annotations t) ; align annotations to the right
-(setvar company-tooltip-limit 12)            ; limit of completions per pop up
-(setvar company-idle-delay 0.5)          ; idle time to show completion. if set
+(setvar 'company-tooltip-align-annotations t) ; align annotations to the right
+(setvar 'company-tooltip-limit 12)            ; limit of completions per pop up
+(setvar 'company-idle-delay 0.5)          ; idle time to show completion. if set
                                         ; to nil then only complete when asked
-(setvar company-show-numbers t)         ; show numbers for quick nav with M-num
-(setvar company-echo-delay 0)           ; disable blinking
-(setvar company-minimum-prefix-length 1) ; minimum chars to start completion
-(setvar company-require-match nil)       ; can quit company without completing
-(setvar company-selection-wrap-around t) ; wrap when no more candidates
-(setvar company-dabbrev-other-buffers nil) ; only words of the current buffer
-(setvar company-backends                 ; default company backends
+(setvar 'company-show-numbers t)         ; show numbers for quick nav with M-num
+(setvar 'company-echo-delay 0)           ; disable blinking
+(setvar 'company-minimum-prefix-length 1) ; minimum chars to start completion
+(setvar 'company-require-match nil)       ; can quit company without completing
+(setvar 'company-selection-wrap-around t) ; wrap when no more candidates
+(setvar 'company-dabbrev-other-buffers nil) ; only words of the current buffer
+(setvar 'company-backends                 ; default company backends
         '(company-eclim                  ; completion for eclim
           company-semantic               ; CEDET semantic
           company-clang                  ; clang
@@ -37,7 +37,7 @@
           company-abbrev
           company-dabbrev))
 
-(setvar company-global-modes             ; ignored modes
+(setvar 'company-global-modes             ; ignored modes
         '(not eshell-mode
               comint-mode))
 
@@ -71,20 +71,20 @@ configuration available at `https://github.com/jpprime/.emacs.d'."
   (if (package-installed-p 'yasnippet)
       ;; if we want it to be a local change
       (if is-local
-          (setvar company-backends
+          (setvar 'company-backends
                   (mapcar #'company-backend-with-yasnippet
                           (append backends company-backends)) 'local)
-        (setvar company-backends
+        (setvar 'company-backends
                 (mapcar #'company-backend-with-yasnippet
                         (append backends company-backends))))
     ;; yasnippet not installed
     (if is-local
-        (setvar company-backends (cons backends company-backends) 'local)
-      (setvar company-backends (cons backends company-backends)))))
+        (setvar 'company-backends (cons backends company-backends) 'local)
+      (setvar 'company-backends (cons backends company-backends)))))
 
 ;; add yasnippet as a backend for all backends
 (after 'yasnippet
-  (setvar company-backends
+  (setvar 'company-backends
           (mapcar #'company-backend-with-yasnippet company-backends)))
 
 ;; if using lsp, install company-lsp. this needs to be down here because we are
@@ -94,10 +94,10 @@ configuration available at `https://github.com/jpprime/.emacs.d'."
 
   (company-add-backends '(company-lsp)) ; add it to our backends
 
-  (setvar company-lsp-cache-candidates 'auto) ; better read the docs on this one
-  (setvar company-lsp-async t)          ; fetch complation async
-  (setvar company-lsp-enable-snippet t) ; enable snippets
-  (setvar company-lsp-enable-recompletion t)) ; read the docs on this one too
+  (setvar 'company-lsp-cache-candidates 'auto) ; better read the docs on this one
+  (setvar 'company-lsp-async t)          ; fetch complation async
+  (setvar 'company-lsp-enable-snippet t) ; enable snippets
+  (setvar 'company-lsp-enable-recompletion t)) ; read the docs on this one too
 
 (provide 'config-company)
 ;;; config-company.el ends here
