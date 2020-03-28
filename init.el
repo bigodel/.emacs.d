@@ -10,8 +10,11 @@
 ;; To read more on the gc-cons-threshold, go to:
 ;; https://bling.github.io/blog/2016/01/18/why-are-you-changing-gc-cons-threshold/
 ;;
-;; NEXT: flyspell!!!
 ;; NEXT: lsp!!!!!!!!!!!
+;; NEXT: flyspell!!!
+;; TODO: separate the configuration for languages in the langs folder and also
+;; don't forget to wrap it on (after 'XXX-mode)
+;; TODO: add config-aux-modes for modes that don't require config only install
 ;; TODO: check if whithout the provide's it makes it faster
 ;;; Code:
 ;; some common lisp functions
