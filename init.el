@@ -7,6 +7,9 @@
 ;; Most (if not all,) of this configuration was inspired/copied from Bailey
 ;; Ling's Emacs configuration, found on https://github.com/bling/dotemacs
 ;;
+;; To read more on the gc-cons-threshold, go to:
+;; https://bling.github.io/blog/2016/01/18/why-are-you-changing-gc-cons-threshold/
+;;
 ;; NEXT: flyspell!!!
 ;; NEXT: lsp!!!!!!!!!!!
 ;; TODO: check if whithout the provide's it makes it faster
@@ -26,11 +29,14 @@
 ;; we wrap our whole initializatino inside this let because we set some
 ;; variables to make it snappier and faster to start Emacs. also, we don't need
 ;; a variable to store the location of our config outside of the initialization,
-;; that's why it is also inside the let.
+;; that's why it is also inside the let. and i also create a constant to store
+;; the default value of the gc-cons-threshold.
 ;; TODO: write about the gc-cons-threshold and file-name-handler-alist!
-(let ((gc-cons-threshold (* 256 1024 1024))
+(defconst default-gc-cons-threshold gc-cons-threshold
+  "The default value for the `gc-cons-threshold' variable.")
+
+(let ((gc-cons-threshold most-positive-fixnum) ; the value for the gc is too low
       (file-name-handler-alist nil)
-      (core-directory (concat user-emacs-directory "core/"))
       (bindings-directory (concat user-emacs-directory "bindings/"))
       (config-directory (concat user-emacs-directory "config/")))
 

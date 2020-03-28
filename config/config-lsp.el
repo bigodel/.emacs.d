@@ -20,8 +20,14 @@
 
 (setvar lsp-keymap-prefix "C-l")        ; change the default prefix for lsp
 (setvar lsp-auto-configure t)           ; will configure company, flycheck, ...
+(setvar lsp-log-io t)                   ; log msgs from the ls in *lsp-log*
+(setvar lsp-session-file                ; where to store the session file
+        (concat dotemacs-cache-directory ".lsp-session-v1"))
+(setvar lsp-enable-semantic-highlighting t) ; experimental semantic highlighting
+
 
 ;; enable which key integration
-(add-hook 'lsp-mode #'lsp-enable-which-key-integration)
+(after 'which-key
+  (add-hook 'lsp-mode #'lsp-enable-which-key-integration))
 
 ;;; config-lsp.el ends here

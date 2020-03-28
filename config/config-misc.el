@@ -37,6 +37,13 @@
   (setvar undo-tree-visualizer-diff t)
   (add-hook 'after-init-hook #'global-undo-tree-mode))
 
+;;; treemacs
+(require-package 'treemacs)
+(after [treemacs projectile]
+  (require-package 'treemacs-projectile))
+(after [treemacs magit]
+  (require-pacakge 'treemacs-magit))
+
 ;;; `doc-view-mode'
 (setvar doc-view-continuous t)          ; continuous mode in `doc-view-mode'
 (setvar doc-view-resolution 200)        ; resolution of images
