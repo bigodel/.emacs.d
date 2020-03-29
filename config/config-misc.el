@@ -37,12 +37,32 @@
   (setvar 'undo-tree-visualizer-diff t)
   (add-hook 'after-init-hook #'global-undo-tree-mode))
 
-;;; treemacs
+;;; `treemacs'
 (require-package 'treemacs)
+
 (after [treemacs projectile]
   (require-package 'treemacs-projectile))
+
 (after [treemacs magit]
   (require-pacakge 'treemacs-magit))
+
+(setvar 'treemacs-persist-file               ; location of persist file
+        (concat dotemacs-cache-directory "treemacs-persist"))
+(setvar 'treemacs-indentation-string    ; show this char as and indent guide
+        (propertize "│  " 'face 'font-lock-comment-face))
+(setvar 'treemacs-indentation 1)        ; number of spaces for indentation
+;; some option only behave well if python3 is installed
+(setvar 'treemacs-collapse-dirs (if (executable-find "python3") 3 0))
+
+(after 'treemacs
+  (treemacs-fringe-indicator-mode -1)   ; don't show the fringe helper
+  ;; if git and python3 are installed, use deferred, otherwise use simple
+  (pcase (cons (not (null (executable-find "git")))
+               (not (null (executable-find "python3"))))
+    (`(t . t)
+     (treemacs-git-mode 'deferred))
+    (`(t . _)
+     (treemacs-git-mode 'simple))))
 
 ;;; `doc-view-mode'
 (setvar 'doc-view-continuous t)          ; continuous mode in `doc-view-mode'

@@ -8,6 +8,25 @@
 ;; configuration in https://github.com/bling/dotemacs.
 ;;
 ;;; Code:
+;;; treemacs
+(after "treemacs-autoloads"
+  (bindings-define-keys ctl-x-map
+    ((kbd "t t") #'treemacs)
+    ((kbd "t 1") #'treemacs-delete-other-windows)
+    ((kbd "t B") #'treemacs-bookmark)
+    ((kbd "t C-t") #'treemacs-find-file)
+    ((kbd "t M-t") #'treemacs-find-tag))
+
+  (bindings-define-keys bindings-space-map
+    ((kbd "T") #'treemacs))
+
+  (after 'treemacs
+    (bindings-define-key treemacs-mode-map
+      [mouse-1] #'treemacs-single-click-expand-action)
+
+    (after 'evil
+      (bindings-define-key treemacs-mode-map
+        (kbd "C-w") evil-window-map))))
 ;;; pdf
 (after 'doc-view
   (bindings-define-keys doc-view-mode-map
