@@ -41,6 +41,10 @@
   (defadvice swiper-all (before dotemacs activate)
     (setq gc-cons-threshold most-positive-fixnum)))
 
+;; a nice little hydra to work with ivy
+(after 'hydra
+  (require-package 'ivy-hydra))
+
 (after 'projectile
   (require-package 'counsel-projectile)
   (counsel-projectile-mode t))

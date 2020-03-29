@@ -1,4 +1,4 @@
-alias l ls -lAh $*
-alias rd rm -rdv $*
-alias q exit
+alias l ls -lah
 alias clr clear
+alias q exit
+alias rd rm -rdv $*

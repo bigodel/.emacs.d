@@ -16,6 +16,7 @@
 ;; don't forget to wrap it on (after 'XXX-mode)
 ;; TODO: add config-aux-modes for modes that don't require config only install
 ;; TODO: check if whithout the provide's it makes it faster
+;; TODO: add a comment to all non-local variables
 ;;; Code:
 ;; some common lisp functions
 (require 'cl)

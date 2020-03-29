@@ -111,7 +111,8 @@ PREFIX arg as nil. Check its documentation for more details."
 
 ;; might not have my eshell config
 (after 'config-eshell
-  (bindings-define-key bindings-space-map "'" #'eshell/new-window))
+  (bindings-define-key bindings-space-map "'" #'eshell/new-window)
+  (bindings-define-key ctl-x-map "'" #'eshell/new-window))
 
 ;;; C-x bindings
 (bindings-define-keys (current-global-map)
@@ -147,6 +148,10 @@ PREFIX arg as nil. Check its documentation for more details."
   ;; <dead-acute> (it is a dead key) so I need to make Emacs understand
   ;; <C-dead-aclute> as C-'
   ((kbd "<C-dead-acute>") (kbd "C-'"))
+  ;; TODO: create a scroll-other-window that works with pdf-view and doc-view
+  ;; https://github.com/politza/pdf-tools/issues/55
+  ((kbd "M-J") (bind (scroll-other-window 15)))
+  ((kbd "M-K") (bind (scroll-other-window-down 15)))
   ((kbd "<M-next>") #'scroll-other-window)
   ((kbd "<M-prior>") #'scroll-other-window-down))
 

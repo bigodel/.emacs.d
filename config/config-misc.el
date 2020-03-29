@@ -21,7 +21,7 @@
           (vector (intern k)) #'ignore)))))
 
 ;; enable the new disable mouse minor mode
-(disable-mouse-mode t)
+(disable-mouse-mode -1)
 ;; needed for the evil states
 (after 'evil
   (evil-make-overriding-map disable-mouse-mode-map))
@@ -85,22 +85,6 @@
             (require 'pdf-tools)
             (pdf-tools-install)
             (pdf-view-mode)))
-
-;;; aggressive indent
-(defconst dotemacs-misc-aggressive-indent-hooks
-  '(c-mode-hook
-    cc-mode-hook
-    lisp-mode-hook
-    emacs-lisp-mode-hook
-    sh-mode-hook
-    java-mode-hook
-    python-mode-hook
-    proof-mode-hook)
-  "Hooks for major modes to activate `aggressive-indent-mode'.")
-
-(require-package 'aggressive-indent)
-(dolist (hook dotemacs-misc-aggressive-indent-hooks)
-  (add-hook hook #'aggressive-indent-mode))
 
 ;;; better help
 (require-package 'helpful)

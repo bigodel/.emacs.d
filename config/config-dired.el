@@ -1,4 +1,4 @@
-;;; config-basic.el --- Basic configuration
+;;; config-dired.el --- Dired configuration
 
 ;; Author: João Pedro de Amorim Paula <maybe_add_email@later>
 

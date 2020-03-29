@@ -10,7 +10,6 @@
 ;;; install `markdown-mode'
 (lazy-major-mode "\\.md\\'" markdown-mode)
 (lazy-major-mode "\\.markdown\\'" markdown-mode)
-(lazy-major-mode "README\\.md\\'" gfm-mode)
 
 (after 'markdown-mode
   ;;; variables

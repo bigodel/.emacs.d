@@ -1,4 +1,4 @@
-;;; config-basic.el --- Basic configuration
+;;; config-core.el --- Basic configuration
 
 ;; Author: João Pedro de Amorim Paula <maybe_add_email@later>
 
@@ -259,15 +259,16 @@ buffer name."
 (setvar 'initial-scratch-message nil)
 
 ;;; misc variables
+(setvar 'x-gtk-use-system-tooltips nil) ; use emacs tooltips, not gtk's
 (setvar 'debug-on-error t)               ; enter debug if error is signaled
 (setvar 'sentence-end-double-space nil)  ; setences don't end with double space
 (setvar 'ring-bell-function 'ignore)     ; disable annoying bell
 (setvar 'mark-ring-max 64)               ; max number of marks
 (setvar 'global-mark-ring-max 128)       ; max number of global marks
 (setvar 'select-enable-clipboard t)      ; use clipboard for cutting and pasting
-(setvar 'save-interprogram-paste-before-kill nil) ; save clipboard into kill-ring
-(setvar 'track-eol t)                    ; vertical motion at eol keeps at eol
-(setvar 'create-lockfiles t)             ; create lockfiles (see manual for info)
+(setvar 'save-interprogram-paste-before-kill t) ; save clipboard into kill-ring
+(setvar 'track-eol t)                   ; vertical motion at eol keeps at eol
+(setvar 'create-lockfiles t)            ; create lockfiles (see manual for info)
 (setvar 'enable-recursive-minibuffers t) ; recursive minibuffers (be careful)
 (setvar 'truncate-lines nil)             ; display or not continuous lines
 (setvar 'mouse-yank-at-point t)          ; don't move point to mouse paste
@@ -276,5 +277,5 @@ buffer name."
 (electric-indent-mode t)                ; indent automatically on some keys
 (random t)                              ; random number seed
 
-(provide 'config-basic)
-;;; config-basic.el ends here
+(provide 'config-core)
+;;; config-core.el ends here
