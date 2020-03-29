@@ -12,27 +12,29 @@
 (when (fboundp 'menu-bar-mode) (menu-bar-mode -1))
 (when (fboundp 'horizontal-scroll-bar-mode) (horizontal-scroll-bar-mode -1))
 
+;;; color theme
+;; use manoj-dark
+(load-theme 'manoj-dark t)
+
+;; default foreground and background
 (set-face-foreground 'default "white")
 (set-face-background 'default "black")
-
-;;; color theme
-;; (load-theme 'manoj-dark t)
 
 ;; make fringe same background color as line-number face
 (when (version<= "26" emacs-version)
   (set-face-background 'fringe (face-background 'line-number)))
 
 ;; disable the bigger scale on bold function fonts (manoj-dark)
-;; (set-face-attribute 'font-lock-function-name-face nil :height 1.0)
+(set-face-attribute 'font-lock-function-name-face nil :height 1.0)
 
 ;; make comments grey (manoj-dark and default)
 (set-face-foreground 'font-lock-comment-face "dimgray")
 (set-face-foreground 'font-lock-comment-delimiter-face "dimgray")
 
 ;; change mode-line's face (manoj-dark)
-;; (set-face-attribute 'mode-line nil :height 1.0 :underline nil)
-;; (set-face-attribute 'mode-line-buffer-id nil :height 1.0)
-;; (set-face-attribute 'mode-line-inactive nil :underline nil)
+(set-face-attribute 'mode-line nil :height 1.0 :underline nil) ;
+(set-face-attribute 'mode-line-buffer-id nil :height 1.0)
+(set-face-attribute 'mode-line-inactive nil :underline nil)
 
 ;; a custom theme to run on top of the other custom themes loaded (so it should
 ;; be here, after (load-theme 'blah)) that shows the name of the host when in
@@ -42,7 +44,7 @@
 ;; (load-theme 'tramp t)
 
 ;;; default font
-(set-default-font "monospace-13")
+(set-frame-font "monospace-13" nil t)
 
 ;;; line numbers (only available in Emacs 26+)
 (defconst eyecandy-line-numbers-disabled-hooks
@@ -87,6 +89,14 @@
                       :foreground (face-foreground 'trailing-whitespace)
                       :background (face-background 'trailing-whitespace)))
 
+;;; show a vertical rule on fill-column
+(require-package 'fill-column-indicator)
+(setvar 'fci-rule-color "gray15")
+;; use fci-mode pratically everyhwere (this little "hack" is needed becase
+;; fci-mode doesn't have a global mode
+(add-hook 'prog-mode-hook #'fci-mode)
+(add-hook 'text-mode-hook #'fci-mode)
+
 ;;; misc
 ;; stop blinking cursor
 (blink-cursor-mode -1)
@@ -97,7 +107,7 @@
 (size-indication-mode)
 (which-function-mode)
 
-;; hide all minor modes from mode line
+;; hide all minor modes from mode line (not needed with doom-modeline)
 (require-package 'rich-minority)
 (unless rich-minority-mode
   (rich-minority-mode t))
