@@ -21,7 +21,7 @@
 
 ;; add some more commands to the visual commands
 (after 'em-term
-  (dolist (cmd dotemacs-eshell/visual-commands)
+  (dolist (cmd dotemacs-eshell-visual-commands)
     (add-to-list 'eshell-visual-commands cmd)))
 
 ;;; helper packages
@@ -48,7 +48,7 @@
     (eshell-send-input)))
 
 (defun eshell/ff (&rest args)
-  "Opens a file in emacs."
+  "Open ARGS with `find-file'."
   (when (not (null args))
     (mapc #'find-file (mapcar #'expand-file-name
                               (eshell-flatten-list (reverse args))))))
@@ -63,7 +63,7 @@
   (eshell-send-input))
 
 (defun eshell/tramp (&rest args)
-  "Use tramp as a eshell command."
+  "Use tramp as an eshell command to execute ARGS."
   (insert (apply #'format "cd /ssh:%s:\\~/" args))
   (eshell-send-input))
 
@@ -73,14 +73,14 @@
     (eshell/echo)))
 
 (defun eshell/new-window ()
-  "Opens up a new shell in the directory associated with the
-current buffer's file. The eshell is renamed to match that
-directory to make multiple eshell windows easier."
+  "Opens up a new eshell in the directory of the current file.
+The eshell is renamed to match that directory to make multiple
+eshell windows easier."
   (interactive)
   (let* ((parent (if (buffer-file-name)
                      (file-name-directory (buffer-file-name))
                    default-directory))
-         (height (/ (window-total-height) 3))
+         (height (floor (/ (window-total-height) 2.4)))
          ;; (width (/ (window-total-height) 2))
          (name   (car (last (split-string parent "/" t)))))
     (split-window-vertically (- height))
