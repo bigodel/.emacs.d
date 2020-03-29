@@ -14,7 +14,7 @@
 ;;; variables
 (setvar 'company-tooltip-align-annotations t) ; align annotations to the right
 (setvar 'company-tooltip-limit 12)            ; limit of completions per pop up
-(setvar 'company-idle-delay 0.5)          ; idle time to show completion. if set
+(setvar 'company-idle-delay nil)        ; idle time to show completion. if set
                                         ; to nil then only complete when asked
 (setvar 'company-show-numbers t)         ; show numbers for quick nav with M-num
 (setvar 'company-echo-delay 0)           ; disable blinking
@@ -94,10 +94,28 @@ configuration available at `https://github.com/jpprime/.emacs.d'."
 
   (company-add-backends '(company-lsp)) ; add it to our backends
 
-  (setvar 'company-lsp-cache-candidates 'auto) ; better read the docs on this one
+  (setvar 'company-lsp-cache-candidates 'auto) ; better read the docs on this
   (setvar 'company-lsp-async t)          ; fetch complation async
   (setvar 'company-lsp-enable-snippet t) ; enable snippets
   (setvar 'company-lsp-enable-recompletion t)) ; read the docs on this one too
+
+;; company and `fci-mode' don't behave well correctly, so this is a workaround
+;; posted on this issue: https://github.com/company-mode/company-mode/issues/180
+;; all i did was wrap it on my after macro
+(after 'fci-mode
+  (defvar-local company-fci-mode-on-p nil)
+
+  (defun company-turn-off-fci (&rest ignore)
+    (when (boundp 'fci-mode)
+      (setq company-fci-mode-on-p fci-mode)
+      (when fci-mode (fci-mode -1))))
+
+  (defun company-maybe-turn-on-fci (&rest ignore)
+    (when company-fci-mode-on-p (fci-mode 1)))
+
+  (add-hook 'company-completion-started-hook 'company-turn-off-fci)
+  (add-hook 'company-completion-finished-hook 'company-maybe-turn-on-fci)
+  (add-hook 'company-completion-cancelled-hook 'company-maybe-turn-on-fci))
 
 (provide 'config-company)
 ;;; config-company.el ends here
