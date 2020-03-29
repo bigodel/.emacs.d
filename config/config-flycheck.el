@@ -8,8 +8,15 @@
 ;; install flycheck
 (require-package 'flycheck)
 
+(when (display-graphic-p)
+  (after 'flycheck
+    ;; show the error on a bellow it instead of on the minibuffer
+    (require-package 'flycheck-inline)
+    (global-flycheck-inline-mode)))
+
 (setvar 'flycheck-display-errors-function ; only display errors if the error
         #'flycheck-display-error-messages-unless-error-list) ; list is not on
+(setvar 'flycheck-indication-mode 'right-fringe) ; where to show the error
 
 ;; not really sure what this does
 ;; (after "web-mode-autoloads"
