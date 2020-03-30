@@ -21,6 +21,7 @@
     package-menu-mode
     profiler-report-mode
     process-menu-mode
+    xref--xref-buffer-mode
     treemacs-mode
     flycheck-error-list-mode)
   "List of major modes that should default to Emacs state.")

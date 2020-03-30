@@ -53,14 +53,7 @@
   ;; (which means the package is installed)
   (after "counsel-tramp-autoloads"
     (bindings-define-key (current-global-map)
-      (kbd "C-c c t") #'counsel-tramp))
-
-  ;; TODO: this might not be ideal, so use it for a while and check it out
-  (after 'evil
-    (evil-define-key '(normal visual motion) (current-global-map)
-      "/" #'swiper)
-    (evil-define-key '(normal visual motion) (current-global-map)
-      "?" #'swiper-backward)))
+      (kbd "C-c c t") #'counsel-tramp)))
 
 (provide 'bindings-ivy)
 ;;; bindings-ivy.el ends here

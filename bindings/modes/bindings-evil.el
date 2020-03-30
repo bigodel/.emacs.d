@@ -11,7 +11,7 @@
 (after 'evil
   ;;; normal state maps
   (bindings-define-keys evil-normal-state-map
-    ("gp" "`[v`]")
+    ("gp" "`[v`]")                      ; TODO: what does this do?
     ("[ " (bind (evil-insert-newline-above) (forward-line)) "new line up")
     ("] " (bind (evil-insert-newline-below) (forward-line -1)) "new line down"))
 
@@ -19,26 +19,17 @@
   (evil-define-key '(normal visual motion) 'global
     " " bindings-space-map
     " w" evil-window-map
-    "gr" #'revert-buffer
     "[b" #'previous-buffer
     "]b" #'next-buffer
     "[q" #'previous-error
     "]q" #'next-error
     "Y" "y$"
+    "K" #'man
     "gC" #'compile
     "gc" #'recompile
-    "gA" #'align-regexp)
-
-  ;; TODO: maybe don't add this
-  ;; (after 'flycheck
-  ;;   (evil-define-key 'normal flycheck-error-list-mode-map
-  ;;     "j" #'flycheck-error-list-next-error
-  ;;     "k" #'flycheck-error-list-previous-error))
-
-  ;; (after 'diff-mode
-  ;;   (evil-define-key 'normal diff-mode diff-mode-map
-  ;;     "j" #'diff-hunk-next
-  ;;     "k" #'diff-hunk-prev))
+    "gA" #'align-regexp
+    (kbd "M-.") #'xref-find-definitions ; evil overrides this
+    (kbd "M-?") #'xref-find-definitions) ; and this
 
   (defun evil-mouse-yank-primary ()
     "Insert the contents of primary selection into the location
