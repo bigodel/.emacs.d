@@ -15,41 +15,40 @@
 
 
 
-(defhydra hydras/errors (:hint nil)
-  "
+(after 'flycheck
+  (defhydra hydras/errors (:hint nil)
+    "
    errors:  navigation                 flycheck
             -----------------------    ---------------
             _j_ → next error             _l_ → list errors
             _k_ → previous error         _?_ → describe checker
 "
-  ("j" (if (fboundp 'flycheck-next-error)
-           (call-interactively #'flycheck-next-error)
-         (call-interactively #'next-error)))
-  ("k" (if (fboundp 'flycheck-previous-error)
-           (call-interactively #'flycheck-previous-error)
-         (call-interactively #'previous-error)))
-  ("?" flycheck-describe-checker)
-  ("l" flycheck-list-errors :exit t)
-  ("q" nil "quit" :exit t))
+    ("j" (call-interactively #'flycheck-next-error))
+    ("k" (call-interactively #'flycheck-previous-error))
+    ("?" flycheck-describe-checker)
+    ("l" flycheck-list-errors :exit t)
+    ("q" nil "quit" :exit t)))
 
 
 
 ;; TODO: review this
-(defhydra hydras/jumps (:hint nil :exit t)
-  "
+(after [swiper counsel]
+  (defhydra hydras/jumps (:hint nil :exit t)
+    "
    jump   _i_ → outline in current buffer   _l_ → lines in current buffer
           _b_ → bookmarks                   _L_ → lines in all buffers
 "
-  ;; TODO: might want to use counsel-imenu!
-  ("i" counsel-imenu)
-  ("l" swiper)
-  ("L" swiper-all)
-  ("b" bookmark-jump))
+    ;; TODO: might want to use counsel-imenu!
+    ("i" counsel-imenu)
+    ("l" swiper)
+    ("L" swiper-all)
+    ("b" bookmark-jump)))
 
 
 
-(defhydra hydras/search (:hint nil :exit t)
-  "
+(after [counsel projectile counsel-projectile]
+  (defhydra hydras/search (:hint nil :exit t)
+    "
     search     directory    ^^project      ^^buffer       ^^buffers
                ---------    ^^-------      ^^------       ^^-------
                _r_ → rg       _R_ → rg       _l_ → lines    _L_ → lines
@@ -57,41 +56,42 @@
                _p_ → pt       _P_ → pt
                _g_ → grep     _G_ → grep
 "
-  ("r" counsel-rg)
-  ("a" counsel-ag)
-  ("p" counsel-pt)
-  ("g" counsel-grep)
-  ("R" counsel-projectile-rg)
-  ("A" counsel-projectile-ag)
-  ("P" projectile-pt)
-  ("G" counsel-projectile-grep)
-  ("l" hydras/jumps/lambda-l-and-exit)
-  ("L" hydras/jumps/lambda-L-and-exit))
+    ("r" counsel-rg)
+    ("a" counsel-ag)
+    ("p" counsel-pt)
+    ("g" counsel-grep)
+    ("R" counsel-projectile-rg)
+    ("A" counsel-projectile-ag)
+    ("P" projectile-pt)
+    ("G" counsel-projectile-grep)
+    ("l" hydras/jumps/lambda-l-and-exit)
+    ("L" hydras/jumps/lambda-L-and-exit)))
 
 
 
-(defhydra hydras/files/convert (:hint nil :exit t)
-  "
+(after 'config-utils
+  (defhydra hydras/files/convert (:hint nil :exit t)
+    "
    convert to _d_ → dos
               _u_ → unix
 "
-  ("d" utils-set-buffer-to-dos-format)
-  ("u" utils-set-buffer-to-unix-format))
+    ("d" utils-set-buffer-to-dos-format)
+    ("u" utils-set-buffer-to-unix-format))
 
-(defhydra hydras/files (:hint nil :exit t)
-  "
+  (defhydra hydras/files (:hint nil :exit t)
+    "
    files:  _f_ → find files    → delete  _y_ → copy filename  _E_ → edit as root
            _r_ → recentf     _R_ → rename  _c_ → copy file      _C_ → convert
 "
-  ;; TODO: ("D" utils-delete-buffer-file)
-  ("R" utils-rename-current-buffer-file)
-  ("M" utils-rename-buffer-file)
-  ("f" counsel-find-file)
-  ("r" counsel-recentf)
-  ("y" utils-copy-file-name-to-clipboard)
-  ("E" utils-find-file-as-root)
-  ("c" copy-file)
-  ("C" hydras/files/convert/body))
+    ;; TODO: ("D" utils-delete-buffer-file)
+    ("R" utils-rename-current-buffer-file)
+    ("M" utils-rename-buffer-file)
+    ("f" counsel-find-file)
+    ("r" counsel-recentf)
+    ("y" utils-copy-file-name-to-clipboard)
+    ("E" utils-find-file-as-root)
+    ("c" copy-file)
+    ("C" hydras/files/convert/body)))
 
 
 
@@ -117,21 +117,22 @@
 
 
 
-(defhydra hydras/ivy (:hint nil :exit t)
-  "
+(after [ivy counsel swiper]
+  (defhydra hydras/ivy (:hint nil :exit t)
+    "
    ivy:  _b_ → buffers    _y_ → kill-ring   _l_ → swiper
          _e_ → recentf    _x_ → M-x         _L_ → swiper (multi)
          _f_ → files
 "
-  ;; TODO: maybe ivy-everything and maybe just ivy-switch-buffer
-  ;; ("b" /ivy/everything)
-  ("b" ivy-switch-buffer)
-  ("e" counsel-recentf)
-  ("f" counsel-find-file)
-  ("y" counsel-yank-pop)
-  ("x" counsel-M-x)
-  ("l" swiper)
-  ("L" swiper-all))
+    ;; TODO: maybe ivy-everything and maybe just ivy-switch-buffer
+    ;; ("b" /ivy/everything)
+    ("b" ivy-switch-buffer)
+    ("e" counsel-recentf)
+    ("f" counsel-find-file)
+    ("y" counsel-yank-pop)
+    ("x" counsel-M-x)
+    ("l" swiper)
+    ("L" swiper-all)))
 
 
 
@@ -140,24 +141,25 @@
 ;; (autoload 'magit-diff "magit-diff" nil t)
 ;; (autoload 'magit-log "magit-log" nil t)
 
-(defhydra hydras/magit (:hint nil :exit t)
-  "
+(after 'magit
+  (defhydra hydras/magit (:hint nil :exit t)
+    "
    magit:  _s_ → status  _l_ → log    _f_ → file   _a_ → stage file
            _c_ → commit  _d_ → diff   _z_ → stash  _r_ → unstage file
            _p_ → push    _b_ → blame  _m_ → merge
 
 "
-  ("s" magit-status)
-  ("b" magit-blame)
-  ("f" magit-file-dispatch)
-  ("z" magit-stash)
-  ("l" magit-log)
-  ("d" magit-diff)
-  ("c" magit-commit)
-  ("m" magit-merge)
-  ("p" magit-push)
-  ("a" magit-stage-file)
-  ("r" magit-unstage-file))
+    ("s" magit-status)
+    ("b" magit-blame)
+    ("f" magit-file-dispatch)
+    ("z" magit-stash)
+    ("l" magit-log)
+    ("d" magit-diff)
+    ("c" magit-commit)
+    ("m" magit-merge)
+    ("p" magit-push)
+    ("a" magit-stage-file)
+    ("r" magit-unstage-file)))
 
 
 
