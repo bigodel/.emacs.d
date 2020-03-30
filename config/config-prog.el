@@ -46,6 +46,7 @@ tabs."
     sh-mode-hook
     java-mode-hook
     python-mode-hook
+    makefile-mode-hook
     dart-mode-hook
     proof-mode-hook)
   "Hooks for major modes to activate `aggressive-indent-mode'.")

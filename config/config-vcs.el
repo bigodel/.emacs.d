@@ -31,8 +31,8 @@
 ;;; magit
 (when (executable-find "git")
   (require-package 'magit)
-  (require-package 'git-gutter+)
-  (global-git-gutter+-mode))
+  (require-package 'git-gutter)
+  (global-git-gutter-mode))
 
 ;;; magit variables
 (after 'magit
