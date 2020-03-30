@@ -54,6 +54,7 @@
     doc-view-mode-hook
     pdf-view-mode-hook
     lsp-ui-doc-frame-mode-hook
+    lsp-ui-imenu-mode-hook
     proof-goals-mode-hook
     proof-response-mode-hook)
   "Modes to disable `display-line-numbers-mode'.")
@@ -78,15 +79,11 @@
 (add-hook 'prog-mode-hook #'whitespace-mode)
 (add-hook 'text-mode-hook #'whitespace-mode)
 
-(set-face-attribute 'trailing-whitespace nil
-                    :foreground (face-foreground 'default)
-                    :background "gray15")
-(after 'whitespace
-  (set-face-attribute 'whitespace-trailing nil
-                      :foreground (face-foreground 'trailing-whitespace)
-                      :background (face-background 'trailing-whitespace)))
-
 ;;; misc
+;; if using git, strip the backend string from the mode line
+(setcdr (assq 'vc-mode mode-line-format)
+        '((:eval (replace-regexp-in-string "^ Git" " " vc-mode))))
+
 ;; stop blinking cursor
 (blink-cursor-mode -1)
 
