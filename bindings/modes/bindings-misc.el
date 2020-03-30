@@ -48,8 +48,7 @@
     ((kbd "C-h f") #'helpful-callable "describe function")
     ((kbd "C-h v") #'helpful-variable "describe variable")
     ((kbd "C-h F") #'helpful-command "describe command")
-    ((kbd "C-h k") #'helpful-key "describe key")
-    ((kbd "C-c C-d") #'helpful-at-point "help for symbol at point")))
+    ((kbd "C-h k") #'helpful-key "describe key")))
 
 (after 'helpful
   (bindings-define-keys helpful-mode-map

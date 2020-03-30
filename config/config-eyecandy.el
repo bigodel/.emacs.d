@@ -57,6 +57,7 @@
     dired-mode-hook
     doc-view-mode-hook
     pdf-view-mode-hook
+    lsp-ui-doc-frame-mode-hook
     proof-goals-mode-hook
     proof-response-mode-hook)
   "Modes to disable `display-line-numbers-mode'.")
@@ -116,8 +117,6 @@
 ;; highlight TODO
 (require-package 'hl-todo)
 (global-hl-todo-mode t)
-
-;; TODO: folding
 
 ;; beautiful lines instead of ^L
 (require-package 'page-break-lines)

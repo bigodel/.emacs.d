@@ -235,19 +235,13 @@ buffer name."
 
 ;;; paren
 (setvar 'show-paren-delay 0)
-
-(after 'paren
-  (set-face-background 'show-paren-match "white")
-  (set-face-foreground 'show-paren-match "black")
-  (set-face-attribute 'show-paren-match nil :weight 'extra-bold))
-
 (show-paren-mode t)
 
 ;;; don't kill important buffers
 (defun basic-dont-kill-important-buffers ()
   "Don't kill a buffer is its *scratch* or *Messages* or *Load Times*."
   (if (member (buffer-name (current-buffer))
-              '("*scratch*" "*Messages*" "*Load Times*"))
+              '("*scratch*" "*Messages*"))
       (progn (bury-buffer) nil)
     t))
 (add-hook 'kill-buffer-query-functions #'basic-dont-kill-important-buffers)
@@ -288,6 +282,9 @@ buffer name."
 (setvar 'create-lockfiles t)            ; create lockfiles (see manual for info)
 (setvar 'enable-recursive-minibuffers t) ; recursive minibuffers (be careful)
 (setvar 'truncate-lines nil)             ; display or not continuous lines
+(setvar 'truncate-partial-width-windows nil) ; respect the value of the above
+(toggle-truncate-lines -1)               ; don't truncate!!!!
+(setvar 'word-wrap t)                    ; wrap words
 (setvar 'mouse-yank-at-point t)          ; don't move point to mouse paste
 (global-auto-revert-mode t)             ; revert buffers when files change
 (xterm-mouse-mode t)                    ; mouse on in xterm compatible terminals
