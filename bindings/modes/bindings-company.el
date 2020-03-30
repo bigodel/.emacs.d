@@ -33,10 +33,10 @@
   ;; make `company' work like vim's autocompletion
   (after 'evil
     (bindings-define-keys evil-insert-state-map
-      ((kbd "<tab>") #'company-indent-or-complete-common)
-      ((kbd "TAB") #'company-indent-or-complete-common)
-      ((kbd "<C-tab>") #'company-yasnippet) ; this doesn't work on terminal
-      ((kbd "C-TAB") #'company-yasnippet)   ; this doesn't work on terminal
+      ;; ((kbd "<tab>") #'company-indent-or-complete-common)
+      ;; ((kbd "TAB") #'company-indent-or-complete-common)
+      ;; ((kbd "<C-tab>") #'company-yasnippet) ; this doesn't work on terminal
+      ;; ((kbd "C-TAB") #'company-yasnippet)   ; this doesn't work on terminal
       ((kbd "M-n") #'company-complete)      ; use M-{n,p} to force company
       ((kbd "M-p") #'company-complete))))
 

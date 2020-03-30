@@ -3,7 +3,9 @@
 ;; Author: João Pedro de Amorim Paula <maybe_add_email@later>
 
 ;;; Commentary:
-
+;;
+;; TODO: change whitespace-mode so that is doesn't show trailing whitespace
+;;
 ;;; Code:
 (after 'org
   (setvar 'org-directory (concat (getenv "HOME") "/docs/org"))
@@ -23,16 +25,16 @@
           (error (concat "Couldn't load the configuration for `org-mode'.
 Try again or remove the file `%s' from the config folder" load-file-name))))))
 
-  (defconst dotemacs-org/journal-file (concat org-directory "/journal.org")
+  (defconst org-journal-file (concat org-directory "/journal.org")
     "The path to the file where you want to make journal entries.")
 
-  (defconst dotemacs-org/inbox-file (concat org-directory "/inbox.org")
+  (defconst org-inbox-file (concat org-directory "/inbox.org")
     "The path to the file where to capture notes.")
 
   (setvar 'org-startup-indented t)
   (setvar 'org-src-fontify-natively t)
 
-  (setvar 'org-agenda-files (list dotemacs-org/inbox-file))
+  (setvar 'org-agenda-files (list org-inbox-file))
 
   ;; (setvar 'org-default-notes-file (expand-file-name dotemacs-org/inbox-file))
   ;; (setvar 'org-log-done t)
