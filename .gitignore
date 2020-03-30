@@ -1,6 +1,7 @@
 /*
 /*/
 !.gitignore
+!README.org
 !abbrevs
 !config/
 !core.el
