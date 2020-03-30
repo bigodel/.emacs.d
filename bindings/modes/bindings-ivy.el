@@ -32,7 +32,12 @@
     ((kbd "C-c c C") #'counsel-colors-emacs "colors emacs")
     ((kbd "C-c c c") #'counsel-colors-web "colors web")
     ((kbd "C-c c l") #'counsel-locate "locate")
-    ((kbd "C-c c o") #'counsel-outline "jump to outline"))
+    ((kbd "C-c c o") #'counsel-outline "jump to outline")
+    ((kbd "C-c c s g") #'counsel-grep-or-swiper "grep")
+    ((kbd "C-c c s i") #'counsel-git-grep "git grep")
+    ((kbd "C-c c s a") #'counsel-ag)
+    ((kbd "C-c c s p") #'counsel-pt)
+    ((kbd "C-c c s r") #'counsel-rg))
 
   ;; try some searchers to see which to use; default to grep
   (cond
