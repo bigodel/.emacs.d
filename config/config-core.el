@@ -57,6 +57,15 @@
 (run-with-idle-timer 600 t #'recentf-save-list)
 
 ;;; save desktop settings and configuration between sessions
+(setvar 'desktop-restore-frames t)      ; save and restore frame and win config
+(setvar 'desktop-path `(,dotemacs-cache-directory ; paths to look for desktops
+                        ,user-emacs-directory
+                        ,(getenv "HOME")))
+(setvar 'desktop-dirname (car desktop-path))
+(setvar 'desktop-base-file-name "emacs.desktop") ; the default name of the file
+(setvar 'desktop-base-lock-name            ; the default name of the lock file
+        (concat desktop-base-file-name ".lock"))
+(setvar 'desktop-save 'if-exists)          ; whether to save desktop when killed
 (desktop-save-mode -1)
 
 ;;; garbage collector
@@ -71,8 +80,8 @@
 (defvar default-gc-cons-threshold original-gc-cons-threshold
   "The default value for the `gc-cons-threshold' variable.")
 
-;; tell emacs to garbage collect when out of focus
-(add-hook 'focus-out-hook #'garbage-collect)
+;; tell emacs to garbage collect when idle for 5 seconds
+(run-with-idle-timer 5 t #'garbage-collect)
 
 (defun basic-minibuffer-setup-hook ()
   "Hook to optimize garbage collection when entering or exiting minibuffer."
@@ -262,7 +271,7 @@ buffer name."
 (setvar 'tab-width 4)
 ;; enable tabs instead of spaces in makefiles
 ;; TODO: move this to config-makefile.el maybe???
-(add-hook 'makefile-mode-hook '(setvar 'indent-tabs-mode t 'local))
+(add-hook 'makefile-mode-hook (lambda () (setvar 'indent-tabs-mode t 'local)))
 
 ;;; give me a clean *scratch* buffer upon startup
 (setvar 'inhibit-startup-screen t)
