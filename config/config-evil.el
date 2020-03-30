@@ -33,7 +33,7 @@
 
 
 ;;; variables
-(setvar 'evil-search-module 'isearch) ; search like in isearch
+(setvar 'evil-search-module 'evil-search) ; what to use on / and ?
 (setvar 'evil-magic 'very-magic)      ; vim's magicness (for 'evil-search)
 (setvar 'evil-want-C-i-jump t)        ; whether C-i works like in vim
 (setvar 'evil-want-C-u-scroll t)      ; whether C-u works like in vim
@@ -45,12 +45,12 @@
 (setvar 'evil-mode-line-format '(before . mode-line-front-space))
 ;; set the cursor for each state
 (setvar 'evil-emacs-state-cursor    '("red" box))
-(setvar 'evil-motion-state-cursor   '("white" box))
-(setvar 'evil-normal-state-cursor   '("magenta" box))
+(setvar 'evil-motion-state-cursor   '("magenta" box))
+(setvar 'evil-normal-state-cursor   '("white" box))
 (setvar 'evil-visual-state-cursor   '("orange" box))
 (setvar 'evil-insert-state-cursor   '("red" bar))
 (setvar 'evil-replace-state-cursor  '("red" hbar))
-(setvar 'evil-operator-state-cursor '("magenta" hollow))
+(setvar 'evil-operator-state-cursor '("white" hollow))
 
 ;; recenter after any jump in evil-mode
 (add-hook 'evil-jumps-post-jump-hook #'recenter)
@@ -87,6 +87,14 @@
 
 
 
+(defadvice evil-ex-search-forward (after dotemacs activate)
+  "Recenter after a forward search."
+  (recenter))
+
+(defadvice evil-ex-search-backward (after dotemacs activate)
+  "Recenter after a backward search."
+  (recenter))
+
 (defadvice evil-ex-search-next (after dotemacs activate)
   "Recenter after going to the next result of a ex search."
   (recenter))
@@ -95,8 +103,12 @@
   "Recenter after going to the previous result of a ex search."
   (recenter))
 
+;; some configurations for the terminal emacs
 (unless (display-graphic-p)
-  (evil-esc-mode 1))
+  ;; this package shows different cursors for different modes like in GUI emacs
+  (require-package 'evil-terminal-cursor-changer)
+  (evil-terminal-cursor-changer-activate)
+  (evil-esc-mode 1))                    ; make esc behave correctly
 
 (after 'org
   (require-package 'evil-org)
