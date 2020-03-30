@@ -46,20 +46,13 @@ tabs."
     sh-mode-hook
     java-mode-hook
     python-mode-hook
+    dart-mode-hook
     proof-mode-hook)
   "Hooks for major modes to activate `aggressive-indent-mode'.")
 
 (require-package 'aggressive-indent)
 (dolist (hook dotemacs-misc-aggressive-indent-hooks)
   (add-hook hook #'aggressive-indent-mode))
-
-;;; highlight indentation
-;; this is eyecandy but also no so i prefer to have it here
-(require-package 'highlight-indent-guides)
-(setvar 'highlight-indent-guides-method 'character) ; show a thin line
-(setvar 'highlight-indent-guides-responsive 'stack) ; highlight current indent
-(setvar 'highlight-indent-guides-delay 0)           ; show immediately
-(add-hook 'prog-mode-hook #'highlight-indent-guides-mode)
 
 (provide 'config-prog.el)
 ;;; config-prog.el ends here

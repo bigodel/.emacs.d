@@ -282,9 +282,6 @@ buffer name."
 (setvar 'create-lockfiles t)            ; create lockfiles (see manual for info)
 (setvar 'enable-recursive-minibuffers t) ; recursive minibuffers (be careful)
 (setvar 'truncate-lines nil)             ; display or not continuous lines
-(setvar 'truncate-partial-width-windows nil) ; respect the value of the above
-(toggle-truncate-lines -1)               ; don't truncate!!!!
-(setvar 'word-wrap t)                    ; wrap words
 (setvar 'mouse-yank-at-point t)          ; don't move point to mouse paste
 (global-auto-revert-mode t)             ; revert buffers when files change
 (xterm-mouse-mode t)                    ; mouse on in xterm compatible terminals

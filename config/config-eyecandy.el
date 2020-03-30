@@ -90,14 +90,6 @@
                       :foreground (face-foreground 'trailing-whitespace)
                       :background (face-background 'trailing-whitespace)))
 
-;;; show a vertical rule on fill-column
-(require-package 'fill-column-indicator)
-(setvar 'fci-rule-color "gray15")
-;; use fci-mode pratically everyhwere (this little "hack" is needed becase
-;; fci-mode doesn't have a global mode
-(add-hook 'prog-mode-hook #'fci-mode)
-(add-hook 'text-mode-hook #'fci-mode)
-
 ;;; misc
 ;; stop blinking cursor
 (blink-cursor-mode -1)
@@ -107,6 +99,13 @@
 (column-number-mode)
 (size-indication-mode)
 (which-function-mode)
+
+;; paren configuration
+(after 'paren
+  (set-face-background 'show-paren-match "white")
+  (set-face-foreground 'show-paren-match "black")
+  (set-face-attribute 'show-paren-match nil :weight 'extra-bold))
+
 
 ;; hide all minor modes from mode line (not needed with doom-modeline)
 (require-package 'rich-minority)
