@@ -13,35 +13,31 @@
 (when (fboundp 'horizontal-scroll-bar-mode) (horizontal-scroll-bar-mode -1))
 
 ;;; color theme
-;; use manoj-dark
-(load-theme 'manoj-dark t)
-
-;; default foreground and background
-(set-face-foreground 'default "white")
-(set-face-background 'default "black")
+;; use wombat
+(load-theme 'wombat t)
 
 ;; make fringe same background color as line-number face
 (when (version<= "26" emacs-version)
   (set-face-background 'fringe (face-background 'line-number)))
 
 ;; disable the bigger scale on bold function fonts (manoj-dark)
-(set-face-attribute 'font-lock-function-name-face nil :height 1.0)
+;; (set-face-attribute 'font-lock-function-name-face nil :height 1.0)
 
 ;; make comments grey (manoj-dark and default)
-(set-face-foreground 'font-lock-comment-face "dimgray")
-(set-face-foreground 'font-lock-comment-delimiter-face "dimgray")
+;; (set-face-foreground 'font-lock-comment-face "dimgray")
+;; (set-face-foreground 'font-lock-comment-delimiter-face "dimgray")
 
 ;; change mode-line's face (manoj-dark)
-(set-face-attribute 'mode-line nil :height 1.0 :underline nil) ;
-(set-face-attribute 'mode-line-buffer-id nil :height 1.0)
-(set-face-attribute 'mode-line-inactive nil :underline nil)
+;; (set-face-attribute 'mode-line nil :height 1.0 :underline nil) ;
+;; (set-face-attribute 'mode-line-buffer-id nil :height 1.0)
+;; (set-face-attribute 'mode-line-inactive nil :underline nil)
 
 ;; a custom theme to run on top of the other custom themes loaded (so it should
 ;; be here, after (load-theme 'blah)) that shows the name of the host when in
 ;; using tramp in the modeline alongside the buffer name. see
 ;; `tramp-theme-face-remapping-alist' for customization options
-;; (require-package 'tramp-theme)
-;; (load-theme 'tramp t)
+(require-package 'tramp-theme)
+(load-theme 'tramp t)
 
 ;;; default font
 (set-frame-font "monospace-13" nil t)
@@ -100,18 +96,14 @@
 (size-indication-mode)
 (which-function-mode)
 
-;; paren configuration
-(after 'paren
-  (set-face-background 'show-paren-match "white")
-  (set-face-foreground 'show-paren-match "black")
-  (set-face-attribute 'show-paren-match nil :weight 'extra-bold))
-
+(after 'which-func                      ; i don't like the bright blue
+  (set-face-foreground 'which-func (face-foreground 'default)))
 
 ;; hide all minor modes from mode line (not needed with doom-modeline)
 (require-package 'rich-minority)
 (unless rich-minority-mode
   (rich-minority-mode t))
-(setvar 'rm-whitelist "FlyC")            ; minor modes to show
+(setvar 'rm-whitelist "FlyC")
 
 ;; highlight TODO
 (require-package 'hl-todo)
