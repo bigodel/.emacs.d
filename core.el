@@ -116,10 +116,6 @@ necessary, and activates it."
                                (require-package (quote ,mode))
                                (,mode)))))
 
-(defmacro delayed-init (&rest body)
-  "Run BODY after idle for a predetermined amount of time."
-  `(run-with-idle-timer 0.5 nil (lambda () ,@body)))
-
 (defun create-non-existent-directory (&optional dir)
   "When trying to access non-existing directories, ask to create them.
 If DIR is provided, ask to create DIR."
