@@ -13,19 +13,28 @@
 
   (after 'lsp-ui
     (bindings-define-keys lsp-ui-mode-map
+      ([remap imenu] #'lsp-ui-imenu)
       ;; these are causing an extreme amount of lag, investigate
       ;; ([remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
       ;; ([remap xref-find-references] #'lsp-ui-peek-find-references)
-      ((kbd "M-d") #'lsp-ui-doc-focus-frame))))
+      ((kbd "M-l <tab>") #'lsp-ui-doc-focus-frame) ; gui
+      ((kbd "M-l TAB") #'lsp-ui-doc-focus-frame)))) ; terminal
 
 (after [lsp-mode evil]
   (evil-define-key '(normal visual) lsp-mode-map
-    "gd" #'lsp-find-definitions
-    "gr" #'lsp-rename)
+    "ga" #'lsp-execute-code-action
+    "gR" #'lsp-rename)
 
   (after 'lsp-ui
-    (evil-define-key '(normal visual) lsp-ui-mode-map
-      "gd" #'lsp-ui-peek-find-definitions)))
+    (evil-define-key '(normal visual) lsp-mode-map
+      "gD" #'lsp-ui-doc-glance
+      "g?" #'lsp-ui-doc-glance)
+
+    (evil-define-key '(normal visual) lsp-ui-imenu-mode-map
+      "q" #'lsp-ui-imenu--kill)
+
+    (evil-define-key '(normal visual) lsp-ui-doc-frame-mode-map
+      "q" #'lsp-ui-doc-unfocus-frame)))
 
 (provide 'bindings-lsp)
 ;;; bindings-lsp.el ends here
