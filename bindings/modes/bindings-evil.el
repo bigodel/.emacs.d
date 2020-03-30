@@ -15,21 +15,42 @@
     ("[ " (bind (evil-insert-newline-above) (forward-line)) "new line up")
     ("] " (bind (evil-insert-newline-below) (forward-line -1)) "new line down"))
 
-  ;; normal and visual state bindings
-  (evil-define-key '(normal visual motion) 'global
+  ;; TODO: add bindings to hideshow mode
+  ;;; normal and visual state bindings
+  (evil-define-key '(normal visual) 'global
     " " bindings-space-map
     " w" evil-window-map
     "[b" #'previous-buffer
     "]b" #'next-buffer
-    "[q" #'previous-error
-    "]q" #'next-error
+    "[e" #'previous-error
+    "]e" #'next-error
     "Y" "y$"
     "K" #'man
     "gC" #'compile
     "gc" #'recompile
     "gA" #'align-regexp
+    "gI" #'imenu
     (kbd "M-.") #'xref-find-definitions ; evil overrides this
-    (kbd "M-?") #'xref-find-definitions) ; and this
+    (kbd "M-?") #'xref-find-references  ; and this
+    "gd" #'xref-find-definitions
+    (kbd "C-]") #'xref-find-definitions
+    "gr" #'xref-find-references)
+
+  ;;; motion state bindings
+  (evil-define-key 'motion 'global
+    " " bindings-space-map
+    " w" evil-window-map
+    "[b" #'previous-buffer
+    "]b" #'next-buffer
+    "Y" "y$"
+    "K" #'man
+    (kbd "<tab>") #'forward-button            ; evil overrides this
+    (kbd "TAB") #'forward-button              ; and this
+    (kbd "M-.") #'xref-find-definitions ; and this
+    (kbd "M-?") #'xref-find-references  ; and this
+    "gd" #'xref-find-definitions
+    (kbd "C-]") #'xref-find-definitions
+    "gr" #'xref-find-references)
 
   (defun evil-mouse-yank-primary ()
     "Insert the contents of primary selection into the location
