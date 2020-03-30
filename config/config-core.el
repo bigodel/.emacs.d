@@ -56,7 +56,24 @@
 
 (run-with-idle-timer 600 t #'recentf-save-list)
 
+;;; save desktop settings and configuration between sessions
+(desktop-save-mode -1)
+
 ;;; garbage collector
+
+;; the default value of the garbage collector is too small for packages like
+;; lsp, and despite the recommendations of bailey ling, the dude i've basically
+;; copied the building blocks for my config from, i'll set it to 100MB because i
+;; have spare memory on the computers i've been using
+;;
+;; to read more on the gc-cons-threshold, go to:
+;; https://bling.github.io/blog/2016/01/18/why-are-you-changing-gc-cons-threshold/
+(defvar default-gc-cons-threshold original-gc-cons-threshold
+  "The default value for the `gc-cons-threshold' variable.")
+
+;; tell emacs to garbage collect when out of focus
+(add-hook 'focus-out-hook #'garbage-collect)
+
 (defun basic-minibuffer-setup-hook ()
   "Hook to optimize garbage collection when entering or exiting minibuffer."
   (setvar 'gc-cons-threshold most-positive-fixnum))
