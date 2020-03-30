@@ -31,7 +31,7 @@
                                cmd)))))
 
   ;; make `company' work like vim's autocompletion
-  (after 'evil
+  (after [evil yasnippet]
     (bindings-define-keys evil-insert-state-map
       ;; ((kbd "<tab>") #'company-indent-or-complete-common)
       ;; ((kbd "TAB") #'company-indent-or-complete-common)
