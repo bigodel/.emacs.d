@@ -92,7 +92,7 @@ configuration available at `https://github.com/jpprime/.emacs.d'."
 (after 'lsp-mode
   (require-package 'company-lsp)        ; install it
 
-  (company-add-backends '(company-lsp)) ; add it to our backends
+  (add-to-list 'company-backends 'company-lsp) ; add it to our backends
 
   (setvar 'company-lsp-cache-candidates 'auto) ; better read the docs on this
   (setvar 'company-lsp-async t)          ; fetch completion async

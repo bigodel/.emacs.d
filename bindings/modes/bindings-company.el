@@ -38,7 +38,9 @@
       ;; ((kbd "<C-tab>") #'company-yasnippet) ; this doesn't work on terminal
       ;; ((kbd "C-TAB") #'company-yasnippet)   ; this doesn't work on terminal
       ((kbd "M-n") #'company-complete)      ; use M-{n,p} to force company
-      ((kbd "M-p") #'company-complete))))
+      ((kbd "M-p") #'company-complete)
+      ((kbd "M-N") #'company-yasnippet)
+      ((kbd "M-P") #'company-yasnippet))))
 
 (provide 'bindings-company)
 ;;; bindings-company.el ends here
