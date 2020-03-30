@@ -26,14 +26,13 @@ configuration file that I want to use lsp, instead of using the
     (require-package 'lsp-treemacs))    ; TODO: see the necessity of this
 
   ;;; variables
-  (setvar 'lsp-keymap-prefix "C-l")        ; change the default prefix for lsp
+  (setvar 'lsp-keymap-prefix "M-l")        ; change the default prefix for lsp
   (setvar 'lsp-auto-configure t)        ; will configure company, flycheck, ...
   (setvar 'lsp-keep-workspace-alive nil) ; kill lsp with the last buffer
-  (when (featurep 'flycheck)
-    (setvar 'lsp-prefer-flymake nil))     ; force flycheck
+  (setvar 'lsp-diagnostic-package :auto) ; force flycheck
   (setvar 'lsp-log-io t)                   ; log msgs from the ls in *lsp-log*
   (setvar 'lsp-session-file                ; where to store the session file
-          (concat dotemacs-cache-directory ".lsp-session-v1"))
+          (concat dotemacs-cache-directory "lsp-session-v1"))
   (setvar 'lsp-enable-semantic-highlighting t) ; experimental semantic highlight
   (setvar 'lsp-diagnostics-modeline-scope :project) ; modeline show project err
   (setvar 'lsp-prefer-capf              ; capf if company-lsp is not installed
@@ -47,8 +46,8 @@ configuration file that I want to use lsp, instead of using the
   ;; emacs reads from the process. the default (at the time of writing this) is
   ;; 4KB, but some language servers responses are 800KB to 3MB. read more on:
   ;; https://github.com/emacs-lsp/lsp-mode#performance
-  (setvar 'default-gc-cons-threshold 100000000)
-  (setvar 'gc-cons-threshold default-gc-cons-threshold)
+  ;; (setvar 'default-gc-cons-threshold 100000000)
+  ;; (setvar 'gc-cons-threshold default-gc-cons-threshold)
   (setvar 'read-process-output-max (* 1024 1024)) ; 1MB
 
   ;;; lsp-ui configuration
@@ -62,11 +61,13 @@ configuration file that I want to use lsp, instead of using the
   (setvar 'lsp-ui-doc-include-signature t) ; include object signature
   (setvar 'lsp-ui-doc-position 'at-point)  ; position of the doc pop up
   ;; sideline
-  (setvar 'lsp-ui-sideline-enable t)    ; enable or disable sideline
+  (setvar 'lsp-ui-sideline-enable nil)  ; enable or disable sideline
   (setvar 'lsp-ui-sideline-delay 0.5)   ; how many secs to wait before showing
   (setvar 'lsp-ui-sideline-show-code-actions nil) ; don't show code actions
   (setvar 'lsp-ui-sideline-show-hover t)          ; show hover messages
   (setvar 'lsp-ui-sideline-show-diagnostics t)    ; show diagnostics messages
+  ;; imenu
+  (setvar 'lsp-ui-imenu-enable t)       ; enable or disable imenu
 
   ;;; clients configuration
 
