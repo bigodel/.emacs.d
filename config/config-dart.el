@@ -23,12 +23,12 @@
   (setvar 'flutter-sdk-path             ; path to flutter sdk
           (if (null (getenv "FLUTTER_SDK"))
               (concat (getenv "HOME") "/git/flutter")
-            (getenv "FLUTTER_SDK")))
+            (getenv "FLUTTER_SDK"))))
 
-  (after 'lsp-dart
-    (setvar 'lsp-dart-sdk-dir dart-sdk-path))
+;; (after 'lsp-dart
+;;   (setvar 'lsp-dart-sdk-dir dart-sdk-path))
 
-  (add-hook 'dart-mode-hook #'lsp-start))
+;; (add-hook 'dart-mode-hook #'lsp-start))
 
-  (provide 'config-dart)
+(provide 'config-dart)
 ;;; config-dart.el ends here
