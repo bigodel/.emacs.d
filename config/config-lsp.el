@@ -98,6 +98,12 @@ This overrides `lsp--suggest-project-root'."
   ;; see error statistics in modeline TODO: test this!
   (add-hook 'lsp-managed-mode-hook #'lsp-diagnostics-modeline-mode)
 
+  (after [lsp-ui whitespace]
+    (add-hook 'lsp-ui-doc-frame-hook
+              (lambda (&rest frame window)
+                "Disable `whitespace-mode' on the doc pop up."
+                (whitespace-mode -1))))
+
   ;; enable which key integration
   (after 'which-key
     (add-hook 'lsp-mode #'lsp-enable-which-key-integration)))
