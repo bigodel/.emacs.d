@@ -8,6 +8,21 @@
 ;; configuration in https://github.com/bling/dotemacs.
 ;;
 ;;; Code:
+;;; undo-tree
+(after 'undo-tree
+  (bindings-define-prefix-keys bindings-space-map "SPC"
+    ("U" #'undo-tree-visualize)))
+
+;;; ace-window
+;; TODO: add more options to ace-window
+(after 'ace-window
+  (bindings-define-key ctl-x-map "o" #'ace-window)
+
+  (after 'evil
+    (bindings-define-keys evil-window-map
+      ((kbd "C-w") #'ace-window)
+      ("w" #'ace-window))))
+
 ;;; treemacs
 (after "treemacs-autoloads"
   (bindings-define-keys ctl-x-map
@@ -25,8 +40,12 @@
       [mouse-1] #'treemacs-single-click-expand-action)
 
     (after 'evil
-      (bindings-define-key treemacs-mode-map
-        (kbd "C-w") evil-window-map))))
+      (bindings-define-keys treemacs-mode-map
+        ((kbd "C-w") evil-window-map)
+        ((kbd "M-h") #'evil-window-left)
+        ((kbd "M-j") #'evil-window-down)
+        ((kbd "M-k") #'evil-window-up)
+        ((kbd "M-l") #'evil-window-right)))))
 ;;; pdf
 (after 'doc-view
   (bindings-define-keys doc-view-mode-map
@@ -56,10 +75,6 @@
     ("q" #'quit-window)
     ((kbd "<tab>") #'forward-button)
     ((kbd "TAB") #'forward-button)))
-
-;;; undo-tree
-(bindings-define-prefix-keys bindings-space-map "SPC"
-  ("U" #'undo-tree-visualize))
 
 (provide 'bindings-misc)
 ;;; bindings-misc.el ends here
