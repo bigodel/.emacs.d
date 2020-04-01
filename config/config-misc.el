@@ -37,6 +37,9 @@
   (setvar 'undo-tree-visualizer-diff t)
   (add-hook 'after-init-hook #'global-undo-tree-mode))
 
+;;; better window management with `ace-window'
+(require-package 'ace-window)
+
 ;;; `treemacs'
 (require-package 'treemacs)
 
@@ -44,7 +47,7 @@
   (require-package 'treemacs-projectile))
 
 (after [treemacs magit]
-  (require-pacakge 'treemacs-magit))
+  (require-package 'treemacs-magit))
 
 (setvar 'treemacs-persist-file               ; location of persist file
         (concat dotemacs-cache-directory "treemacs-persist"))
