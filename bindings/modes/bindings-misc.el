@@ -76,5 +76,13 @@
     ((kbd "<tab>") #'forward-button)
     ((kbd "TAB") #'forward-button)))
 
-(provide 'bindings-misc)
+;;; hungry delete
+(after "smart-hungry-delete-autoloads"
+  ;; i only want it available on insert and emacs states
+  (after 'evil
+    (evil-define-key '(insert emacs) 'global
+      [remap delete-backward-char] #'smart-hungry-delete-backward-char
+      [remap delete-forward-char] #'smart-hungry-delete-forward-char)))
+
+(provide 'config-bindings-misc)
 ;;; bindings-misc.el ends here
