@@ -1,4 +1,4 @@
-;;; config-prog.el --- Prog mode configurations
+;;; config-prog.el --- Prog mode configurations -*- lexical-bindings: t; -*-
 
 ;; Author: João Pedro de Amorim Paula <maybe_add_email@later>
 
@@ -77,10 +77,9 @@ tabs."
 (require-package 'rainbow-delimiters)
 (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
 
-;;; highlight indentation
-(require-package 'highlight-indent-guides)
-(setvar 'highlight-indent-guides-method 'character) ; display a 1px char
-(add-hook 'prog-mode-hook #'highlight-indent-guides-mode)
+;;; rainbow mode (show background color for strings)
+(require-package 'rainbow-mode)
+(add-hook 'prog-mode-hook #'rainbow-mode)
 
 (provide 'config-prog.el)
 ;;; config-prog.el ends here

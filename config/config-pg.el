@@ -1,4 +1,4 @@
-;;; config-pg.el --- Proof General configuration
+;;; config-pg.el --- Proof General configuration -*- lexical-bindings: t; -*-
 
 ;; Author: João Pedro de Amorim Paula <maybe_add_email@later>
 

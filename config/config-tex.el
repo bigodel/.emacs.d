@@ -1,4 +1,4 @@
-;;; config-tex.el --- TeX configuration
+;;; config-tex.el --- TeX configuration -*- lexical-bindings: t; -*-
 
 ;; Author: João Pedro de Amorim Paula <maybe_add_email@later>
 

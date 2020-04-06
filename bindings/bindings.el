@@ -1,4 +1,4 @@
-;;; bindings.el --- General bindings definitions
+;;; bindings.el --- General bindings definitions  -*- lexical-bindings: t; -*-
 
 ;; Author: João Pedro de Amorim Paula <maybe_add_email@later>
 
@@ -179,8 +179,8 @@ PREFIX arg as nil. Check its documentation for more details."
                        #'eshell/new-window
                      #'eshell) "eshell")))
 
-;; escape minibuffer with ESC
 (after 'config-utils
+  ;; escape minibuffer with ESC
   (bindings-define-key minibuffer-local-map
     [escape] #'utils-minibuffer-keyboard-quit)
   (bindings-define-key minibuffer-local-ns-map
@@ -190,7 +190,11 @@ PREFIX arg as nil. Check its documentation for more details."
   (bindings-define-key minibuffer-local-must-match-map
     [escape] #'utils-minibuffer-keyboard-quit)
   (bindings-define-key minibuffer-local-isearch-map
-    [escape] #'utils-minibuffer-keyboard-quit))
+    [escape] #'utils-minibuffer-keyboard-quit)
+  ;; quit minibuffer even if point is in another window
+  ;; NOTE: took from https://with-emacs.com/posts/tips/quit-current-context/
+  (bindings-define-key (current-global-map)
+    [remap keyboard-quit] #'utils-keyboard-quit-context))
 
 ;; mouse scrolling in terminal
 (unless (display-graphic-p)

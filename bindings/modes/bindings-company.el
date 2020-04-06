@@ -1,4 +1,4 @@
-;;; config-bindings-company.el --- Bindings for company
+;;; bindings-company.el --- Company bindings -*- lexical-bindings: t; -*-
 
 ;; Author: João Pedro de Amorim Paula <maybe_add_email@later>
 

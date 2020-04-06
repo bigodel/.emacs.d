@@ -1,4 +1,4 @@
-;;; config-vcs.el --- VCS configuration
+;;; config-vcs.el --- VCS configuration -*- lexical-bindings: t; -*-
 
 ;; Author: João Pedro de Amorim Paula <maybe_add_email@later>
 

@@ -1,4 +1,4 @@
-;;; config-org.el --- Org mode configuration
+;;; config-org.el --- Org mode configuration -*- lexical-bindings: t; -*-
 
 ;; Author: João Pedro de Amorim Paula <maybe_add_email@later>
 

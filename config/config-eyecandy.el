@@ -1,4 +1,4 @@
-;;; config-eyecandy.el --- Some eyecandy to make things more beautiful
+;;; config-eyecandy.el --- Some eyecandy -*- lexical-bindings: t; -*-
 
 ;; Author: João Pedro de Amorim Paula <maybe_add_email@later>
 
@@ -107,6 +107,31 @@
 ;; highlight TODO
 (require-package 'hl-todo)
 (global-hl-todo-mode t)
+
+;; make treemacs a little bit better
+(after 'treemacs
+  (set-face-attribute 'treemacs-directory-collapsed-face nil :font "Sans Serif")
+  (set-face-attribute 'treemacs-directory-face nil :font "Sans Serif")
+  (set-face-attribute 'treemacs-file-face nil :font "Sans Serif")
+  (set-face-attribute 'treemacs-fringe-indicator-face nil :font "Sans Serif")
+  (set-face-attribute 'treemacs-git-added-face nil :font "Sans Serif")
+  (set-face-attribute 'treemacs-git-conflict-face nil :font "Sans Serif")
+  (set-face-attribute 'treemacs-git-ignored-face nil :font "Sans Serif")
+  (set-face-attribute 'treemacs-git-modified-face nil :font "Sans Serif")
+  (set-face-attribute 'treemacs-git-renamed-face nil :font "Sans Serif")
+  (set-face-attribute 'treemacs-git-unmodified-face nil :font "Sans Serif")
+  (set-face-attribute 'treemacs-git-untracked-face nil :font "Sans Serif")
+  (set-face-attribute 'treemacs-help-column-face nil :font "Sans Serif")
+  (set-face-attribute 'treemacs-help-title-face nil :font "Sans Serif")
+  (set-face-attribute 'treemacs-on-failure-pulse-face nil :font "Sans Serif")
+  (set-face-attribute 'treemacs-on-success-pulse-face nil :font "Sans Serif")
+  (set-face-attribute 'treemacs-root-face nil :font "Sans Serif" :height 1.2)
+  (set-face-attribute 'treemacs-root-remote-disconnected-face nil :font "Sans Serif")
+  (set-face-attribute 'treemacs-root-remote-face nil :font "Sans Serif")
+  (set-face-attribute 'treemacs-root-remote-unreadable-face nil :font "Sans Serif")
+  (set-face-attribute 'treemacs-root-unreadable-face nil :font "Sans Serif")
+  (set-face-attribute 'treemacs-tags-face nil :font "Sans Serif")
+  (set-face-attribute 'treemacs-term-node-face nil :font "Sans Serif"))
 
 (provide 'config-eyecandy)
 ;;; config-eyecandy.el ends here

@@ -1,4 +1,4 @@
-;;; bindings-dart.el --- Dart mode bindings
+;;; bindings-dart.el --- Dart mode bindings -*- lexical-bindings: t; -*-
 
 ;; Author: João Pedro de Amorim Paula <maybe_add_email@later>
 

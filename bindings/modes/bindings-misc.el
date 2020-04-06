@@ -1,4 +1,4 @@
-;;; bindings-misc.el --- Miscellaneous bindings (see config/config-misc.el)
+;;; bindings-misc.el --- Miscellaneous bindings -*- lexical-bindings: t; -*-
 
 ;; Author: João Pedro de Amorim Paula <maybe_add_email@later>
 
@@ -79,10 +79,9 @@
 ;;; hungry delete
 (after "smart-hungry-delete-autoloads"
   ;; i only want it available on insert and emacs states
-  (after 'evil
-    (evil-define-key '(insert emacs) 'global
-      [remap delete-backward-char] #'smart-hungry-delete-backward-char
-      [remap delete-forward-char] #'smart-hungry-delete-forward-char)))
+  (bindings-define-keys (current-global-map)
+    ([remap backward-delete-char] #'smart-hungry-delete-backward-char)
+    ([remap delete-forward-char] #'smart-hungry-delete-forward-char)))
 
 (provide 'config-bindings-misc)
 ;;; bindings-misc.el ends here

@@ -1,4 +1,4 @@
-;;; bindings-evil.el --- Evil bindings definitions
+;;; bindings-evil.el --- Evil bindings -*- lexical-bindings: t; -*-
 
 ;; Author: João Pedro de Amorim Paula <maybe_add_email@later>
 

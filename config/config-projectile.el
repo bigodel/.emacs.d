@@ -1,4 +1,4 @@
-;;; config-projectile.el --- Projectile configuration
+;;; config-projectile.el --- Projectile configuration -*- lexical-bindings: t; -*-
 
 ;; Author: João Pedro de Amorim Paula <maybe_add_email@later>
 

@@ -1,4 +1,4 @@
-;;; config-evil.el --- Evil-mode config file
+;;; config-evil.el --- Evil-mode configuration -*- lexical-bindings: t; -*-
 
 ;; Author: João Pedro de Amorim Paula <maybe_add_email@later>
 

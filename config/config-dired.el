@@ -1,4 +1,4 @@
-;;; config-dired.el --- Dired configuration
+;;; config-dired.el --- Dired configuration -*- lexical-bindings: t; -*-
 
 ;; Author: João Pedro de Amorim Paula <maybe_add_email@later>
 

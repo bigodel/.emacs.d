@@ -1,4 +1,4 @@
-;;; config-markdown.el --- Markdown configurations.
+;;; config-markdown.el --- Markdown configurations -*- lexical-bindings: t; -*-
 
 ;; Author: João Pedro de Amorim Paula <maybe_add_later@gmail.com>
 

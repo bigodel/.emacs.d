@@ -1,4 +1,4 @@
-;;; bindings-dired.el --- Dired bindings definitions
+;;; bindings-dired.el --- Dired bindings -*- lexical-bindings: t; -*-
 
 ;; Author: João Pedro de Amorim Paula <maybe_add_email@later>
 

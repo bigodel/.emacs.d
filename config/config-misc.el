@@ -1,4 +1,4 @@
-;;; config-org.el --- Org mode configuration
+;;; config-misc.el --- Miscellaneous configuration -*- lexical-bindings: t; -*-
 
 ;; Author: João Pedro de Amorim Paula <maybe_add_email@later>
 
@@ -51,9 +51,9 @@
 
 (setvar 'treemacs-persist-file               ; location of persist file
         (concat dotemacs-cache-directory "treemacs-persist"))
-(setvar 'treemacs-indentation 1)        ; number of spaces for indentation
-(setvar 'treemacs-indentation-string    ; the string to show on indent level
-        (propertize "|" 'face 'font-lock-comment-face))
+(setvar 'treemacs-indentation 2)        ; number of spaces for indentation
+;; (setvar 'treemacs-indentation-string    ; the string to show on indent level
+;;         (propertize "|" 'face 'font-lock-comment-face))
 (setvar 'treemacs-width 40)             ; default width of the treemacs window
                                         ; TODO: modify treemacs faces so the
                                         ; fonts are smaller
@@ -114,9 +114,12 @@
 
 ;;; automatically insert and manage parenthesis
 ;; TODO: look into smartparens config and the strict mode
-;; (require-package 'smartparens)
-;; (smartparens-global-mode t)
-(electric-pair-mode t)
+(require-package 'smartparens)
+(add-hook 'after-init-hook #'smartparens-global-mode)
+;; since we don't have a elisp file for configuration, we do it here
+(after 'smartparens
+  (sp-local-pair 'emacs-lisp-mode "`" "'")
+  (sp-local-pair 'emacs-lisp-mode "'" nil :actions nil))
 
 ;;; search from within emacs
 (require-package 'engine-mode)

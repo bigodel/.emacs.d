@@ -1,4 +1,4 @@
-;;; bindings-tex.el --- TeX bindings
+;;; bindings-tex.el --- TeX bindings -*- lexical-bindings: t; -*-
 
 ;; Author: João Pedro de Amorim Paula <maybe_add_email@later>
 

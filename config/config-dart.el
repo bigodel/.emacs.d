@@ -1,4 +1,4 @@
-;;; config-dart.el --- Dart configuration
+;;; config-dart.el --- Dart configuration -*- lexical-bindings: t; -*-
 
 ;; Author: João Pedro de Amorim Paula <maybe_add_email@later>
 

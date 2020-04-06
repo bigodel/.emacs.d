@@ -1,4 +1,4 @@
-;;; core-boot.el --- Core file for the boot
+;;; core-boot.el --- Core file for the boot  -*- lexical-binding: t; -*-
 
 ;; Author: João Pedro de Amorim Paula <maybe_add_email@later>
 
@@ -95,6 +95,23 @@ FEATURE may be any one of:
       prog))
    (t
     `(with-eval-after-load ,feature ,@body))))
+
+;; TODO: study csetq
+(defmacro csetq-1 (var value)
+  "Set VAR to VALUE using the appropriate function or macro."
+  `(funcall (or (get ',var 'custom-set)
+                'set-default)
+            ',var ,value))
+
+(defmacro csetq (&rest binds)
+  "Apply `setvar-1' to each variable in BINDS."
+  (pcase binds
+    (`(,var ,val)
+     `(csetq-1 ,var ,val))
+    (`(,var ,val . ,rest)
+     `(progn
+        (csetq-1 ,var ,val)
+        (csetq ,@rest)))))
 
 (defmacro setvar (var value &optional local comment)
   "Set VAR to VALUE using `customize-set-variable'.

@@ -1,4 +1,4 @@
-;;; bindings-hydras.el --- Hydras definitions
+;;; bindings-hydras.el --- Hydras definitions -*- lexical-bindings: t; -*-
 
 ;; Author: João Pedro de Amorim Paula <maybe_add_email@later>
 
@@ -12,20 +12,6 @@
 (setvar 'lv-use-separator t)
 (require-package 'hydra)
 (autoload 'hydra-default-pre "hydra")
-
-(after 'flycheck
-  (defhydra hydras/errors (:hint nil)
-    "
-   errors:  navigation                 flycheck
-            -----------------------    ---------------
-            _j_ → next error             _l_ → list errors
-            _k_ → previous error         _?_ → describe checker
-"
-    ("j" (call-interactively #'flycheck-next-error))
-    ("k" (call-interactively #'flycheck-previous-error))
-    ("?" flycheck-describe-checker)
-    ("l" flycheck-list-errors :exit t)
-    ("q" nil "quit" :exit t)))
 
 (after [counsel projectile counsel-projectile]
   (defhydra hydras/search (:hint nil :exit t)
@@ -48,6 +34,7 @@
     ("l" swiper)
     ("L" swiper-all)))
 
+;; TODO: convert
 (after 'config-utils
   (defhydra hydras/files/convert (:hint nil :exit t)
     "
@@ -59,10 +46,11 @@
 
   (defhydra hydras/files (:hint nil :exit t)
     "
-   files:  _f_ → find files    → delete  _y_ → copy filename  _E_ → edit as root
-           _r_ → recentf     _R_ → rename  _c_ → copy file      _C_ → convert
+   files:  _f_ → find files  _D_ → delete this  _y_ → copy filename  _E_ → edit as root
+           _d_ → delete      _R_ → rename       _c_ → copy file      _C_ → convert
 "
-    ;; TODO: ("D" utils-delete-buffer-file)
+    ("d" utils-delete-buffer-file)
+    ("D" utils-delete-current-buffer-file)
     ("R" utils-rename-current-buffer-file)
     ("M" utils-rename-buffer-file)
     ("f" counsel-find-file)
@@ -121,25 +109,13 @@
 ;; SPC bindings
 (bindings-define-prefix-keys bindings-space-map "SPC"
   ("t" #'hydras/toggles/body "toggle...")
-  ("j" #'hydras/jumps/body "jump...")
   ("s" #'hydras/search/body "search...")
   ("F" #'hydras/files/body "files...")
-  ("i" #'hydras/ivy/body "ivy...")
-  ("g" #'hydras/magit/body "magit..."))
+  ("i" #'hydras/ivy/body "ivy..."))
 
 ;; global bindings
 (bindings-define-keys (current-global-map)
   ((kbd "C-x n") #'hydras/narrow/body))
-
-;; space bidings
-(bindings-define-prefix-keys bindings-space-map "SPC"
-  ("t" #'hydras/toggles/body "toggle...")
-  ("j" #'hydras/jumps/body "jump...")
-  ("s" #'hydras/search/body "search...")
-  ("F" #'hydras/files/body "files...")
-  ("i" #'hydras/ivy/body "ivy...")
-  ("g" #'hydras/magit/body "magit...")
-  ("u" #'hydras/utils/body "utils..."))
 
 (provide 'config-bindings-hydras)
 ;;; bindings-hydras.el ends here

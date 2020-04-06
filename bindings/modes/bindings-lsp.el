@@ -1,4 +1,4 @@
-;;; bindings-lsp.el --- LSP bindings
+;;; bindings-lsp.el --- LSP bindings -*- lexical-bindings: t; -*-
 
 ;; Author: João Pedro de Amorim Paula <maybe_add_email@later>
 
@@ -11,7 +11,34 @@
     ([remap xref-find-definitions] #'lsp-find-definition)
     ([remap xref-find-references] #'lsp-find-references))
 
-  (after 'lsp-ui
+  ;; for some reason this needs to be defined here and can't be define in
+  ;; bindings-hydra.el like i intended
+  (after [hydra lsp-ui]
+    (defhydra hydras/lsp/workspace (:exit t)
+      ("a" lsp-workspace-folders-add "add folder" :column "workspace")
+      ("r" lsp-workspace-folders-remove "remove folder")
+      ("s" lsp-workspace-folders-switch "switch folder"))
+
+    (defhydra hydras/lsp (:exit t)
+      ("d" lsp-ui-peek-find-definitions "peek definition" :column "definitions")
+      ("D" xref-find-definitions "xref definitions")
+
+      ("r" lsp-ui-peek-find-references "peek references" :column "references")
+      ("R" xref-find-references "xref references")
+      ("u" lsp-treemacs-references "usages")
+
+      ("n" lsp-rename "rename" :column "refactor")
+      ("=" lsp-format-buffer "format")
+      ("a" lsp-ui-sideline-apply-code-actions "apply code action")
+
+      ("s" lsp-treemacs-symbols "symbols" :column "info")
+
+      ("e" lsp-treemacs-errors-list "list" :column "errors")
+
+      ("S" lsp-restart-workspace "restart workspace" :column "workspace")
+      ("w" hydras/lsp/workspace/body "folders")
+      ("i" lsp-describe-session "session info"))
+
     (bindings-define-keys lsp-ui-mode-map
       ([remap imenu] #'lsp-ui-imenu)
       ;; these are causing an extreme amount of lag, investigate
@@ -35,8 +62,8 @@
     ;; TODO: add lsp-ui-peek-find-definitions
     (after 'lsp-ui
       (evil-define-key '(normal visual) lsp-mode-map
-        "ga" #'lsp-execute-code-action
-        "gR" #'lsp-rename
+        (kbd "RET") #'hydras/lsp/body
+        (kbd "<ret>") #'hydras/lsp/body
         "gD" #'lsp-ui-doc-glance
         "g?" #'lsp-ui-doc-glance)
 

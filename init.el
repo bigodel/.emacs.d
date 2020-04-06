@@ -1,4 +1,4 @@
-;;; init.el --- Main file
+;;; init.el --- Main file  -*- lexical-binding: t; -*-
 
 ;; Author: João Pedro de Amorim Paula <maybe_add_email@later>
 
@@ -34,8 +34,8 @@
 ;; the original value of the gc-cons-threshold while initing Emacs.
 ;; TODO: maybe wrap setq's or setvar's for the original value of these variables
 ;; in a (add-hook 'emacs-startup-hook) and see how much init time we gain
-(let ((gc-cons-threshold-before-init gc-cons-threshold)
-      (gc-cons-threshold most-positive-fixnum) ; the value for the gc is too low
+(setq gc-cons-threshold-before-init gc-cons-threshold)
+(let ((gc-cons-threshold most-positive-fixnum) ; the value for the gc is too low
       (gc-cons-percentage 0.6)
       (file-name-handler-alist nil)
       (bindings-directory (concat user-emacs-directory "bindings/"))

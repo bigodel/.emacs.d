@@ -1,4 +1,4 @@
-;;; config-lsp.el --- lsp-mode and dap-mode configuration
+;;; config-lsp.el --- LSP configuration -*- lexical-bindings: t; -*-
 
 ;; Author: João Pedro de Amorim Paula <maybe_add_email@later>
 
