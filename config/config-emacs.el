@@ -1,4 +1,4 @@
-;;; config-core.el --- Basic configuration
+;;; config-emacs.el --- Basic configuration
 
 ;; Author: João Pedro de Amorim Paula <maybe_add_email@later>
 
@@ -69,27 +69,44 @@
 (desktop-save-mode -1)
 
 ;;; garbage collector
-
+;; TODO: investigate gcmh (garbage collector magic hack) package and maybe
+;; incorporate what it does, without using the package, here, instead of all of
+;; this configuration
+;;
 ;; the default value of the garbage collector is too small for packages like
 ;; lsp, and despite the recommendations of bailey ling, the dude i've basically
-;; copied the building blocks for my config from, i'll set it to 100MB because i
-;; have spare memory on the computers i've been using
+;; copied the building blocks for my config from, i'll set it to 16MB, based on
+;; doom-emacs, because i have spare memory on the computers i've been using
 ;;
 ;; to read more on the gc-cons-threshold, go to:
 ;; https://bling.github.io/blog/2016/01/18/why-are-you-changing-gc-cons-threshold/
-(defvar default-gc-cons-threshold original-gc-cons-threshold
-  "The default value for the `gc-cons-threshold' variable.")
+;; https://github.com/hlissner/doom-emacs/blob/develop/docs/faq.org#how-does-doom-start-up-so-quickly
+(defconst original-gc-cons-threshold gc-cons-threshold-before-init
+  "The original value for the `gc-cons-threshold' variable.")
+
+(defvar default-gc-cons-threshold 16777216
+  "The default value for the `gc-cons-threshold' variable.
+
+Note that this is different from its original value.")
 
 ;; tell emacs to garbage collect when idle for 5 seconds
 (run-with-idle-timer 5 t #'garbage-collect)
 
 (defun basic-minibuffer-setup-hook ()
-  "Hook to optimize garbage collection when entering or exiting minibuffer."
-  (setvar 'gc-cons-threshold most-positive-fixnum))
+  "Hook to optimize garbage collection when entering or exiting minibuffer.
+
+I'm using `setq' in instead of `setvar' just so I don't have to load a macro."
+  (setq gc-cons-threshold most-positive-fixnum))
 
 (defun basic-minibuffer-exit-hook ()
-  "Hook to optimize garbage collection when entering or exiting minibuffer."
-  (setvar 'gc-cons-threshold default-gc-cons-threshold))
+  "Hook to optimize garbage collection when entering or exiting minibuffer.
+
+I'm using `setq' in instead of `setvar' just so I don't have to load a macro.
+
+The `run-at-time' is there so that commands launched immediately
+after will enjoy the benefits."
+  (run-at-time
+   1 nil (lambda () (setq gc-cons-threshold default-gc-cons-threshold))))
 
 (add-hook 'minibuffer-setup-hook #'basic-minibuffer-setup-hook)
 (add-hook 'minibuffer-exit-hook #'basic-minibuffer-exit-hook)
@@ -242,7 +259,7 @@ buffer name."
 (setvar 'uniquify-ignore-buffers-re "^\\*") ; leave special buffers alone
 (setvar 'uniquify-after-kill-buffer-p t)
 
-;;; paren
+;;; show-paren
 (setvar 'show-paren-delay 0)
 (show-paren-mode t)
 
@@ -266,17 +283,36 @@ buffer name."
   (prefer-coding-system coding)
   (setvar 'buffer-file-coding-system coding))
 
-;;; tabs
+;;; default tabs configuration
 (setvar 'indent-tabs-mode nil) ; spaces instead of tabs
 (setvar 'tab-width 4)
-;; enable tabs instead of spaces in makefiles
-;; TODO: move this to config-makefile.el maybe???
-(add-hook 'makefile-mode-hook (lambda () (setvar 'indent-tabs-mode t 'local)))
 
 ;;; give me a clean *scratch* buffer upon startup
 (setvar 'inhibit-startup-screen t)
 (setvar 'inhibit-startup-echo-area-message t)
 (setvar 'initial-scratch-message nil)
+
+;;; profiler
+(after 'profiler
+  ;; by default the width of the columns in the profiler window is too small
+  ;; sometimes, although it works on most of the time, so i've added this minor
+  ;; mode as shown here: https://kisaragi-hiu.com/blog/2019-05-16-emacs-profiler-width.html
+  ;; and here: https://emacs.stackexchange.com/questions/7344/make-profiler-report-columns-wider
+  (define-minor-mode profiler-wide-mode
+    "Minor mode to widen profiler reports."
+    :global t
+    (if profiler-wide-mode
+        (setf (caar profiler-report-cpu-line-format) 80
+              (caar profiler-report-memory-line-format) 80)
+      (setf (caar profiler-report-cpu-line-format) 50
+            (caar profiler-report-memory-line-format) 55)))
+
+  ;; enable `hl-line-mode' on the report
+  (add-hook 'profiler-report-mode-hook #'hl-line-mode))
+
+;;; eww
+;; set eww as the default browser
+;; (setvar 'browse-url-browser-function 'eww-browse-url)
 
 ;;; misc variables
 (setvar 'x-gtk-use-system-tooltips nil) ; use emacs tooltips, not gtk's
@@ -295,10 +331,11 @@ buffer name."
 (toggle-truncate-lines -1)               ; don't truncate!!!!
 (setvar 'word-wrap t)                    ; wrap words
 (setvar 'mouse-yank-at-point t)          ; don't move point to mouse paste
+(setvar 'global-auto-revert-non-file-buffers t) ; revert nonfile buffers (dired)
 (global-auto-revert-mode t)             ; revert buffers when files change
 (xterm-mouse-mode t)                    ; mouse on in xterm compatible terminals
 (electric-indent-mode t)                ; indent automatically on some keys
 (random t)                              ; random number seed
 
-(provide 'config-core)
-;;; config-core.el ends here
+(provide 'config-emacs)
+;;; config-emacs.el ends here
