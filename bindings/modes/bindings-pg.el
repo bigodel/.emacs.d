@@ -13,5 +13,5 @@
   (after 'evil
     (evil-ex-define-cmd "pr[ove]" 'proof-goto-point)))
 
-(provide 'bindings-pg)
+(provide 'config-bindings-pg)
 ;;; bindings-pg.el ends here

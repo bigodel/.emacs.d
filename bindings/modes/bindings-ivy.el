@@ -60,5 +60,5 @@
     (bindings-define-key (current-global-map)
       (kbd "C-c c t") #'counsel-tramp)))
 
-(provide 'bindings-ivy)
+(provide 'config-bindings-ivy)
 ;;; bindings-ivy.el ends here

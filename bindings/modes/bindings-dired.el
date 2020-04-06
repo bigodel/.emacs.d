@@ -12,3 +12,6 @@
   (after "dired-subtree-autoloads"
     (bindings-define-keys dired-mode-map
       ((kbd "TAB") #'dired-subtree-toggle))))
+
+(provide 'config-bindings-dired)
+;;; bindings-dired.el ends here

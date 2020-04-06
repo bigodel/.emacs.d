@@ -1,4 +1,4 @@
-;;; bindings-company.el --- Bindings for company
+;;; config-bindings-company.el --- Bindings for company
 
 ;; Author: João Pedro de Amorim Paula <maybe_add_email@later>
 

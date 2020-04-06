@@ -141,5 +141,5 @@
   ("g" #'hydras/magit/body "magit...")
   ("u" #'hydras/utils/body "utils..."))
 
-(provide 'bindings-hydras)
+(provide 'config-bindings-hydras)
 ;;; bindings-hydras.el ends here

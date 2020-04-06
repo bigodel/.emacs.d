@@ -6,5 +6,5 @@
 
 ;;; Code:
 
-(provide 'bindigns-tex)
+(provide 'config-bindings-tex)
 ;;; bindings-tex.el ends here
