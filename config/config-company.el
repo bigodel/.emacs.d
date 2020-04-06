@@ -11,13 +11,19 @@
 ;; complete unicode mathematical symbols with `company-mode'
 (require-package 'company-math)
 
+;; show a help pop up
+(require-package 'company-quickhelp)
+(setvar 'company-quickhelp-delay 0.5) ; how much secs to wait before showing
+(setvar 'company-quickhelp-use-propertized-text nil) ; beautiful text please
+(company-quickhelp-mode t)
+
 ;;; variables
 (setvar 'company-tooltip-align-annotations t) ; align annotations to the right
 (setvar 'company-tooltip-limit 12)            ; limit of completions per pop up
-(setvar 'company-idle-delay nil)        ; idle time to show completion. if set
+(setvar 'company-idle-delay 0.5)        ; idle time to show completion. if set
                                         ; to nil then only complete when asked
 (setvar 'company-show-numbers t)         ; show numbers for quick nav with M-num
-(setvar 'company-echo-delay 0)           ; disable blinking
+(setvar 'company-echo-delay (if (display-graphic-p) nil 0)) ; disable blinking
 (setvar 'company-minimum-prefix-length 1) ; minimum chars to start completion
 (setvar 'company-require-match nil)       ; can quit company without completing
 (setvar 'company-selection-wrap-around t) ; wrap when no more candidates
@@ -39,10 +45,13 @@
 
 (setvar 'company-global-modes             ; ignored modes
         '(not eshell-mode
+              shell-mode
+              help-mode
+              message-mode
               comint-mode))
 
 ;;; start company
-(global-company-mode)
+(add-hook 'after-init-hook #'global-company-mode)
 
 ;; helper functions
 (defun company-backend-with-yasnippet (backend)
@@ -92,9 +101,9 @@ configuration available at `https://github.com/jpprime/.emacs.d'."
 (after 'lsp-mode
   (require-package 'company-lsp)        ; install it
 
-  (add-to-list 'company-backends 'company-lsp) ; add it to our backends
+  (push 'company-lsp company-backends) ; add it to our backends
 
-  (setvar 'company-lsp-cache-candidates 'auto) ; better read the docs on this
+  (setvar 'company-lsp-cache-candidates t)     ; better read the docs on this
   (setvar 'company-lsp-async t)          ; fetch completion async
   (setvar 'company-lsp-enable-snippet t) ; enable snippets
   (setvar 'company-lsp-enable-recompletion t)) ; read the docs on this one too

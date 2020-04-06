@@ -14,10 +14,10 @@
   ;; bindings that are used when company is activated
   (bindings-define-keys company-active-map
     ((kbd "C-n") #'company-complete-common-or-cycle)
-    ((kbd "C-p") #'company-select-previous)
+    ((kbd "C-p") (bind (company-complete-common-or-cycle -1)))
     ((kbd "<tab>") #'company-complete-selection)
     ((kbd "TAB") #'company-complete-selection))
-  ;; <return> is for windowed Emacs; RET is for terminal Emacs
+  ;; <return> is for GUI Emacs; RET is for terminal Emacs
   (dolist (key '("<return>" "RET"))
     ;; here we are using an advanced feature of define-key that lets
     ;; us pass an "extended menu item" instead of an interactive
@@ -31,16 +31,16 @@
                                cmd)))))
 
   ;; make `company' work like vim's autocompletion
-  (after [evil yasnippet]
+  (after 'evil
     (bindings-define-keys evil-insert-state-map
-      ;; ((kbd "<tab>") #'company-indent-or-complete-common)
-      ;; ((kbd "TAB") #'company-indent-or-complete-common)
-      ;; ((kbd "<C-tab>") #'company-yasnippet) ; this doesn't work on terminal
-      ;; ((kbd "C-TAB") #'company-yasnippet)   ; this doesn't work on terminal
-      ((kbd "M-n") #'company-complete)      ; use M-{n,p} to force company
-      ((kbd "M-p") #'company-complete)
-      ((kbd "M-N") #'company-yasnippet)
-      ((kbd "M-P") #'company-yasnippet))))
+      ;; use C-{n,p} to force company
+      ((kbd "C-n") #'company-complete-common-or-cycle)
+      ((kbd "C-p") (bind (company-complete-common-or-cycle -1))))
 
-(provide 'bindings-company)
+    (after 'yasnippet
+      (bindings-define-keys evil-insert-state-map
+        ((kbd "C-S-n") #'company-yasnippet) ; use C-{N,P} to force yasnippet
+        ((kbd "C-S-p") #'company-yasnippet)))))
+
+(provide 'config-bindings-company)
 ;;; bindings-company.el ends here
