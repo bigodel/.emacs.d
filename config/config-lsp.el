@@ -23,32 +23,31 @@ configuration file that I want to use lsp, instead of using the
   (after 'ivy
     (require-package 'lsp-ivy))         ; TODO: see the necessity of this
   (after 'treemacs
-    (require-package 'lsp-treemacs))    ; TODO: see the necessity of this
+    (require-package 'lsp-treemacs)     ; TODO: see the necessity of this
+    (lsp-treemacs-sync-mode t))         ; sync lsp and treemacs workspaces
 
   ;;; variables
-  (setvar 'lsp-keymap-prefix "M-l")        ; change the default prefix for lsp
+  (setvar 'lsp-keymap-prefix "M-l")      ; change the default prefix for lsp
+  (setvar 'lsp-idle-delay 0.5)           ; how ofter lsp refreshes
+  (setvar 'lsp-enable-symbol-highlighting nil) ; dont highlight symbol at ponint
   (setvar 'lsp-auto-configure t)        ; will configure company, flycheck, ...
   (setvar 'lsp-keep-workspace-alive nil) ; kill lsp with the last buffer
-  (setvar 'lsp-diagnostic-package :auto) ; force flycheck
+  (setvar 'lsp-diagnostic-package :auto) ; package to use for findings errors
+  (setvar 'lsp-enable-semantic-highlighting t) ; experimental semantic highlight
+  (setvar 'lsp-enable-snippet t)               ; enable snippet completion
   (setvar 'lsp-log-io t)                   ; log msgs from the ls in *lsp-log*
+  (setvar 'lsp-print-performance t)        ; print performance information
   (setvar 'lsp-session-file                ; where to store the session file
           (concat dotemacs-cache-directory "lsp-session-v1"))
-  (setvar 'lsp-enable-semantic-highlighting t) ; experimental semantic highlight
   (setvar 'lsp-diagnostics-modeline-scope :project) ; modeline show project err
-  (setvar 'lsp-prefer-capf              ; capf if company-lsp is not installed
+  (setvar 'lsp-prefer-capf              ; whether or not to prefere capf
           (not (featurep 'company-lsp)))
 
-  ;; this section recommends settings these two variables. i like to have
-  ;; gc-cons-threshold at its default value, but whenever i'm using lsp-mode it
-  ;; makes sense to bump it up to 100MB (i've tried it with the default value,
-  ;; if the file has more than 2000 lines emacs becomes unusable from so many
-  ;; garbage collections). and the other variable is the amount of data which
-  ;; emacs reads from the process. the default (at the time of writing this) is
-  ;; 4KB, but some language servers responses are 800KB to 3MB. read more on:
-  ;; https://github.com/emacs-lsp/lsp-mode#performance
-  ;; (setvar 'default-gc-cons-threshold 100000000)
-  ;; (setvar 'gc-cons-threshold default-gc-cons-threshold)
-  (setvar 'read-process-output-max (* 1024 1024)) ; 1MB
+  ;; the performance section recommends settings this variable. it is the amount
+  ;; of data which emacs reads from processes. the default (at the time of
+  ;; writing this) is 4KB, but some language servers responses are 800KB to 3MB.
+  ;; read more on: https://github.com/emacs-lsp/lsp-mode#performance
+  (setvar 'read-process-output-max (* 3 1024 1024)) ; 3MB
 
   ;;; lsp-ui configuration
   ;; peek
@@ -59,7 +58,8 @@ configuration file that I want to use lsp, instead of using the
   (setvar 'lsp-ui-doc-max-width 80)        ; max width of the doc pop-up
   (setvar 'lsp-ui-doc-use-webkit nil)      ; use emacs native pop ups
   (setvar 'lsp-ui-doc-include-signature t) ; include object signature
-  (setvar 'lsp-ui-doc-position 'at-point)  ; position of the doc pop up
+  (setvar 'lsp-ui-doc-position 'top)       ; position of the doc pop up
+  (setvar 'lsp-ui-doc-header t)            ; display the symbol string
   ;; sideline
   (setvar 'lsp-ui-sideline-enable nil)  ; enable or disable sideline
   (setvar 'lsp-ui-sideline-delay 0.5)   ; how many secs to wait before showing
@@ -71,19 +71,37 @@ configuration file that I want to use lsp, instead of using the
 
   ;;; clients configuration
 
+  ;;; hooks
+  ;; see error statistics in modeline
+  (add-hook 'lsp-managed-mode-hook #'lsp-diagnostics-modeline-mode)
+  ;; format and organize imports on save
+  (add-hook 'before-save-hook #'lsp-format-buffer t t)
+  (add-hook 'before-save-hook #'lsp-organize-imports t t)
+
+  (after 'whitespace
+    (add-hook 'lsp-ui-doc-frame-mode-hook
+              (lambda ()
+                "Disable `whitespace-mode' on the doc pop up."
+                (setvar 'show-trailing-whitespace nil)
+                (whitespace-mode -1))))
+
+  ;; enable which key integration
+  (after 'which-key
+    (add-hook 'lsp-mode #'lsp-enable-which-key-integration))
+
   ;;; start lsp
-  (lsp)
-  (lsp-treemacs-sync-mode t))            ; TODO: investigate what is this
+  (lsp))
 
 (defun lsp-suggest-project-root ()
   "Suggest the nearest project root.
+I use this so that I can add my own files that should trigger a
+root of a project.
 This overrides `lsp--suggest-project-root'."
   (or
    (locate-dominating-file
     (buffer-file-name)
     (lambda (dir)
-      (if (string-match-p "node_modules" dir)
-          nil
+      (when (string-match-p "node_modules" dir)
         (file-exists-p (concat dir "package.json")))))
    (when (featurep 'projectile) (condition-case nil
                                     (projectile-project-root)
@@ -94,19 +112,11 @@ This overrides `lsp--suggest-project-root'."
 
 (after 'lsp-mode
   ;; override the default `lsp--suggest-project-root' with our function
-  (advice-add #'lsp--suggest-project-root :override #'lsp-suggest-project-root)
-  ;; see error statistics in modeline TODO: test this!
-  (add-hook 'lsp-managed-mode-hook #'lsp-diagnostics-modeline-mode)
+  (advice-add #'lsp--suggest-project-root :override #'lsp-suggest-project-root))
 
-  (after [lsp-ui whitespace]
-    (add-hook 'lsp-ui-doc-frame-hook
-              (lambda (&rest frame window)
-                "Disable `whitespace-mode' on the doc pop up."
-                (whitespace-mode -1))))
-
-  ;; enable which key integration
-  (after 'which-key
-    (add-hook 'lsp-mode #'lsp-enable-which-key-integration)))
+(after 'lsp-ui
+  ;; `C-g'to close doc
+  (advice-add #'keyboard-quit :before #'lsp-ui-doc-hide))
 
 (provide 'config-lsp)
 ;;; config-lsp.el ends here
