@@ -51,12 +51,22 @@
 
 (setvar 'treemacs-persist-file               ; location of persist file
         (concat dotemacs-cache-directory "treemacs-persist"))
-(setvar 'treemacs-indentation 2)        ; number of spaces for indentation
+(setvar 'treemacs-indentation 1)        ; number of spaces for indentation
+(setvar 'treemacs-indentation-string    ; the string to show on indent level
+        (propertize "|" 'face 'font-lock-comment-face))
+(setvar 'treemacs-width 40)             ; default width of the treemacs window
+                                        ; TODO: modify treemacs faces so the
+                                        ; fonts are smaller
 ;; some option only behave well if python3 is installed
 (setvar 'treemacs-collapse-dirs (if (executable-find "python3") 3 0))
+(setvar 'treemacs-project-follow-cleanup t) ; close projects and expand current
+(setvar 'treemacs-follow-after-init t)      ; focus the current file when open
 
 (after 'treemacs
   (treemacs-fringe-indicator-mode -1)   ; don't show the fringe helper
+  (treemacs-follow-mode t)
+  (treemacs-tag-follow-mode t)
+  (treemacs-filewatch-mode t)
   ;; if git and python3 are installed, use deferred, otherwise use simple
   (pcase (cons (not (null (executable-find "git")))
                (not (null (executable-find "python3"))))
@@ -91,6 +101,29 @@
 (require-package 'helpful)
 (after [evil helpful]
   (evil-set-initial-state 'helpful-mode 'motion))
+
+;;; hungry delete
+;; NOTE: this isn't needed for modes that have `aggressive-indent-mode' on, but
+;; i don't have it enabled globally so this helps (it might make me not use
+;; `aggressive-indent-mode' anymore...). also the full configuration depends on
+;; that is present in `bindings-misc'.
+;; this package basically adds the functionality of `hungry-delete-mode' that is
+;; available only for `cc-mode' everywhere you might want it
+(require-package 'smart-hungry-delete)
+(smart-hungry-delete-add-default-hooks)
+
+;;; automatically insert and manage parenthesis
+;; TODO: look into smartparens config and the strict mode
+;; (require-package 'smartparens)
+;; (smartparens-global-mode t)
+(electric-pair-mode t)
+
+;;; search from within emacs
+(require-package 'engine-mode)
+(setvar 'engine/keybinding-prefix "C-x /")
+(defengine duckduckgo
+  "https://duckduckgo.com/?q=%s" :keybinding "d")
+(engine-mode t)
 
 (provide 'config-misc)
 ;;; config-misc.el ends here
