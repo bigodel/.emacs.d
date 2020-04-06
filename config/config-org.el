@@ -3,9 +3,7 @@
 ;; Author: João Pedro de Amorim Paula <maybe_add_email@later>
 
 ;;; Commentary:
-;;
-;; TODO: change whitespace-mode so that is doesn't show trailing whitespace
-;;
+
 ;;; Code:
 (after 'org
   (setvar 'org-directory (concat (getenv "HOME") "/docs/org"))
@@ -34,7 +32,7 @@ Try again or remove the file `%s' from the config folder" load-file-name))))))
   (setvar 'org-startup-indented t)
   (setvar 'org-src-fontify-natively t)
 
-  (setvar 'org-agenda-files (list org-inbox-file))
+  (setvar 'org-agenda-files '(org-inbox-file))
 
   ;; (setvar 'org-default-notes-file (expand-file-name dotemacs-org/inbox-file))
   ;; (setvar 'org-log-done t)
@@ -55,18 +53,28 @@ Try again or remove the file `%s' from the config folder" load-file-name))))))
   ;;            (file+datetree (expand-file-name dotemacs-org/journal-file))
   ;;            "* %U\n** %?")))
 
+  ;;; TODO
   ;; (setvar 'org-use-fast-todo-selection nil)
   ;; (setvar 'org-treat-S-cursor-todo-selection-as-state-change nil)
-  ;; (setvar 'org-todo-keywords
-  ;;         '((sequence "TODO(t)" "NEXT(n@)" "|" "DONE(d@)")
-  ;;           (sequence "WAITING(w@/!)" "|" "CANCELLED(c@/!)")))
+  (setvar 'org-enforce-todo-checkbox-dependencies t) ; don't allow to change to DONE
+  (setvar 'org-enforce-todo-dependencies t)          ; until everything is really done
+  (setvar 'org-todo-keywords
+          '((sequence "TODO(t)" "NEXT(n@)" "|" "DONE(d@)")
+            (sequence "WAITING(w@/!)" "STARTED(s@/!)" "|" "CANCELLED(c@/!)")))
 
-  ;; (setvar 'org-todo-state-tags-triggers
-  ;;         ' (("CANCELLED" ("CANCELLED" . t))
-  ;;            ("WAITING" ("WAITING" . t))
-  ;;            ("TODO" ("WAITING") ("CANCELLED"))
-  ;;            ("NEXT" ("WAITING") ("CANCELLED"))
-  ;;            ("DONE" ("WAITING") ("CANCELLED"))))
+  (setvar 'org-todo-keyword-faces
+          '(("TODO" . (:weight bold))
+            ("NEXT" . (:weight bold))
+            ("STARTED" . "yellow")
+            ("WAITING" . "blue")
+            ("CANCELLED" . (:foreground "orange" :weight bold))))
+
+  (setvar 'org-todo-state-tags-triggers
+          ' (("CANCELLED" ("CANCELLED" . t))
+             ("WAITING" ("WAITING" . t))
+             ("TODO" ("WAITING") ("CANCELLED"))
+             ("NEXT" ("WAITING") ("CANCELLED"))
+             ("DONE" ("WAITING") ("CANCELLED"))))
 
   ;; (setvar 'org-refile-targets '((nil :maxlevel . 9)
   ;;                              (org-agenda-files :maxlevel . 9)))
@@ -74,7 +82,17 @@ Try again or remove the file `%s' from the config folder" load-file-name))))))
   ;; (setvar 'org-outline-path-complete-in-steps nil)
   ;; (setvar 'org-completion-use-ido t)
 
-  (add-hook 'org-babel-after-execute-hook #'org-redisplay-inline-images))
+  (add-hook 'org-babel-after-execute-hook #'org-redisplay-inline-images)
+
+  (after 'whitespace
+    (add-hook 'org-mode-hook
+              (lambda ()
+                "Disable 'lines-tail for `whitespace-mode' in `org-mode'."
+                (setvar 'whitespace-line-column nil 'local)
+                (setvar 'whitespace-style
+                        (remove 'lines-tail whitespace-style) 'local)
+                (whitespace-mode -1)
+                (whitespace-mode t)))))
 
 (provide 'config-org)
 ;;; config-org.el ends here
