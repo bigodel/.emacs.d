@@ -18,11 +18,15 @@
     makey-key-mode
     dired-mode
     compilation-mode
+    comint-mode
+    occur-mode
+    ivy-occur-mode
     package-menu-mode
     profiler-report-mode
     process-menu-mode
     xref--xref-buffer-mode
     treemacs-mode
+    lsp-browser-mode
     flycheck-error-list-mode)
   "List of major modes that should default to Emacs state.")
 
@@ -56,8 +60,7 @@
 ;; recenter after any jump in evil-mode
 (add-hook 'evil-jumps-post-jump-hook #'recenter)
 
-;; load `evil'
-(require-package 'evil)
+;;; load `evil'
 (evil-mode 1)
 
 ;; emacs state hooks
@@ -120,6 +123,18 @@
 ;; match tags like <b> in html or \begin{env} in LaTeX
 (require-package 'evil-matchit)
 (global-evil-matchit-mode t)
+
+;; add text objects to work with surroundings
+(require-package 'evil-surround)
+(global-evil-surround-mode t)
+;; this is an example of how to add new surrounds
+(add-hook 'c-mode-hook (lambda ()
+                         "Add <> as surrounds for `c-mode'."
+                         (push '(?` . ("<" . ">")) evil-surround-pairs-alist)))
+
+;; add comment text objects
+(require-package 'evil-commentary)
+(evil-commentary-mode t)
 
 (provide 'config-evil)
 ;;; config-evil.el ends here
