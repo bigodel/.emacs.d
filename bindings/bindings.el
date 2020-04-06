@@ -94,15 +94,18 @@ PREFIX arg as nil. Check its documentation for more details."
 (bindings-define-prefix-keys bindings-space-map "SPC"
   (" " #'execute-extended-command "M-x")
   ("x" ctl-x-map)
+  ("u" #'universal-argument)
+  ("c" #'mode-specific-command-prefix "C-c")
+  ("k" #'kill-buffer)
+  ("K" #'kill-this-buffer)
   ((kbd "C-j") #'dired-jump)
+  ("." #'dired-jump)
   ("d" #'dired)
   ("f" #'find-file)
   ("b" #'switch-to-buffer)
   ("I" #'ibuffer)
-  ((kbd "C-b") #'ibuffer)
   ("B" #'buffer-menu)
   ("h" help-map "help")
-  ("v" vc-prefix-map "vc-prefix-map")
   ("4" ctl-x-4-map "other window")
   ("5" ctl-x-5-map "other frame"))
 
@@ -136,8 +139,23 @@ PREFIX arg as nil. Check its documentation for more details."
     ((kbd "C-c s") #'utils-goto-scratch-buffer "go to scratch")
     ((kbd "C-c e") #'utils-eval-and-replace "eval and replace")))
 
+(after 'projectile
+  (bindings-define-keys mode-specific-map
+    ("p" #'projectile-command-map))
+
+  (bindings-define-keys bindings-space-map
+    ("p" #'projectile-command-map)))
+
 ;; misc bindings
 (bindings-define-keys (current-global-map)
+  ;; C-SPC is used to start the mark in the emacs and insert state, but since i
+  ;; use visual state for that when on evil and when not on evil there are other
+  ;; bindings to start the mark, like C-x C-x, i bound it to my space map to use
+  ;; it even when inserting text. i've tried S-SPC which is only bound in `ivy'
+  ;; to `ivy-restrict-to-matches' but i found that it is not unusual do hit that
+  ;; key combination when typing stuff like ``UPPERCASE '' or ``something: '',
+  ;; and it also made sense to me why S-SPC just inserts a space.
+  ((kbd "C-SPC") bindings-space-map "space map")
   ([next] #'next-buffer)
   ([prior] #'previous-buffer)
   ((kbd "M-/") #'hippie-expand)
@@ -147,8 +165,6 @@ PREFIX arg as nil. Check its documentation for more details."
   ((kbd "<C-dead-acute>") (kbd "C-'"))
   ;; TODO: create a scroll-other-window that works with pdf-view and doc-view
   ;; https://github.com/politza/pdf-tools/issues/55
-  ((kbd "M-J") (bind (scroll-other-window 15)))
-  ((kbd "M-K") (bind (scroll-other-window-down 15)))
   ((kbd "<M-next>") #'scroll-other-window)
   ((kbd "<M-prior>") #'scroll-other-window-down))
 
@@ -182,5 +198,5 @@ PREFIX arg as nil. Check its documentation for more details."
     ([mouse-4] (bind (scroll-down 1)))
     ([mouse-5] (bind (scroll-up 1)))))
 
-(provide 'bindings)
-;; bindings.el ends here
+(provide 'config-bindings)
+;;; bindings.el ends here
