@@ -22,11 +22,6 @@
 (projectile-mode)
 
 (after 'projectile
-  ;;; default prefix key for projectile
-  ;; although bindigns are in the bindings/ folder, since this is the only thing
-  ;; that is bindings related to projectile, i opted to just leave it here
-  (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
-
   (dolist (dir dotemacs-globally-ignored-directories)
     (add-to-list 'projectile-globally-ignored-directories dir))
 

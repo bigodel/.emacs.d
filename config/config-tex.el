@@ -22,7 +22,6 @@
   (setvar 'TeX-show-compilation t)       ; show output of TeX compilation
   (setvar 'TeX-after-compilation-finished-functions
           '(TeX-revert-document-buffer  ; if using doc-view, revert pdf buffer
-            ;; TODO: maybe put this in a defun instead of using lambda
             (lambda (_output)
               "Close compilation buffer if there are no errors.
 This function actually checks the values of `TeX-debug-bad-boxes'
@@ -75,9 +74,9 @@ just a few changes."
   ;; install `ivy-bibtex' if `ivy' is installed
   ;; TODO: move this to bindings/bindings-tex.el
   (after [ivy tex]
-    (require-package 'ivy-bibtex)
-    (/bindings/define-key tex-mode-map (kbd "C-c c B") #'ivy-bibtex)
-    (/bindings/define-key TeX-mode-map (kbd "C-c c B") #'ivy-bibtex))
+    (require-package 'ivy-bibtex))
+  ;; (/bindings/define-key tex-mode-map (kbd "C-c c B") #'ivy-bibtex)
+  ;; (/bindings/define-key TeX-mode-map (kbd "C-c c B") #'ivy-bibtex))
 
   ;;; auxiliary modes
   ;; after company is loaded add some company backends for latex to company
@@ -112,60 +111,7 @@ backslash character '\' as part of it."
     '(("\\c" "\\c{c}"))
     "Custom abbrev-table for `LaTeX-mode' to allow abbrevs with the
 backslash character '\' as part of it."
-    :regexp "\\(\\\\[a-z0-9@]+\\)")
-
-  ;;; TeX mode bindings
-  ;; auxiliary functions
-  ;;   (defun /tex/TeX-command-run-all-this-window (arg)
-  ;;     "`TeX-command-run-all' that compiles and stays on the same window.
-  ;; ARG is passed to `TeX-command-run-all' and works the same way.
-
-  ;; This is only effective if using `doc-view-mode' or
-  ;; `pdf-view-mode' as the default pdf viewer for Emacs, since when
-  ;; it compiles it moves us to the other window."
-  ;;     (interactive "P")
-  ;;     (save-selected-window
-  ;;       (TeX-command-run-all arg)))
-
-  ;; (/bindings/define-key TeX-mode-map
-  ;;   [remap TeX-command-run-all] #'/tex/TeX-command-run-all-this-window)
-
-  (defun /tex/LaTeX-insert-item ()
-    "Like `LaTeX-insert-item', but always creates a blank newline
-instead of breaking where the point is at."
-    (interactive "*")
-    (let ((env (LaTeX-current-environment)))
-      (when (and (TeX-active-mark)
-                 (> (point) (mark)))
-        (exchange-point-and-mark))
-      (move-end-of-line 1)
-      (newline)
-      (if (assoc env LaTeX-item-list)
-          (funcall (cdr (assoc env LaTeX-item-list)))
-        (TeX-insert-macro "item"))
-      (indent-according-to-mode)))
-
-  ;; i don't use `electric-pair-mode' or anything similar so { should only
-  ;; insert a { and not be `LaTeX-insert-left-brace' as it is by default. the
-  ;; same goes for [ and (
-  (defun /tex/LaTeX-mode-hook ()
-    "Bindings to apply to `LaTeX-mode' when its loaded through a hook."
-    (after [abbrev LaTeX]
-      (abbrev-table-put latex-mode-abbrev-table
-                        :regexp "\\(\\\\[a-z0-9@]+\\)"))
-
-    ;; TODO: move this to bindings/bindings-tex.el
-    (/bindings/define-keys LaTeX-mode-map
-                           ([remap LaTeX-insert-item] #'/tex/LaTeX-insert-item)
-                           ([remap LaTeX-insert-left-brace] #'self-insert-command)))
-
-  (add-hook 'LaTeX-mode-hook #'/tex/LaTeX-mode-hook)
-
-  ;; `pdf-view-mode' bindings
-  (after 'pdf-view-mode
-    ;; TODO: move this to bindings/bindings-tex.el
-    (/bindings/define-key TeX-mode-map
-                          (kbd "C-c C-g") #'pdf-sync-forward-search)))
+    :regexp "\\(\\\\[a-z0-9@]+\\)"))
 
 (provide 'config-tex)
 ;;; config-tex.el ends here
