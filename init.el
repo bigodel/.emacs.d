@@ -16,7 +16,7 @@
 ;; TODO: add a comment to all non-local variables
 ;;; Code:
 ;; some common lisp functions
-(require 'cl)
+(require 'cl-lib)
 
 ;;; log Emacs startup time in *Messages*. this adds about 0.2 secs to init time
 ;; (lexical-let ((emacs-start-time (current-time)))
@@ -31,9 +31,12 @@
 ;; variables to make it snappier and faster to start Emacs. also, we don't need
 ;; a variable to store the location of our config outside of the initialization,
 ;; that's why it is also inside the let. and i also create a constant to store
-;; the default value of the gc-cons-threshold.
-(let ((original-gc-cons-threshold gc-cons-threshold)
+;; the original value of the gc-cons-threshold while initing Emacs.
+;; TODO: maybe wrap setq's or setvar's for the original value of these variables
+;; in a (add-hook 'emacs-startup-hook) and see how much init time we gain
+(let ((gc-cons-threshold-before-init gc-cons-threshold)
       (gc-cons-threshold most-positive-fixnum) ; the value for the gc is too low
+      (gc-cons-percentage 0.6)
       (file-name-handler-alist nil)
       (bindings-directory (concat user-emacs-directory "bindings/"))
       (config-directory (concat user-emacs-directory "config/")))
@@ -41,7 +44,7 @@
   ;;; constants
   (defconst dotemacs-globally-ignored-directories
     '("elpa" ".cache" "target" "dist" "node_modules" ".git" ".hg" ".svn"
-      ".idea")
+      ".idea" ".vscode")
     "A set of default directories to ignore for anything that
 involves searching.")
 
@@ -58,17 +61,17 @@ involves searching.")
 
   ;;; packages
   (setq package-archives
-        '(("melpa" . "https://melpa.org/packages/")
+        '(("gnu" . "https://elpa.gnu.org/packages/")
+          ("melpa" . "https://melpa.org/packages/")
           ("melpa-stable" . "https://stable.melpa.org/packages/")
-          ("org" . "https://orgmode.org/elpa/")
-          ("gnu" . "https://elpa.gnu.org/packages/")))
+          ("org" . "https://orgmode.org/elpa/")))
 
   ;; set the priorities when installing packages
   (setq package-archive-priorities
-        '(("melpa" . 4)
-          ("melpa-stable" . 3)
-          ("org" . 2)
-          ("gnu" . 1)))
+        '(("gnu" . 4)
+          ("melpa" . 3)
+          ("melpa-stable" . 2)
+          ("org" . 1)))
 
   ;; activate installed packages when Emacs starts
   ;; we set this to nil to stop Emacs from starting it twice
@@ -86,9 +89,10 @@ involves searching.")
 
   ;;; load all of our configuration files
   ;; the bindings configuration needs to get loaded before every thing else,
-  ;; since it has the definitions for the macros of defining keys and what not.
-  (cl-loop for file in (append (reverse (directory-files-recursively
-                                         config-directory "\\.el\\'"))
+  ;; since it has the definitions for the macros of defining keys and what not,
+  ;; that's why we use the reverse on the bindings.
+  (cl-loop for file in (append (directory-files-recursively
+                                config-directory "\\.el\\'")
                                (reverse (directory-files-recursively
                                          bindings-directory "\\.el$")))
            do (condition-case ex
