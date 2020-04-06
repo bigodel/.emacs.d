@@ -13,8 +13,9 @@
 (when (fboundp 'horizontal-scroll-bar-mode) (horizontal-scroll-bar-mode -1))
 
 ;;; color theme
-;; use wombat
-(load-theme 'wombat t)
+;; the theme i'm using. if it needs download, it goes here
+(require-package 'color-theme-sanityinc-tomorrow)
+(load-theme 'sanityinc-tomorrow-night t)
 
 ;; make fringe same background color as line-number face
 (when (version<= "26" emacs-version)
@@ -68,16 +69,21 @@
                      "Disable `display-line-numbers-mode'."
                      (display-line-numbers-mode -1)))))
 
-;;; whitespace-mode
-(setvar 'whitespace-style
-        '(face trailing tabs tab-mark lines-tail))
-
-(add-hook 'after-save-hook #'whitespace-cleanup)
+;;; whitespace
+(setvar 'whitespace-style '(face trailing tabs tab-mark lines-tail empty))
 
 ;; I don't enable `global-whitespace-mode' because there are non file modes,
 ;; like `dired', in which I don't want it activated
 (add-hook 'prog-mode-hook #'whitespace-mode)
 (add-hook 'text-mode-hook #'whitespace-mode)
+
+;; ws-butler is a better way to delete trailing whitespace, it deletes
+;; whitespace only on the lines that have been changed. that avoids having
+;; commits and such with a bunch of changes that are only whitespace removal.
+;; keep the whitespace littered code of other they way they intended, ugly...
+;; it only clean whitespace when saving, like the old hook we had
+(require-package 'ws-butler)
+(ws-butler-global-mode)
 
 ;;; misc
 ;; if using git, strip the backend string from the mode line
@@ -88,13 +94,9 @@
 (blink-cursor-mode -1)
 
 ;; modeline indicators
-(line-number-mode)
-(column-number-mode)
-(size-indication-mode)
-(which-function-mode)
-
-(after 'which-func                      ; i don't like the bright blue
-  (set-face-foreground 'which-func (face-foreground 'default)))
+(line-number-mode t)
+(column-number-mode t)
+(size-indication-mode t)
 
 ;; hide all minor modes from mode line (not needed with doom-modeline)
 (require-package 'rich-minority)
@@ -105,10 +107,6 @@
 ;; highlight TODO
 (require-package 'hl-todo)
 (global-hl-todo-mode t)
-
-;; beautiful lines instead of ^L
-(require-package 'page-break-lines)
-(global-page-break-lines-mode)
 
 (provide 'config-eyecandy)
 ;;; config-eyecandy.el ends here
