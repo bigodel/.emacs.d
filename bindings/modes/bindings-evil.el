@@ -9,44 +9,40 @@
 ;;
 ;;; Code:
 (after 'evil
+  ;;; minibuffer maps
+  ;; make ex completion behave more like emacs state
+  (bindings-define-keys evil-ex-completion-map
+    ((kbd "C-f") #'forward-char)
+    ((kbd "C-b") #'backward-char)
+    ((kbd "C-a") #'move-beginning-of-line)
+    ((kbd "C-d") #'delete-forward-char)
+    ((kbd "C-k") #'kill-line)
+    ((kbd "C-u") #'universal-argument)
+    ((kbd "C-w") #'kill-region))
+
   ;;; normal state maps
   (bindings-define-keys evil-normal-state-map
-    ("gp" "`[v`]")                      ; TODO: what does this do?
-    ("[ " (bind (evil-insert-newline-above) (forward-line)) "new line up")
-    ("] " (bind (evil-insert-newline-below) (forward-line -1)) "new line down"))
+    ("[ " (bind (save-excursion (evil-insert-newline-above))) "new line up")
+    ("] " (bind (save-excursion (evil-insert-newline-below))) "new line down"))
 
-  ;; TODO: add bindings to hideshow mode
   ;;; normal, visual and motion state bindings
   (evil-define-key '(normal visual motion) 'global
     " " bindings-space-map
     " w" evil-window-map
-    (kbd "M-h") #'evil-window-left
-    (kbd "M-j") #'evil-window-down
-    (kbd "M-k") #'evil-window-up
-    (kbd "M-l") #'evil-window-right
     "[b" #'previous-buffer
     "]b" #'next-buffer
     "Y" "y$"
     "K" #'man
     "gI" #'imenu
-    (kbd "M-.") #'xref-find-definitions ; and this
+    (kbd "M-.") #'xref-find-definitions ; evil overrides this
     (kbd "M-?") #'xref-find-references  ; and this
     "gd" #'xref-find-definitions
-    (kbd "C-]") #'xref-find-definitions
-    "gr" #'xref-find-references)
+    (kbd "C-]") #'xref-find-definitions)
 
   ;;; normal and visual state bindings
   (evil-define-key '(normal visual) 'global
     "[e" #'previous-error
-    "]e" #'next-error
-    "gC" #'compile
-    "gc" #'recompile
-    "gA" #'align-regexp)
-
-  ;;; motion state bindings
-  (evil-define-key 'motion 'global
-    (kbd "<tab>") #'forward-button            ; evil overrides this
-    (kbd "TAB") #'forward-button)             ; and this
+    "]e" #'next-error)
 
   (defun evil-mouse-yank-primary ()
     "Insert the contents of primary selection into the location
@@ -58,7 +54,11 @@ of point."
       (setvar 'mouse-yank-at-point default-mouse-yank-at-point)))
 
   (evil-define-key '(insert normal visual) 'global
-    (kbd "<S-insert>") #'evil-mouse-yank-primary))
+    (kbd "<S-insert>") #'evil-mouse-yank-primary)
 
-(provide 'bindings-evil)
+  (after 'evil-commentary
+    (bindings-define-key (current-global-map)
+      (kbd "M-SPC") #'evil-commentary-line)))
+
+(provide 'config-bindings-evil)
 ;;; bindings-evil.el ends here
