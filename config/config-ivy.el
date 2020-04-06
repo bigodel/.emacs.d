@@ -17,7 +17,8 @@
 (setvar 'ivy-count-format "%d/%d ")
 (setvar 'ivy-wrap t)
 (setvar 'ivy-height 16)
-(setvar 'ivy-initial-inputs-alist nil)
+(setvar 'ivy-use-selectable-prompt t)  ; make the prompt selectable with C-p
+;; (setvar 'ivy-initial-inputs-alist nil)
 
 ;; `counsel' automatically uses `amx' as the M-x package
 (setvar 'amx-history-length 10)
@@ -45,6 +46,7 @@
 (after 'hydra
   (require-package 'ivy-hydra))
 
+;; ivy on everything even projectile
 (after 'projectile
   (require-package 'counsel-projectile)
   (counsel-projectile-mode t))
