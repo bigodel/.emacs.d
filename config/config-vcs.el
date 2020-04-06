@@ -22,7 +22,6 @@
 
 ;;; packages
 (lazy-major-mode "\\.gitignore\\'" gitignore-mode)
-;; TODO: consider local configuration files
 (lazy-major-mode "\\.gitconfig\\'" gitconfig-mode)
 (lazy-major-mode "\\.gitattributes\\'" gitattributes-mode)
 

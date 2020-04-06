@@ -5,6 +5,7 @@
 ;;; Commentary:
 
 ;;; Code:
+;; TODO: only install if visiting one of the files that proof general handles!
 ;;; install proof-general
 (require-package 'proof-general)
 

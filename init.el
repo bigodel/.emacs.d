@@ -7,7 +7,6 @@
 ;; Most (if not all,) of this configuration was inspired/copied from Bailey
 ;; Ling's Emacs configuration, found on https://github.com/bling/dotemacs
 ;;
-;; NEXT: lsp!!!!!!!!!!!
 ;; NEXT: flyspell!!!
 ;; TODO: separate the configuration for languages in the langs folder and also
 ;; don't forget to wrap it on (after 'XXX-mode)

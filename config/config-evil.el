@@ -30,7 +30,8 @@
   '(magit-blame-mode)
   "List of minor modes that when active should switch to Emacs state.")
 
-
+;;; install `evil-mode'
+(require-package 'evil)
 
 ;;; variables
 (setvar 'evil-search-module 'evil-search) ; what to use on / and ?
@@ -75,17 +76,15 @@
                                          (if ,mode
                                              (evil-emacs-state)
                                            (evil-normal-state))))))
-;; change the modeline tag for each state
+;;; change the modeline tag for each state
 (after 'evil-common
-  (evil-put-property 'evil-state-properties 'normal   :tag " NORMAL ")
-  (evil-put-property 'evil-state-properties 'insert   :tag " INSERT ")
-  (evil-put-property 'evil-state-properties 'visual   :tag " VISUAL ")
-  (evil-put-property 'evil-state-properties 'motion   :tag " MOTION ")
-  (evil-put-property 'evil-state-properties 'emacs    :tag " EMACS ")
-  (evil-put-property 'evil-state-properties 'replace  :tag " REPLACE ")
-  (evil-put-property 'evil-state-properties 'operator :tag " OPERATOR "))
-
-
+  (evil-put-property 'evil-state-properties 'normal   :tag " NOR ")
+  (evil-put-property 'evil-state-properties 'insert   :tag " INS ")
+  (evil-put-property 'evil-state-properties 'visual   :tag " VIS ")
+  (evil-put-property 'evil-state-properties 'motion   :tag " MOT ")
+  (evil-put-property 'evil-state-properties 'emacs    :tag " EMA ")
+  (evil-put-property 'evil-state-properties 'replace  :tag " REP ")
+  (evil-put-property 'evil-state-properties 'operator :tag " OPE "))
 
 (defadvice evil-ex-search-forward (after dotemacs activate)
   "Recenter after a forward search."

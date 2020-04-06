@@ -13,8 +13,6 @@
 (require-package 'hydra)
 (autoload 'hydra-default-pre "hydra")
 
-
-
 (after 'flycheck
   (defhydra hydras/errors (:hint nil)
     "
@@ -28,23 +26,6 @@
     ("?" flycheck-describe-checker)
     ("l" flycheck-list-errors :exit t)
     ("q" nil "quit" :exit t)))
-
-
-
-;; TODO: review this
-(after [swiper counsel]
-  (defhydra hydras/jumps (:hint nil :exit t)
-    "
-   jump   _i_ → outline in current buffer   _l_ → lines in current buffer
-          _b_ → bookmarks                   _L_ → lines in all buffers
-"
-    ;; TODO: might want to use counsel-imenu!
-    ("i" counsel-imenu)
-    ("l" swiper)
-    ("L" swiper-all)
-    ("b" bookmark-jump)))
-
-
 
 (after [counsel projectile counsel-projectile]
   (defhydra hydras/search (:hint nil :exit t)
@@ -64,10 +45,8 @@
     ("A" counsel-projectile-ag)
     ("P" projectile-pt)
     ("G" counsel-projectile-grep)
-    ("l" hydras/jumps/lambda-l-and-exit)
-    ("L" hydras/jumps/lambda-L-and-exit)))
-
-
+    ("l" swiper)
+    ("L" swiper-all)))
 
 (after 'config-utils
   (defhydra hydras/files/convert (:hint nil :exit t)
@@ -93,8 +72,6 @@
     ("c" copy-file)
     ("C" hydras/files/convert/body)))
 
-
-
 ;; TODO: add more things to toggle
 (defhydra hydras/toggles (:hint nil :exit t)
   "
@@ -115,54 +92,6 @@
   ("r" read-only-mode)
   ("f" auto-fill-mode))
 
-
-
-(after [ivy counsel swiper]
-  (defhydra hydras/ivy (:hint nil :exit t)
-    "
-   ivy:  _b_ → buffers    _y_ → kill-ring   _l_ → swiper
-         _e_ → recentf    _x_ → M-x         _L_ → swiper (multi)
-         _f_ → files
-"
-    ;; TODO: maybe ivy-everything and maybe just ivy-switch-buffer
-    ;; ("b" /ivy/everything)
-    ("b" ivy-switch-buffer)
-    ("e" counsel-recentf)
-    ("f" counsel-find-file)
-    ("y" counsel-yank-pop)
-    ("x" counsel-M-x)
-    ("l" swiper)
-    ("L" swiper-all)))
-
-
-
-;; TODO: investigate the need of this
-;; (autoload 'magit-blame "magit-blame" nil t)
-;; (autoload 'magit-diff "magit-diff" nil t)
-;; (autoload 'magit-log "magit-log" nil t)
-
-(after 'magit
-  (defhydra hydras/magit (:hint nil :exit t)
-    "
-   magit:  _s_ → status  _l_ → log    _f_ → file   _a_ → stage file
-           _c_ → commit  _d_ → diff   _z_ → stash  _r_ → unstage file
-           _p_ → push    _b_ → blame  _m_ → merge
-
-"
-    ("s" magit-status)
-    ("b" magit-blame)
-    ("f" magit-file-dispatch)
-    ("z" magit-stash)
-    ("l" magit-log)
-    ("d" magit-diff)
-    ("c" magit-commit)
-    ("m" magit-merge)
-    ("p" magit-push)
-    ("a" magit-stage-file)
-    ("r" magit-unstage-file)))
-
-
-
 (defhydra hydras/narrow (:hint nil :exit t)
   "
    narrow:  _d_ → defun   _b_ → org-block    _w_ → widen
@@ -177,8 +106,6 @@
   ("p" narrow-to-page)
   ("w" widen))
 
-
-
 ;; TODO: this hydras/utils
 (after 'config-utils
   (defhydra hydras/utils (:hint nil :exit t)
@@ -188,9 +115,7 @@
     ("t" utils-goto-scratch-buffer))
 
   (bindings-define-prefix-keys bindings-space-map "SPC"
-    ("u" #'hydras/utils/body)))
-
-
+    ("U" #'hydras/utils/body)))
 
 ;;; bindings
 ;; SPC bindings

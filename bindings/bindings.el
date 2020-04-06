@@ -12,6 +12,7 @@
 ;; You can find all of Bailey Lings' Emacs configuration in
 ;; https://github.com/bling/dotemacs.
 ;;
+;; TODO: move each of the packages configuration to their own file
 ;;; Code:
 ;;; macros for defining keys
 (defmacro bindings-define-prefix-keys (keymap prefix &rest body)
@@ -70,8 +71,6 @@ PREFIX arg as nil. Check its documentation for more details."
   `(bindings-define-prefix-keys ,keymap nil
      (,sequence ,binding ,description)))
 
-
-
 ;;; show possible combinations of keys for prefix keys
 (require-package 'which-key)
 (setvar 'which-key-idle-delay 1.0)       ; delay (in secs) for which-key pop up
@@ -87,8 +86,6 @@ PREFIX arg as nil. Check its documentation for more details."
                                        "transient/levels.el"))
 (setvar 'transient-values-file (concat dotemacs-cache-directory
                                        "transient/values.el"))
-
-
 
 ;;; bindings
 ;;; SPC as a prefix key
