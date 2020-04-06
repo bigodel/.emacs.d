@@ -31,7 +31,7 @@
 (when (executable-find "git")
   (require-package 'magit)
   (require-package 'git-gutter)
-  (global-git-gutter-mode))
+  (global-git-gutter-mode))             ; TODO: add bindings for git-gutter
 
 ;;; magit variables
 (after 'magit
@@ -43,12 +43,6 @@
   ;; default merge arguments
   (setvar 'magit-merge-arguments '("--no-ff"))
   (setvar 'magit-auto-revert-mode t)
-
-  ;; TODO: understand this
-  (add-hook 'magit-post-display-buffer-hook
-            (lambda ()
-              (when (string-match "*magit:" (buffer-name))
-                (delete-other-windows))))
 
   (require-package 'magit-todos)
   (setvar 'magit-todos-fontify-org nil)

@@ -109,8 +109,9 @@ variable locally."
     `(customize-set-variable ,var ,value ,comment)))
 
 (defmacro lazy-major-mode (pattern mode)
-  "Define a new `major-mode' matched by PATTERN, install MODE if
-necessary, and activates it."
+  "Define a new MODE matched by PATTERN.
+MODE has to be a `major-mode'. Install MODE if not installed
+already. This macro depends on `require-package'."
   `(add-to-list 'auto-mode-alist
                 '(,pattern . (lambda ()
                                (require-package (quote ,mode))
