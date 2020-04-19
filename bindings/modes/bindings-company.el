@@ -30,12 +30,12 @@
                              (when (company-explicit-action-p)
                                cmd)))))
 
-  ;; make `company' work like vim's autocompletion
+  ;; TODO add tab as a completion key
+
   (after 'evil
     (bindings-define-keys evil-insert-state-map
-      ;; use C-{n,p} to force company
-      ((kbd "C-n") #'company-complete-common-or-cycle)
-      ((kbd "C-p") (bind (company-complete-common-or-cycle -1))))
+      ;; use C-SPC to force company
+      ((kbd "C-SPC") #'company-complete-common-or-cycle))
 
     (after 'yasnippet
       (bindings-define-keys evil-insert-state-map

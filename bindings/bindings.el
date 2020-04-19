@@ -109,18 +109,12 @@ PREFIX arg as nil. Check its documentation for more details."
   ("4" ctl-x-4-map "other window")
   ("5" ctl-x-5-map "other frame"))
 
-;; might not have my eshell config
-(after 'config-eshell
-  (bindings-define-key bindings-space-map "'" #'eshell/new-window)
-  (bindings-define-key ctl-x-map "'" #'eshell/new-window))
-
 ;;; C-x bindings
 (bindings-define-keys (current-global-map)
   ((kbd "C-x C-j") #'dired-jump)
   ((kbd "C-x C-b") #'ibuffer)
   ((kbd "C-x C") #'compile)
-  ((kbd "C-x c") #'recompile)
-  ((kbd "C-x C-k") #'kill-this-buffer))
+  ((kbd "C-x c") #'recompile))
 
 ;; might not have my utils installed
 (after 'config-utils
@@ -148,18 +142,8 @@ PREFIX arg as nil. Check its documentation for more details."
 
 ;; misc bindings
 (bindings-define-keys (current-global-map)
-  ;; C-SPC is used to start the mark in the emacs and insert state, but since i
-  ;; use visual state for that when on evil and when not on evil there are other
-  ;; bindings to start the mark, like C-x C-x, i bound it to my space map to use
-  ;; it even when inserting text. i've tried S-SPC which is only bound in `ivy'
-  ;; to `ivy-restrict-to-matches' but i found that it is not unusual do hit that
-  ;; key combination when typing stuff like ``UPPERCASE '' or ``something: '',
-  ;; and it also made sense to me why S-SPC just inserts a space.
-  ((kbd "C-SPC") bindings-space-map "space map")
-  ([next] #'next-buffer)
-  ([prior] #'previous-buffer)
   ((kbd "M-/") #'hippie-expand)
-  ;; since I use a US international keyboard, ' is actually translated as
+  ;; since i use a US international keyboard, ' is actually translated as
   ;; <dead-acute> (it is a dead key) so I need to make Emacs understand
   ;; <C-dead-aclute> as C-'
   ((kbd "<C-dead-acute>") (kbd "C-'"))
@@ -170,14 +154,15 @@ PREFIX arg as nil. Check its documentation for more details."
 
 ;; eshell
 (after 'eshell
-  (bindings-define-keys (current-global-map)
-    ((kbd "M-!") #'eshell-command)
-    ((kbd "C-!") (if (fboundp 'eshell/new-window)
-                     #'eshell/new-window
-                   #'eshell) "eshell")
-    ((kbd "C-c t") (if (fboundp 'eshell/new-window)
-                       #'eshell/new-window
-                     #'eshell) "eshell")))
+  (bindings-define-keys ctl-x-map
+    ("'" (if (fboundp 'eshell/new-window)
+             #'eshell/new-window
+           #'eshell) "eshell"))
+
+  (bindings-define-keys bindings-space-map
+    ("'" (if (fboundp 'eshell/new-window)
+             #'eshell/new-window
+           #'eshell) "eshell")))
 
 (after 'config-utils
   ;; escape minibuffer with ESC
