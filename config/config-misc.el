@@ -28,7 +28,7 @@
 
 ;;; undo like vim (only needed if using evil-mode)
 (after 'evil
-  (package-install 'undo-tree)
+  (require-package 'undo-tree)
   (setvar 'undo-tree-auto-save-history t)
   (setvar 'undo-tree-enable-undo-in-region nil)
   (setvar 'undo-tree-history-directory-alist
@@ -54,13 +54,12 @@
 (setvar 'treemacs-indentation 2)        ; number of spaces for indentation
 ;; (setvar 'treemacs-indentation-string    ; the string to show on indent level
 ;;         (propertize "|" 'face 'font-lock-comment-face))
-(setvar 'treemacs-width 40)             ; default width of the treemacs window
-                                        ; TODO: modify treemacs faces so the
-                                        ; fonts are smaller
+(setvar 'treemacs-width 35)             ; default width of the treemacs window
 ;; some option only behave well if python3 is installed
 (setvar 'treemacs-collapse-dirs (if (executable-find "python3") 3 0))
 (setvar 'treemacs-project-follow-cleanup t) ; close projects and expand current
 (setvar 'treemacs-follow-after-init t)      ; focus the current file when open
+(setvar 'treemacs-is-never-other-window nil) ; `other-window' goes to treemacs
 
 (after 'treemacs
   (treemacs-fringe-indicator-mode -1)   ; don't show the fringe helper
@@ -102,31 +101,36 @@
 (after [evil helpful]
   (evil-set-initial-state 'helpful-mode 'motion))
 
-;;; hungry delete
-;; NOTE: this isn't needed for modes that have `aggressive-indent-mode' on, but
-;; i don't have it enabled globally so this helps (it might make me not use
-;; `aggressive-indent-mode' anymore...). also the full configuration depends on
-;; that is present in `bindings-misc'.
-;; this package basically adds the functionality of `hungry-delete-mode' that is
-;; available only for `cc-mode' everywhere you might want it
-(require-package 'smart-hungry-delete)
-(smart-hungry-delete-add-default-hooks)
-
 ;;; automatically insert and manage parenthesis
-;; TODO: look into smartparens config and the strict mode
-(require-package 'smartparens)
-(add-hook 'after-init-hook #'smartparens-global-mode)
-;; since we don't have a elisp file for configuration, we do it here
-(after 'smartparens
-  (sp-local-pair 'emacs-lisp-mode "`" "'")
-  (sp-local-pair 'emacs-lisp-mode "'" nil :actions nil))
+;; (require-package 'smartparens)
+;; (add-hook 'after-init-hook #'smartparens-global-mode)
+;; ;; since we don't have a elisp file for configuration, we do it here
+;; (after 'smartparens
+;;   (sp-local-pair 'emacs-lisp-mode "`" "'")
+;;   (sp-local-pair 'emacs-lisp-mode "'" nil :actions nil))
+(electric-pair-mode t)
 
-;;; search from within emacs
-(require-package 'engine-mode)
-(setvar 'engine/keybinding-prefix "C-x /")
-(defengine duckduckgo
-  "https://duckduckgo.com/?q=%s" :keybinding "d")
-(engine-mode t)
+;;; jump to definitions without TAGS
+(require-package 'dumb-jump)
+(after 'ivy
+  (setvar 'dumb-jump-selector 'ivy))
+(cond
+ ((executable-find "rg")
+  (setvar 'dumb-jump-prefer-searcher 'rg))
+ ((executable-find "ag")
+  (setvar 'dumb-jump-prefer-searcher 'ag))
+ (t
+  (setvar 'dumb-jump-prefer-searcher 'grep)))
+;; make dumb-jumps also evil jumps
+(after [evil dumb-jump]
+  (defadvice dumb-jump-go (before dotemacs activate)
+    (evil-set-jump)))
+
+;;; pomodoro timer
+(require-package 'pomidor)
+(setvar 'pomidor-sound-tick nil)
+(setvar 'pomidor-sound-tack nil)
+(setvar 'alert-default-style 'libnotify) ; `alert' is a dep of `pomidor'
 
 (provide 'config-misc)
 ;;; config-misc.el ends here

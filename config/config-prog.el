@@ -30,17 +30,17 @@ tabs."
 ;;; folding
 (add-hook 'prog-mode-hook #'hs-minor-mode)
 
-(defun hs-fold-overlay (ov)
-  "Function to be set up the overlay OV to be displayed by `hs-minor-mode'."
-  (when (eq 'code (overlay-get ov 'hs))
+(defun hs-fold-overlay (overlay)
+  "Function set up the OVERLAY to be displayed by `hs-minor-mode'."
+  (when (eq 'code (overlay-get overlay 'hs))
     (let ((col (save-excursion
                  (move-end-of-line 0)
                  (current-column)))
-          (count (count-lines (overlay-start ov) (overlay-end ov))))
-      (overlay-put ov 'after-string
-                   (format "%s [ %d lines ] "
-                           (make-string (- (window-width) col 32)
-                                        (string-to-char " "))
+          (count (count-lines (overlay-start overlay) (overlay-end overlay))))
+      (overlay-put overlay 'after-string
+                   (format " [ %d lines ] "
+                           ;; (make-string (- (window-width) col 16)
+                           ;;              (string-to-char " "))
                            count)))))
 
 (setvar 'hs-set-up-overlay #'hs-fold-overlay)

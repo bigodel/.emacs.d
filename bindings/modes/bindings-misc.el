@@ -76,12 +76,16 @@
     ((kbd "<tab>") #'forward-button)
     ((kbd "TAB") #'forward-button)))
 
-;;; hungry delete
-(after "smart-hungry-delete-autoloads"
-  ;; i only want it available on insert and emacs states
+;;; dumb-jump
+(after "dumb-jump-autoloads"
   (bindings-define-keys (current-global-map)
-    ([remap backward-delete-char] #'smart-hungry-delete-backward-char)
-    ([remap delete-forward-char] #'smart-hungry-delete-forward-char)))
+    ((kbd "M-g j") #'dumb-jump-go)
+    ((kbd "M-g o") #'dumb-jump-go-other-window)
+    ((kbd "M-g b") #'dumb-jump-back)
+    ((kbd "M-g i") #'dumb-jump-go-prompt)
+    ((kbd "M-g l") #'dumb-jump-quick-look)
+    ((kbd "M-g x") #'dumb-jump-prefer-external)
+    ((kbd "M-g z") #'dumb-jump-go-prefer-external-other-window)))
 
 (provide 'config-bindings-misc)
 ;;; bindings-misc.el ends here
