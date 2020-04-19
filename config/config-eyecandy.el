@@ -14,12 +14,37 @@
 
 ;;; color theme
 ;; the theme i'm using. if it needs download, it goes here
-(require-package 'color-theme-sanityinc-tomorrow)
-(load-theme 'sanityinc-tomorrow-night t)
+(require-package 'solarized-theme)
+(setvar 'solarized-high-contrast-mode-line t) ; make the modeline high contrast
+(setvar 'solarized-use-more-italic t)         ; use more italics
+(setvar 'solarized-use-variable-pitch nil)    ; all fonts monospaced?
+(setvar 'solarized-scale-org-headlines nil)   ; don't scale org headings
+(setvar 'solarized-scale-outline-headlines nil) ; don't scale outline headings
+;; avoid all font-size changes
+(setvar 'solarized-height-minus-1 1.0)
+(setvar 'solarized-height-plus-1 1.0)
+(setvar 'solarized-height-plus-2 1.0)
+(setvar 'solarized-height-plus-3 1.0)
+(setvar 'solarized-height-plus-4 1.0)
+(load-theme 'solarized-dark-high-contrast t)
+;; some customizations to the color of matching parenthesis
+(after 'paren
+  (set-face-foreground 'show-paren-match "#002732")
+  (set-face-background 'show-paren-match "#8d9fa1"))
+;; some customizations to the color of whitespace
+(after 'whitespace
+  (set-face-background 'whitespace-line (face-background 'highlight)))
+;; i don't like these defaults
+;; 'error: #db5823
+;; 'warning: #c49619
+;; 'success: #93a61a
+(set-face-foreground 'error "red")
+(set-face-foreground 'warning "yellow")
+(set-face-foreground 'success "DarkGreen")
 
 ;; make fringe same background color as line-number face
-(when (version<= "26" emacs-version)
-  (set-face-background 'fringe (face-background 'line-number)))
+;; (when (version<= "26" emacs-version)
+;;   (set-face-background 'fringe (face-background 'line-number)))
 
 ;; disable the bigger scale on bold function fonts (manoj-dark)
 ;; (set-face-attribute 'font-lock-function-name-face nil :height 1.0)
@@ -41,7 +66,10 @@
 (load-theme 'tramp t)
 
 ;;; default font
-(set-frame-font "monospace-13" nil t)
+;; this is how it has to be set so it works on the daemon mode
+;; or configure it on the XResources file
+;; (add-to-list 'default-frame-alist '(font . "monospace-13"))
+(set-frame-font "monospace-13")
 
 ;;; line numbers (only available in Emacs 26+)
 (defconst eyecandy-line-numbers-disabled-hooks
@@ -52,10 +80,14 @@
     help-mode-hook
     treemacs-mode-hook
     dired-mode-hook
+    term-mode-hook
     doc-view-mode-hook
     pdf-view-mode-hook
     lsp-ui-doc-frame-mode-hook
     lsp-ui-imenu-mode-hook
+    magit-status-mode-hook
+    org-agenda-mode-hook
+    pomidor-mode-hook
     proof-goals-mode-hook
     proof-response-mode-hook)
   "Modes to disable `display-line-numbers-mode'.")
@@ -63,6 +95,9 @@
 (when (fboundp 'display-line-numbers-mode)
   (setvar 'display-line-numbers t)
   (setvar 'display-line-numbers-current-absolute t)
+  (set-face-attribute 'line-number-current-line nil
+                      :weight 'extra-bold
+                      :foreground (face-foreground 'default))
 
   (dolist (hook eyecandy-line-numbers-disabled-hooks)
     (add-hook hook (lambda ()
@@ -86,6 +121,8 @@
 (ws-butler-global-mode)
 
 ;;; misc
+(setvar 'x-underline-at-descent-line t)       ; underline below font baseline
+
 ;; if using git, strip the backend string from the mode line
 (setcdr (assq 'vc-mode mode-line-format)
         '((:eval (replace-regexp-in-string "^ Git" " " vc-mode))))
@@ -102,7 +139,11 @@
 (require-package 'rich-minority)
 (unless rich-minority-mode
   (rich-minority-mode t))
-(setvar 'rm-whitelist "FlyC")
+;; only show lsp and flycheck on mode line
+(setvar 'rm-whitelist (format "^ \\(%s\\)$"
+                              (mapconcat #'identity
+                                         '("FlyC.*" "LSP.*")
+                                         "\\|")))
 
 ;; highlight TODO
 (require-package 'hl-todo)

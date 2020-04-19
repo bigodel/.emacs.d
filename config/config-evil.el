@@ -56,6 +56,17 @@
 (setvar 'evil-insert-state-cursor   '("red" bar))
 (setvar 'evil-replace-state-cursor  '("red" hbar))
 (setvar 'evil-operator-state-cursor '("white" hollow))
+(setvar 'evil-overriding-maps '((Buffer-menu-mode-map)
+                                (color-theme-mode-map)
+                                (comint-mode-map . insert)
+                                (compilation-mode-map)
+                                (grep-mode-map)
+                                (dictionary-mode-map)
+                                (ert-results-mode-map . motion)
+                                (Info-mode-map . motion)
+                                (speedbar-key-map)
+                                (speedbar-file-key-map)
+                                (speedbar-buffers-key-map)))
 
 ;; recenter after any jump in evil-mode
 (add-hook 'evil-jumps-post-jump-hook #'recenter)
@@ -127,10 +138,11 @@
 ;; add text objects to work with surroundings
 (require-package 'evil-surround)
 (global-evil-surround-mode t)
-;; this is an example of how to add new surrounds
-(add-hook 'c-mode-hook (lambda ()
-                         "Add <> as surrounds for `c-mode'."
-                         (push '(?` . ("<" . ">")) evil-surround-pairs-alist)))
+;; add new surrounds for different modes
+(add-hook 'emacs-lisp-mode-hook
+          (lambda ()
+            "Add `' as surrounds for `elisp-mode'."
+            (push '(?` . ("`" . "'")) evil-surround-pairs-alist)))
 
 ;; add comment text objects
 (require-package 'evil-commentary)

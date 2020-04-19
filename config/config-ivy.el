@@ -18,7 +18,7 @@
 (setvar 'ivy-wrap t)
 (setvar 'ivy-height 16)
 (setvar 'ivy-use-selectable-prompt t)  ; make the prompt selectable with C-p
-;; (setvar 'ivy-initial-inputs-alist nil)
+(setvar 'ivy-initial-inputs-alist nil) ; don't have initial prompts ever
 
 ;; `counsel' automatically uses `amx' as the M-x package
 (setvar 'amx-history-length 10)
