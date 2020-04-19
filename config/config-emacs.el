@@ -39,7 +39,10 @@
 
 ;;; savehist
 (setvar 'savehist-file (concat dotemacs-cache-directory "savehist"))
-(setvar 'savehist-additional-variables '(search ring regexp-search-ring))
+(setvar 'savehist-additional-variables '(search
+                                         ring
+                                         regexp-search-ring
+                                         kill-ring))
 (setvar 'history-length 1000)
 (savehist-mode t)
 
@@ -57,16 +60,17 @@
 (run-with-idle-timer 600 t #'recentf-save-list)
 
 ;;; save desktop settings and configuration between sessions
-(setvar 'desktop-restore-frames t)      ; save and restore frame and win config
-(setvar 'desktop-path `(,dotemacs-cache-directory ; paths to look for desktops
-                        ,user-emacs-directory
-                        ,(getenv "HOME")))
-(setvar 'desktop-dirname (car desktop-path))
-(setvar 'desktop-base-file-name "emacs.desktop") ; the default name of the file
-(setvar 'desktop-base-lock-name            ; the default name of the lock file
-        (concat desktop-base-file-name ".lock"))
-(setvar 'desktop-save 'if-exists)          ; whether to save desktop when killed
-(desktop-save-mode -1)
+(when (display-graphic-p)
+  (setvar 'desktop-restore-frames t)    ; save and restore frame and win config
+  (setvar 'desktop-path `(,dotemacs-cache-directory ; paths to look for desktops
+                          ,user-emacs-directory
+                          ,(getenv "HOME")))
+  (setvar 'desktop-dirname (car desktop-path))
+  (setvar 'desktop-base-file-name "emacs.desktop") ; default name of the file
+  (setvar 'desktop-base-lock-name       ; the default name of the lock file
+          (concat desktop-base-file-name ".lock"))
+  (setvar 'desktop-save 'if-exists)     ; whether to save desktop when killed
+  (desktop-save-mode -1))
 
 ;;; garbage collector
 ;; TODO: investigate gcmh (garbage collector magic hack) package and maybe
@@ -172,38 +176,40 @@ inserted." t)
 (setvar 'ibuffer-use-other-window t)           ; use other window
 ;; define filter groups
 (setvar 'ibuffer-saved-filter-groups
-        (quote (("Home"
-                 ("ERC" (mode . erc-mode))
-                 ("Gnus" (or
-                          (mode . message-mode)
-                          (mode . bbdb-mode)
-                          (mode . mail-mode)
-                          (mode . gnus-group-mode)
-                          (mode . gnus-summary-mode)
-                          (mode . gnus-article-mode)
-                          (name . "^\\.bbdb$")
-                          (name . "^\\.newsrc-dribble")))
-                 ("Planner" (or           ; add some org mode here later
-                             (name . "^\\*Calendar\\*$")
-                             (name . "^diary$")))
-                 ("Magit" (or (mode . magit-mode)
-                              (name . "^\\*magit.*\\*$")
-                              (name . "^magit.*:.*$")))
-                 ("Help" (or
-                          (name . "^\\*.*[hH]elp.*\\*$")
-                          (name . "^\\*info\\*$")
-                          (name . "^\\*Apropos\\*$")))
-                 ("Emacs config" (filename . ".emacs.d"))
-                 ("Emacs" (or
-                           (name . "^\\*scratch\\*$")
-                           (name . "^\\*Messages\\*$")
-                           (name . "^\\*Load Times\\*$")))
-                 ("Dired" (mode . dired-mode))))))
+        '(("home"
+           ("erc" (mode . erc-mode))
+           ("gnus" (or
+                    (mode . message-mode)
+                    (mode . bbdb-mode)
+                    (mode . mail-mode)
+                    (mode . gnus-group-mode)
+                    (mode . gnus-summary-mode)
+                    (mode . gnus-article-mode)
+                    (name . "^\\.bbdb$")
+                    (name . "^\\.newsrc-dribble")))
+           ("planner" (or           ; add some org mode here later
+                       (name . "^\\*Calendar\\*$")
+                       (name . "^diary$")))
+           ("magit" (or (mode . magit-mode)
+                        (name . "^\\*magit.*\\*$")
+                        (name . "^magit.*:.*$")))
+           ("help" (or
+                    (name . "^\\*.*[hH]elp.*\\*$")
+                    (name . "^\\*info\\*$")
+                    (name . "^\\*Apropos\\*$")))
+           ("emacs config" (filename . ".emacs.d"))
+           ;; TODO make this work with the var `org-directory'
+           ("org" (filename . "docs/org"))
+           ("emacs" (or
+                     (name . "^\\*scratch\\*$")
+                     (name . "^\\*Messages\\*$")
+                     (name . "^\\*Load Times\\*$")))
+           ("dired" (mode . dired-mode)))))
 
 ;; use the above defined filter group
 (add-hook 'ibuffer-mode-hook
           (lambda ()
-            (ibuffer-switch-to-saved-filter-groups "Home")))
+            (ibuffer-switch-to-saved-filter-groups "home")))
 
 ;; use human readable Size column instead of original one
 (after 'ibuffer
@@ -260,7 +266,11 @@ buffer name."
 (setvar 'uniquify-after-kill-buffer-p t)
 
 ;;; show-paren
+(setvar 'show-paren-style 'parenthesis)
 (setvar 'show-paren-delay 0)
+(setvar 'show-paren-highlight-openparen t)
+(setvar 'show-paren-when-point-inside-paren t)
+(setvar 'show-paren-when-point-in-periphery t)
 (show-paren-mode t)
 
 ;;; don't kill important buffers
@@ -310,13 +320,37 @@ buffer name."
   ;; enable `hl-line-mode' on the report
   (add-hook 'profiler-report-mode-hook #'hl-line-mode))
 
+;;; ansi-term
+;; TODO give this a keybinding and maybe move it somewhere else with more
+;; configurations to make it better
+(defun ansi-term-new-window ()
+  "Opens up a new `ansi-term' in the directory of the current file.
+The buffer is renamed to match that directory to make multiple
+terminal windows easier."
+  (interactive)
+  (let* ((parent (if (buffer-file-name)
+                     (file-name-directory (buffer-file-name))
+                   default-directory))
+         (height (floor (/ (window-total-height) 2.4)))
+         ;; (width (/ (window-total-height) 2))
+         (name   (car (last (split-string parent "/" t)))))
+    (split-window-vertically (- height))
+    ;; (split-window-horizontally)
+    (other-window 1)
+    (ansi-term (or (getenv "SHELL")
+                   (executable-find "zsh")
+                   (executable-find "bash")) (concat "ansi-term: " name))))
+
 ;;; eww
 ;; set eww as the default browser
 ;; (setvar 'browse-url-browser-function 'eww-browse-url)
 
-;;; misc variables
+;;; misc
+;; TODO: some of this might deserve its own section
+;; add a new place to store authentication info
+(add-to-list 'auth-sources (concat dotemacs-cache-directory ".authinfo"))
 (setvar 'x-gtk-use-system-tooltips nil) ; use emacs tooltips, not gtk's
-(setvar 'debug-on-error t)               ; enter debug if error is signaled
+(setvar 'debug-on-error nil)            ; enter debugger if error is signaled
 (setvar 'sentence-end-double-space nil)  ; setences don't end with double space
 (setvar 'ring-bell-function 'ignore)     ; disable annoying bell
 (setvar 'mark-ring-max 64)               ; max number of marks
@@ -326,16 +360,29 @@ buffer name."
 (setvar 'track-eol t)                   ; vertical motion at eol keeps at eol
 (setvar 'create-lockfiles t)            ; create lockfiles (see manual for info)
 (setvar 'enable-recursive-minibuffers t) ; recursive minibuffers (be careful)
+(setvar 'enable-local-variables nil)     ; don't query about safe variables
+(setvar 'mouse-yank-at-point t)          ; don't move point to mouse paste
 (setvar 'truncate-lines nil)             ; display or not continuous lines
 (setvar 'truncate-partial-width-windows nil) ; respect the value of the above
 (toggle-truncate-lines -1)               ; don't truncate!!!!
 (setvar 'word-wrap t)                    ; wrap words
-(setvar 'mouse-yank-at-point t)          ; don't move point to mouse paste
 (setvar 'global-auto-revert-non-file-buffers t) ; revert nonfile buffers (dired)
 (global-auto-revert-mode t)             ; revert buffers when files change
 (xterm-mouse-mode t)                    ; mouse on in xterm compatible terminals
 (electric-indent-mode t)                ; indent automatically on some keys
-(random t)                              ; random number seed
+
+;; create e new notepad file if it doesn't exist
+(defconst notepad-file
+  (if (getenv "NOTEPAD")
+      (getenv "NOTEPAD")
+    (make-temp-file (concat "notepad-" user-login-name ".") nil nil
+                    "# file to take quick notes"))
+  "File used to take quick notes on my system.")
+;; set it to be in org mode
+(add-to-list 'auto-mode-alist `(,notepad-file . org-mode))
+
+;; active `hl-line-mode' on the package menu
+(add-hook 'package-menu-mode-hook #'hl-line-mode)
 
 (provide 'config-emacs)
 ;;; config-emacs.el ends here
