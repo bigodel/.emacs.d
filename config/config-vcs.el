@@ -36,13 +36,11 @@
 ;;; magit variables
 (after 'magit
   (setvar 'vc-handled-backends (delq 'Git vc-handled-backends)) ; no vc for git
-  ;; (setvar 'magit-section-show-child-couno t)
   (setvar 'magit-diff-arguments '("--histogram"))
-  ;; (setvar 'magit-ediff-dwim-show-on-hunks t)
   (setvar 'magit-completing-read-function 'ivy-completing-read)
-  ;; default merge arguments
-  (setvar 'magit-merge-arguments '("--no-ff"))
   (setvar 'magit-auto-revert-mode t)
+
+  (require-package 'forge)              ; use forge to access pr's and issues
 
   (require-package 'magit-todos)
   (setvar 'magit-todos-fontify-org nil)

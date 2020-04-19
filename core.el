@@ -36,15 +36,15 @@
                                              (current-time))
                          elapsed))))))
 
-(defadvice load (around dotemacs activate)
-  "Wrap `measure-load' around `load'."
-  (measure-load file ad-do-it))
+;; (defadvice load (around dotemacs activate)
+;;   "Wrap `measure-load' around `load'."
+;;   (measure-load file ad-do-it))
 
-(defadvice require (around dotemacs activate)
-  "Wrap `measure-load' around `require'."
-  (if (memq feature features)
-      ad-do-it
-    (measure-load feature ad-do-it)))
+;; (defadvice require (around dotemacs activate)
+;;   "Wrap `measure-load' around `require'."
+;;   (if (memq feature features)
+;;       ad-do-it
+;;     (measure-load feature ad-do-it)))
 
 (defmacro bind (&rest commands)
   "Convenience macro to create lambda interactive COMMANDS."
