@@ -139,6 +139,17 @@ behavior added."
   (interactive)
   (switch-to-buffer (get-buffer-create "*scratch*")))
 
+(defun utils-goto-notepad ()
+  "Go to $NOTEPAD and if it is not set, create it."
+  (interactive)
+  ;; check if `notepad-file' was created and if not, create a notepad file
+  (unless notepad-file
+    (setvar 'notepad-file
+            (make-temp-file
+             (concat "emacs-notepad-" user-login-name ".")))
+    (add-to-list 'auto-mode-alist `(,notepad-file . org-mode)))
+  (find-file notepad-file))
+
 (defun utils-insert-last-kbd-macro ()
   "Insert the last defined keyboard macro."
   (interactive)

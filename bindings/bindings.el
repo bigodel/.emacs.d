@@ -136,8 +136,8 @@ PREFIX arg as nil. Check its documentation for more details."
 ;;; C-c bindings
 (after 'config-utils
   (bindings-define-keys (current-global-map)
-    ((kbd "C-c s") #'utils-goto-scratch-buffer "go to scratch")
-    ((kbd "C-c e") #'utils-eval-and-replace "eval and replace")))
+    ((kbd "C-c C-s") #'utils-goto-notepad "go to notepad")
+    ((kbd "C-c C-e") #'utils-eval-and-replace "eval and replace")))
 
 (after 'projectile
   (bindings-define-keys mode-specific-map
