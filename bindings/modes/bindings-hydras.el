@@ -105,13 +105,29 @@
   (bindings-define-prefix-keys bindings-space-map "SPC"
     ("U" #'hydras/utils/body)))
 
+(after "dumb-jump-autoloads"
+  (defhydra hydras/dump-jump (:color blue :columns 3)
+    "dumb jump"
+    ("j" dumb-jump-go "go")
+    ("o" dumb-jump-go-other-window "other window")
+    ("x" dumb-jump-go-prefer-external "go external")
+    ("z" dumb-jump-go-prefer-external-other-window "go external other window")
+    ("i" dumb-jump-go-prompt "prompt")
+    ("l" dumb-jump-quick-look "quick look")
+    ("b" dumb-jump-back "back"))
+
+  (bindings-define-key (current-global-map)
+    (kbd "M-g d") #'hydras/dump-jump/body)
+
+  (bindings-define-key bindings-space-map
+    (kbd "C-d") #'hydras/dump-jump/body))
+
 ;;; bindings
 ;; SPC bindings
 (bindings-define-prefix-keys bindings-space-map "SPC"
   ("t" #'hydras/toggles/body "toggle...")
   ("s" #'hydras/search/body "search...")
-  ("F" #'hydras/files/body "files...")
-  ("i" #'hydras/ivy/body "ivy..."))
+  ("F" #'hydras/files/body "files..."))
 
 ;; global bindings
 (bindings-define-keys (current-global-map)

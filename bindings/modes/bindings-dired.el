@@ -3,11 +3,12 @@
 ;; Author: João Pedro de Amorim Paula <maybe_add_email@later>
 
 ;;; Commentary:
-;;
+
 ;;; Code:
 (after 'dired
   (bindings-define-keys dired-mode-map
-    (";" #'dired-kill-subdir))
+    (";" #'dired-kill-subdir)
+    ("E" #'wdired-change-to-wdired-mode))
 
   (after "dired-subtree-autoloads"
     (bindings-define-keys dired-mode-map

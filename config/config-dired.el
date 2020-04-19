@@ -6,10 +6,10 @@
 
 ;;; Code:
 ;; wdired
-(setvar 'wdired-allow-to-change-permissions t)
-(setvar 'wdired-allow-to-redirect-links t)
-(setvar 'wdired-use-interactive-rename t)
-(setvar 'wdired-confirm-overwrite t)
+(setvar 'wdired-allow-to-change-permissions t) ; edit permissions
+(setvar 'wdired-allow-to-redirect-links t)  ; edit target of symlinks
+(setvar 'wdired-use-interactive-rename nil) ; don't require confirmation
+(setvar 'wdired-confirm-overwrite t)        ; but confirm on overwrite
 ;; dired-x is a library to add extra functionality to dired, for more info refer
 ;; to the GNU manual
 ;; https://www.gnu.org/software/emacs/manual/html_node/dired-x/

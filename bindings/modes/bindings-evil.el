@@ -22,6 +22,7 @@
 
   ;;; normal state maps
   (bindings-define-keys evil-normal-state-map
+    ((kbd "C-t") nil)        ; evil rebinds this and i want the default behavior
     ("[ " (bind (save-excursion (evil-insert-newline-above))) "new line up")
     ("] " (bind (save-excursion (evil-insert-newline-below))) "new line down"))
 
