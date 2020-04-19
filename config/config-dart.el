@@ -28,19 +28,24 @@
               (concat (getenv "HOME") "/dev/flutter")
             (getenv "FLUTTER_SDK")))
 
-  ;; start LSP when on dart files. if our configuration for lsp is available,
-  ;; use the function that we defined, otherwise if lsp is installed, start it
-  (if (featurep 'config-lsp)
-      (progn
-        ;; dart configuration regarding lsp
-        (setvar 'lsp-dart-suggest-from-unimported-libraries t)
-        (setvar 'lsp-dart-sdk-dir dart-sdk-path)
-        (add-hook 'dart-mode-hook #'lsp-start))
-    (after "lsp-mode-autoloads"
-      ;; dart configuration regarding lsp
-      (setvar 'lsp-dart-suggest-from-unimported-libraries t)
-      (setvar 'lsp-dart-sdk-dir dart-sdk-path)
-      (add-hook 'dart-mode-hook #'lsp))))
+  (add-hook 'after-save-hook
+            (lambda ()
+              "Only call `flutter-run-or-hot-reload' after save
+              when on `dart-mode'."
+              (when (and (eq major-mode 'dart-mode)
+                         (flutter--running-p))
+                (flutter-hot-reload))))
+
+  ;; start LSP when on dart files. note that `lsp-dart' has `treemacs',
+  ;; `lsp-treemacs' and `lsp-ui' as dependency
+  (after "lsp-mode-autoloads"
+    ;; install `lsp-dart'
+    (require-package 'lsp-dart)
+    ;; dart configuration regarding lsp
+    (setvar 'lsp-dart-suggest-from-unimported-libraries nil) ; TODO: change
+                                        ; this to t when on emacs 27
+    (setvar 'lsp-dart-sdk-dir dart-sdk-path)
+    (add-hook 'dart-mode-hook #'lsp)))
 
 (provide 'config-dart)
 ;;; config-dart.el ends here

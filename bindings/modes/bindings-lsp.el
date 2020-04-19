@@ -7,7 +7,6 @@
 ;;; Code:
 (after 'lsp-mode
   (bindings-define-keys lsp-mode-map
-    ((kbd "C-c C-d") #'lsp-describe-thing-at-point)
     ([remap xref-find-definitions] #'lsp-find-definition)
     ([remap xref-find-references] #'lsp-find-references))
 
@@ -18,6 +17,52 @@
       ("a" lsp-workspace-folders-add "add folder" :column "workspace")
       ("r" lsp-workspace-folders-remove "remove folder")
       ("s" lsp-workspace-folders-switch "switch folder"))
+
+    (defhydra hydras/lsp/config (:quit-key "q")
+      ("d e" (lsp-ui-doc-enable (not lsp-ui-doc-mode))
+       "enable doc" :toggle lsp-ui-doc-mode :column "doc")
+
+      ("d s" (setvar 'lsp-ui-doc-include-signature
+                     (not lsp-ui-doc-include-signature))
+       "include signature" :toggle lsp-ui-doc-include-signature)
+
+      ("d t" (setvar 'lsp-ui-doc-position 'top)
+       "top" :toggle (eq lsp-ui-doc-position 'top))
+
+      ("d b" (setvar 'lsp-ui-doc-position 'bottom)
+       "bottom" :toggle (eq lsp-ui-doc-position 'bottom))
+
+      ("d p" (setvar 'lsp-ui-doc-position 'at-point)
+       "at point" :toggle (eq lsp-ui-doc-position 'at-point))
+
+      ("d f" (setvar 'lsp-ui-doc-alignment 'frame)
+       "align frame" :toggle (eq lsp-ui-doc-alignment 'frame))
+
+      ("d w" (setvar 'lsp-ui-doc-alignment 'window)
+       "align window" :toggle (eq lsp-ui-doc-alignment 'window))
+
+      ("s e" (lsp-ui-sideline-enable (not lsp-ui-sideline-mode))
+       "enable signature" :toggle lsp-ui-sideline-mode :column "signature")
+
+      ("s h" (setvar 'lsp-ui-sideline-show-hover
+                     (not lsp-ui-sideline-show-hover))
+       "show on hover" :toggle lsp-ui-sideline-show-hover)
+
+      ("s d" (setvar 'lsp-ui-sideline-show-diagnostics
+                     (not lsp-ui-sideline-show-diagnostics))
+       "show diagnostics" :toggle lsp-ui-sideline-show-diagnostics)
+
+      ("s s" (setvar 'lsp-ui-sideline-show-symbol
+                     (not lsp-ui-sideline-show-symbol))
+       "show symbol" :toggle lsp-ui-sideline-show-symbol)
+
+      ("s c" (setvar 'lsp-ui-sideline-show-code-actions
+                     (not lsp-ui-sideline-show-code-actions))
+       "show code actions" :toggle lsp-ui-sideline-show-code-actions)
+
+      ("s i" (setvar 'lsp-ui-sideline-ignore-duplicate
+                     (not lsp-ui-sideline-ignore-duplicate))
+       "ignore duplicate" :toggle lsp-ui-sideline-ignore-duplicate))
 
     (defhydra hydras/lsp (:exit t)
       ("d" lsp-ui-peek-find-definitions "peek definition" :column "definitions")
@@ -37,21 +82,24 @@
 
       ("S" lsp-restart-workspace "restart workspace" :column "workspace")
       ("w" hydras/lsp/workspace/body "folders")
-      ("i" lsp-describe-session "session info"))
+      ("i" lsp-describe-session "session info")
 
+      ("c" hydras/lsp/config/body "config" :column "config")))
+
+  (after 'lsp-ui
     (bindings-define-keys lsp-ui-mode-map
       ([remap imenu] #'lsp-ui-imenu)
       ;; these are causing an extreme amount of lag, investigate
       ;; ([remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
       ;; ([remap xref-find-references] #'lsp-ui-peek-find-references)
-      ((kbd "M-l <tab>") #'lsp-ui-doc-focus-frame) ; gui
-      ((kbd "M-l tab") #'lsp-ui-doc-focus-frame) ; gui
-      ((kbd "M-l TAB") #'lsp-ui-doc-focus-frame))) ; terminal
+      ((kbd "C-c l <tab>") #'lsp-ui-doc-focus-frame) ; gui
+      ((kbd "C-c l tab") #'lsp-ui-doc-focus-frame) ; gui
+      ((kbd "C-c l TAB") #'lsp-ui-doc-focus-frame))) ; terminal
 
   (after 'lsp-treemacs
     (bindings-define-keys lsp-mode-map
       ([remap flycheck-list-errors] #'lsp-treemacs-errors-list)
-      ([remap lsp-find-references] #'lsp-treemacs-references)))
+      ([remap xref-find-references] #'lsp-treemacs-references)))
 
   (after 'evil
     (evil-define-key '(normal visual) lsp-mode-map

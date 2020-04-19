@@ -96,17 +96,5 @@ configuration available at `https://github.com/jpprime/.emacs.d'."
   (setvar 'company-backends
           (mapcar #'company-backend-with-yasnippet company-backends)))
 
-;; if using lsp, install company-lsp. this needs to be down here because we are
-;; going to use the functions defined above
-(after 'lsp-mode
-  (require-package 'company-lsp)        ; install it
-
-  (push 'company-lsp company-backends) ; add it to our backends
-
-  (setvar 'company-lsp-cache-candidates t)     ; better read the docs on this
-  (setvar 'company-lsp-async t)          ; fetch completion async
-  (setvar 'company-lsp-enable-snippet t) ; enable snippets
-  (setvar 'company-lsp-enable-recompletion t)) ; read the docs on this one too
-
 (provide 'config-company)
 ;;; config-company.el ends here
