@@ -125,11 +125,8 @@
 
 (after 'org
   (require-package 'evil-org)
-  (add-hook 'org-mode-hook 'evil-org-mode)
-  (after 'evil-org
-    (evil-org-set-key-theme)
-    (after 'evil-org-agenda
-      (evil-org-agenda-set-keys))))
+  (add-hook 'org-mode-hook #'evil-org-mode)
+  (add-hook 'evil-org-mode-hook (lambda () (evil-org-set-key-theme))))
 
 ;; match tags like <b> in html or \begin{env} in LaTeX
 (require-package 'evil-matchit)

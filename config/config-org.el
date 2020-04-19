@@ -5,94 +5,152 @@
 ;;; Commentary:
 
 ;;; Code:
-(after 'org
-  (setvar 'org-directory (concat (getenv "HOME") "/docs/org"))
+(setvar 'org-directory (concat (getenv "HOME") "/docs/org"))
 
-  ;; ask to create `org-directory' if non-existent and if it fails ask to use
-  ;; ~/Documents/Org as the `org-directory'
+;; ask to create `org-directory' if non-existent and if it fails ask to use
+;; ~/Documents/Org as the `org-directory'
+(unless (file-directory-p org-directory)
+  (create-non-existent-directory org-directory)
   (unless (file-directory-p org-directory)
-    (create-non-existent-directory org-directory)
-    (unless (file-directory-p org-directory)
-      (let ((default-org (concat (getenv "HOME") "/Documents/Org")))
-        (if (y-or-n-p
-             (format
-              "Failed to create `%s', use the default directory [%s]?"
-              org-directory default-org))
-            (progn (make-directory (concat (getenv "HOME") "/Documents/Org") t)
-                   (setvar 'org-directory (concat (getenv "HOME") "/Documents")))
-          (error (concat "Couldn't load the configuration for `org-mode'.
+    (let ((default-org (concat (getenv "HOME") "/Documents/Org")))
+      (if (y-or-n-p
+           (format
+            "Failed to create `%s', use the default directory [%s]?"
+            org-directory default-org))
+          (progn (make-directory (concat (getenv "HOME") "/Documents/Org") t)
+                 (setvar 'org-directory (concat (getenv "HOME") "/Documents")))
+        (error (concat "Couldn't load the configuration for `org-mode'.
 Try again or remove the file `%s' from the config folder" load-file-name))))))
 
-  (defconst org-journal-file (concat org-directory "/journal.org")
-    "The path to the file where you want to make journal entries.")
+;;; variables
+(setvar 'org-cycle-separator-lines 2) ; number os lines to keep between headers
+(setvar 'org-startup-indented t)      ; startup indented?
+(setvar 'org-startup-truncated t)     ; truncate lines in org? D:<
+(setvar 'org-src-fontify-natively t)  ; fontify src code blocks?
 
-  (defconst org-inbox-file (concat org-directory "/inbox.org")
-    "The path to the file where to capture notes.")
+;;; constants
+(defconst org-inbox-file (concat org-directory "/inbox.org")
+  "The path to the file where to capture notes.")
 
-  (setvar 'org-startup-indented t)
-  (setvar 'org-src-fontify-natively t)
+(defconst org-notes-file (concat org-directory "/notes.org")
+  "The path to the file where to add notes, cheatsheets and etc.")
 
-  (setvar 'org-agenda-files '(org-inbox-file))
+(defconst org-journal-file (concat org-directory "/journal.org")
+  "The path to the file where you want to make journal entries.")
 
-  ;; (setvar 'org-default-notes-file (expand-file-name dotemacs-org/inbox-file))
-  ;; (setvar 'org-log-done t)
-  ;; (setvar 'org-log-into-drawer t)
+;;; agenda configuration
+(setvar 'org-agenda-files
+        `(,org-inbox-file
+          ,(concat org-directory "/calendar.org")
+          ,(concat org-directory "/work.org")
+          ,(concat org-directory "/uni.org")
+          ,(concat org-directory "/personal.org"))
+        nil "Where to look for TODO's for the agenda.")
+;; TODO if there is too much clutter in the agenda, set these to t
+(setvar 'org-agenda-skip-timestamp-if-done nil) ; skip timestamped task if done
+(setvar 'org-agenda-skip-deadline-if-done nil) ; skip deadline task if done
+(setvar 'org-agenda-skip-scheduled-if-done nil) ; skip scheduled task if done
+;; NOTE if this is set to nil then it will always start on the current day!
+(setvar 'org-agenda-start-on-weekday 0)       ; day to start the agenda on
 
-  ;; (setvar 'org-agenda-files `(,org-directory))
-  ;; (setvar 'org-capture-templates
-  ;;         '(("t" "Todo" entry
-  ;;            (file+headline (expand-file-name dotemacs-org/inbox-file) "INBOX")
-  ;;            "* TODO %?\n%U\n%a\n")
-  ;;           ("n" "Note" entry
-  ;;            (file+headline (expand-file-name dotemacs-org/inbox-file) "NOTES")
-  ;;            "* %? :NOTE:\n%U\n%a\n")
-  ;;           ("m" "Meeting" entry
-  ;;            (file (expand-file-name dotemacs-org/inbox-file))
-  ;;            "* MEETING %? :MEETING:\n%U")
-  ;;           ("j" "Journal" entry
-  ;;            (file+datetree (expand-file-name dotemacs-org/journal-file))
-  ;;            "* %U\n** %?")))
+;; activate `hl-line-mode' on the agenda view
+(add-hook 'org-agenda-mode-hook #'hl-line-mode)
 
-  ;;; TODO
-  ;; (setvar 'org-use-fast-todo-selection nil)
-  ;; (setvar 'org-treat-S-cursor-todo-selection-as-state-change nil)
-  (setvar 'org-enforce-todo-checkbox-dependencies t) ; don't allow to change to DONE
-  (setvar 'org-enforce-todo-dependencies t)          ; until everything is really done
-  (setvar 'org-todo-keywords
-          '((sequence "TODO(t)" "NEXT(n@)" "|" "DONE(d@)")
-            (sequence "WAITING(w@/!)" "STARTED(s@/!)" "|" "CANCELLED(c@/!)")))
+;;; capture configuration
+;; TODO: make better capture templates
+(setvar 'org-capture-templates
+        '(("t" "Todo" entry
+           (file org-inbox-file) "* TODO %?\n%T\n%A\n")
+          ("n" "Note" entry
+           (file+headline org-notes-file "Refile") "* %? :refile:\n%U\n%A\n")))
+;; default file for capturing
+(setvar 'org-default-notes-file org-inbox-file)
 
-  (setvar 'org-todo-keyword-faces
-          '(("TODO" . (:weight bold))
-            ("NEXT" . (:weight bold))
-            ("STARTED" . "yellow")
-            ("WAITING" . "blue")
-            ("CANCELLED" . (:foreground "orange" :weight bold))))
+;;; TODO's
+;; (setvar 'org-treat-S-cursor-todo-selection-as-state-change nil)
+(setvar 'org-enforce-todo-checkbox-dependencies t) ; don't allow to change to DONE
+(setvar 'org-enforce-todo-dependencies t) ; until everything is really done
+(setvar 'org-hierarchical-todo-statistics nil) ; stats should cover whole tree
+(setvar 'org-log-into-drawer t)           ; log state changes in a drawer
+(setvar 'org-todo-keywords
+        '((sequence "TODO(t!)" "NEXT(n!)" "STARTED(s@)" "|" "DONE(d@/@)")
+          (sequence "WAITING(w@/!)" "|" "CANCELLED(c@/!)")))
 
-  (setvar 'org-todo-state-tags-triggers
-          ' (("CANCELLED" ("CANCELLED" . t))
-             ("WAITING" ("WAITING" . t))
-             ("TODO" ("WAITING") ("CANCELLED"))
-             ("NEXT" ("WAITING") ("CANCELLED"))
-             ("DONE" ("WAITING") ("CANCELLED"))))
+(setvar 'org-todo-keyword-faces
+        '(("TODO" :foreground "red" :weight bold)
+          ("NEXT" :foreground "orange" :weight bold)
+          ("STARTED" :foreground "cyan" :weight bold)
+          ("DONE" :foreground "green" :weight bold)
+          ("WAITING" :foreground "yellow" :weight bold)
+          ("CANCELLED" :foreground "dark red" :weight bold)))
 
-  ;; (setvar 'org-refile-targets '((nil :maxlevel . 9)
-  ;;                              (org-agenda-files :maxlevel . 9)))
-  ;; (setvar 'org-refile-use-outline-path 'file)
-  ;; (setvar 'org-outline-path-complete-in-steps nil)
-  ;; (setvar 'org-completion-use-ido t)
+(setvar 'org-todo-state-tags-triggers
+        '(("CANCELLED" ("CANCELLED" . t))
+          ("WAITING" ("WAITING" . t))
+          ("TODO" ("WAITING") ("CANCELLED"))
+          ("NEXT" ("WAITING") ("CANCELLED"))
+          ("STARTED" ("WAITING") ("CANCELLED"))
+          ("DONE" ("WAITING") ("CANCELLED"))))
 
-  (add-hook 'org-babel-after-execute-hook #'org-redisplay-inline-images)
+(defun org-summary-todo (n-done n-not-done)
+  "Switch entry to DONE when all subentries are done."
+  (let (org-log-done org-log-states)   ; turn off logging
+    (org-todo (if (= n-not-done 0) "DONE" 'none))))
+;; (org-todo (if (= n-not-done 0) "DONE" "TODO"))))
 
-  (after 'whitespace
-    (add-hook 'org-mode-hook
-              (lambda ()
-                "Disable 'lines-tail for `whitespace-mode' in `org-mode'."
-                (setvar 'whitespace-line-column nil 'local)
-                (setvar 'whitespace-style
-                        (remove 'lines-tail whitespace-style) 'local)
-                (whitespace-mode -1)
-                (whitespace-mode t)))))
+(add-hook 'org-after-todo-statistics-hook 'org-summary-todo)
+
+;;; refile configuration
+(setvar 'org-refile-targets '((org-agenda-files :maxlevel . 9)
+                              (org-notes-file :maxlevel . 9)))
+(setvar 'org-refile-use-outline-path 'file) ; show the filename on refiling
+;; we need to tell org to don't complete in steps since we're using ivy
+(setvar 'org-outline-path-complete-in-steps nil)
+;; allow us to create new headings when refiling but confirm the creation
+(setvar 'org-refile-allow-creating-parent-nodes 'confirm)
+;; (setvar 'org-completion-use-ido t)
+
+;; save every time we make a modification on our agenda or refile
+;; got this from https://emacs.stackexchange.com/questions/21754/how-to-automatically-save-all-org-files-after-marking-a-repeating-item-as-done-i
+(advice-add 'org-deadline :after
+            (lambda (&rest _) (funcall #'org-save-all-org-buffers)))
+(advice-add 'org-schedule :after
+            (lambda (&rest _) (funcall #'org-save-all-org-buffers)))
+(advice-add 'org-store-log-note :after
+            (lambda (&rest _) (funcall #'org-save-all-org-buffers)))
+(advice-add 'org-todo :after
+            (lambda (&rest _) (funcall #'org-save-all-org-buffers)))
+;; for refiling this has to be the advice and the explanation is here:
+;; https://emacs.stackexchange.com/questions/26923/org-mode-getting-errors-when-auto-saving-after-refiling
+(advice-add 'org-refile :after
+            (lambda (&rest _)
+              (funcal #'org-save-all-org-buffers)))
+
+;;; additional modules
+(after 'org
+  (setvar 'org-habit-graph-column 50)   ; column at which to show the graph
+  ;; add `org-habit' to the loaded modules
+  (add-to-list 'org-modules 'org-habit t))
+
+;;; misc
+(add-hook 'org-babel-after-execute-hook #'org-redisplay-inline-images)
+
+(after 'whitespace
+  (add-hook 'org-mode-hook
+            (lambda ()
+              "Disable 'lines-tail and 'empty for
+`whitespace-mode' in `org-mode'. The former is because links
+actually do go over the 80 column limit, but on the `org-mode'
+visualization of things they don't; and the latter is because for
+some reason it does not behave very well, accusing lines that I'm
+currently editing as being empty and other strange behaviors."
+              (setvar 'whitespace-line-column nil 'local)
+              (setvar 'whitespace-style
+                      (remove 'lines-tail whitespace-style) 'local)
+              (setvar 'whitespace-style
+                      (remove 'empty whitespace-style) 'local)
+              (whitespace-mode -1)
+              (whitespace-mode t))))
 
 (provide 'config-org)
 ;;; config-org.el ends here
