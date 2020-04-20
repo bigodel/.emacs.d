@@ -18,14 +18,10 @@
               (evil-insert-state))
             (setvar 'fill-column 72 'local)))
 
-
-
 ;;; packages
 (lazy-major-mode "\\.gitignore\\'" gitignore-mode)
 (lazy-major-mode "\\.gitconfig\\'" gitconfig-mode)
 (lazy-major-mode "\\.gitattributes\\'" gitattributes-mode)
-
-
 
 ;;; magit
 (when (executable-find "git")
@@ -34,7 +30,7 @@
   (global-git-gutter-mode))             ; TODO: add bindings for git-gutter
 
 ;;; magit variables
-(after 'magit
+(after "magit-autoloads"
   (setvar 'vc-handled-backends (delq 'Git vc-handled-backends)) ; no vc for git
   (setvar 'magit-diff-arguments '("--histogram"))
   (setvar 'magit-completing-read-function 'ivy-completing-read)

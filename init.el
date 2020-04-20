@@ -61,16 +61,16 @@ involves searching.")
 
   ;;; packages
   (setq package-archives
-        '(("gnu" . "https://elpa.gnu.org/packages/")
-          ("melpa" . "https://melpa.org/packages/")
+        '(("melpa" . "https://melpa.org/packages/")
           ("melpa-stable" . "https://stable.melpa.org/packages/")
+          ("gnu" . "https://elpa.gnu.org/packages/")
           ("org" . "https://orgmode.org/elpa/")))
 
   ;; set the priorities when installing packages
   (setq package-archive-priorities
-        '(("gnu" . 4)
-          ("melpa" . 3)
-          ("melpa-stable" . 2)
+        '(("melpa" . 4)
+          ("melpa-stable" . 3)
+          ("gnu" . 2)
           ("org" . 1)))
 
   ;; activate installed packages when Emacs starts

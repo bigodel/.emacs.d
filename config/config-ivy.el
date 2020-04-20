@@ -58,7 +58,6 @@
       ("FIXME" . error))
     "An list of tags for `ivy-tasks' to search for.")
 
-
   (defun ivy--tasks-candidates (tasks)
     "Generate a list of task candidates from TASKS."
     (let* ((max-type-width
