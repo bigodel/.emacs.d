@@ -50,6 +50,8 @@ Try again or remove the file `%s' from the config folder" load-file-name))))))
 (setvar 'org-agenda-skip-timestamp-if-done nil) ; skip timestamped task if done
 (setvar 'org-agenda-skip-deadline-if-done nil) ; skip deadline task if done
 (setvar 'org-agenda-skip-scheduled-if-done nil) ; skip scheduled task if done
+(setvar 'org-agenda-window-setup 'only-window)  ; how to show the agenda window
+(setvar 'org-agenda-restore-windows-after-quit t) ; restore window configuration
 ;; NOTE if this is set to nil then it will always start on the current day!
 (setvar 'org-agenda-start-on-weekday 0)       ; day to start the agenda on
 

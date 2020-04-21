@@ -30,13 +30,13 @@
   (global-git-gutter-mode))             ; TODO: add bindings for git-gutter
 
 ;;; magit variables
-(after "magit-autoloads"
+(after 'magit
   (setvar 'vc-handled-backends (delq 'Git vc-handled-backends)) ; no vc for git
   (setvar 'magit-diff-arguments '("--histogram"))
   (setvar 'magit-completing-read-function 'ivy-completing-read)
   (setvar 'magit-auto-revert-mode t)
 
-  (require-package 'forge)              ; use forge to access pr's and issues
+  ;; (require-package 'forge)              ; use forge to access pr's and issues
 
   (require-package 'magit-todos)
   (setvar 'magit-todos-fontify-org nil)
