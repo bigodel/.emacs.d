@@ -373,7 +373,7 @@ terminal windows easier."
 
 ;; create e new notepad file if it doesn't exist
 (defconst notepad-file
-  (if (getenv "NOTEPAD")
+  (if (not (string= "" (getenv "NOTEPAD")))
       (getenv "NOTEPAD")
     (make-temp-file (concat "notepad-" user-login-name ".") nil nil
                     "# file to take quick notes"))

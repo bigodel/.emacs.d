@@ -13,7 +13,7 @@
   ;; TODO: add a way to automatically install dart sdk and probably flutter
   (setvar 'dart-sdk-path                ; the path for the sdk
           (if (null (getenv "DART_SDK"))
-              (concat (getenv "HOME") "/dev/flutter/bin/cache/dart-sdk")
+              (concat (getenv "HOME") "/proj/flutter/bin/cache/dart-sdk")
             (getenv "DART_SDK")))
   (setvar 'dart-format-on-save t)       ; use dartfmt to format code on save
 
@@ -25,7 +25,7 @@
   (require-package 'flutter)            ; we use dart with flutter
   (setvar 'flutter-sdk-path             ; path to flutter sdk
           (if (null (getenv "FLUTTER_SDK"))
-              (concat (getenv "HOME") "/dev/flutter")
+              (concat (getenv "HOME") "/proj/flutter")
             (getenv "FLUTTER_SDK")))
 
   (add-hook 'after-save-hook

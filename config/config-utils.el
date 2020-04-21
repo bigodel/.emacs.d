@@ -143,10 +143,11 @@ behavior added."
   "Go to $NOTEPAD and if it is not set, create it."
   (interactive)
   ;; check if `notepad-file' was created and if not, create a notepad file
-  (unless notepad-file
+  (when (string= "" notepad-file)
     (setvar 'notepad-file
             (make-temp-file
-             (concat "emacs-notepad-" user-login-name ".")))
+             (concat "emacs-notepad-" user-login-name ".") nil
+             "# file to take quick note"))
     (add-to-list 'auto-mode-alist `(,notepad-file . org-mode)))
   (find-file notepad-file))
 
