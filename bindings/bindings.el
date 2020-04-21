@@ -111,6 +111,7 @@ PREFIX arg as nil. Check its documentation for more details."
 
 ;;; C-x bindings
 (bindings-define-keys (current-global-map)
+  ((kbd "C-x .") #'dired-jump)
   ((kbd "C-x C-j") #'dired-jump)
   ((kbd "C-x C-b") #'ibuffer)
   ((kbd "C-x C") #'compile)
@@ -129,9 +130,11 @@ PREFIX arg as nil. Check its documentation for more details."
 
 ;;; C-c bindings
 (after 'config-utils
-  (bindings-define-keys (current-global-map)
-    ((kbd "C-c C-s") #'utils-goto-notepad "go to notepad")
-    ((kbd "C-c C-e") #'utils-eval-and-replace "eval and replace")))
+  (bindings-define-key emacs-lisp-mode-map
+    (kbd "C-c C-e") #'utils-evil-and-replace "eval and replace")
+
+  (bindings-define-key lisp-interaction-mode-map
+    (kbd "C-c C-e") #'utils-evil-and-replace "eval and replace"))
 
 (after 'projectile
   (bindings-define-keys mode-specific-map
@@ -151,18 +154,6 @@ PREFIX arg as nil. Check its documentation for more details."
   ;; https://github.com/politza/pdf-tools/issues/55
   ((kbd "<M-next>") #'scroll-other-window)
   ((kbd "<M-prior>") #'scroll-other-window-down))
-
-;; eshell
-(after 'eshell
-  (bindings-define-keys ctl-x-map
-    ("'" (if (fboundp 'eshell/new-window)
-             #'eshell/new-window
-           #'eshell) "eshell"))
-
-  (bindings-define-keys bindings-space-map
-    ("'" (if (fboundp 'eshell/new-window)
-             #'eshell/new-window
-           #'eshell) "eshell")))
 
 (after 'config-utils
   ;; escape minibuffer with ESC

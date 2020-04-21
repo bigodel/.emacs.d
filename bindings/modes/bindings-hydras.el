@@ -96,11 +96,10 @@
 
 ;; TODO: this hydras/utils
 (after 'config-utils
-  (defhydra hydras/utils (:hint nil :exit t)
-    "
-   utils:
-"
-    ("t" utils-goto-scratch-buffer))
+  (defhydra hydras/utils (:hint nil :exit t :columns 1)
+    "utils"
+    ("s" utils-goto-scratch-buffer "scratch")
+    ("n" utils-goto-notepad "notepad"))
 
   (bindings-define-prefix-keys bindings-space-map "SPC"
     ("U" #'hydras/utils/body)))
