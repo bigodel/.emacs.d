@@ -14,49 +14,55 @@
 
 ;;; color theme
 ;; the theme i'm using. if it needs download, it goes here
-(require-package 'solarized-theme)
-(setvar 'solarized-high-contrast-mode-line t) ; make the modeline high contrast
-(setvar 'solarized-use-more-italic t)         ; use more italics
-(setvar 'solarized-use-variable-pitch nil)    ; all fonts monospaced?
-(setvar 'solarized-scale-org-headlines nil)   ; don't scale org headings
-(setvar 'solarized-scale-outline-headlines nil) ; don't scale outline headings
-;; avoid all font-size changes
-(setvar 'solarized-height-minus-1 1.0)
-(setvar 'solarized-height-plus-1 1.0)
-(setvar 'solarized-height-plus-2 1.0)
-(setvar 'solarized-height-plus-3 1.0)
-(setvar 'solarized-height-plus-4 1.0)
-(load-theme 'solarized-dark-high-contrast t)
-;; some customizations to the color of matching parenthesis
-(after 'paren
-  (set-face-foreground 'show-paren-match "#002732")
-  (set-face-background 'show-paren-match "#8d9fa1"))
-;; some customizations to the color of whitespace
-(after 'whitespace
-  (set-face-background 'whitespace-line (face-background 'highlight)))
-;; i don't like these defaults
-;; 'error: #db5823
-;; 'warning: #c49619
-;; 'success: #93a61a
-(set-face-foreground 'error "red")
-(set-face-foreground 'warning "yellow")
-(set-face-foreground 'success "DarkGreen")
-
+;; (require-package 'solarized-theme)
+;; (setvar 'solarized-high-contrast-mode-line t) ; make the modeline high contrast
+;; (setvar 'solarized-use-more-italic t)         ; use more italics
+;; (setvar 'solarized-use-variable-pitch nil)    ; all fonts monospaced?
+;; (setvar 'solarized-scale-org-headlines nil)   ; don't scale org headings
+;; (setvar 'solarized-scale-outline-headlines nil) ; don't scale outline headings
+;; ;; avoid all font-size changes
+;; (setvar 'solarized-height-minus-1 1.0)
+;; (setvar 'solarized-height-plus-1 1.0)
+;; (setvar 'solarized-height-plus-2 1.0)
+;; (setvar 'solarized-height-plus-3 1.0)
+;; (setvar 'solarized-height-plus-4 1.0)
+(load-theme 'manoj-dark t)
 ;; make fringe same background color as line-number face
-;; (when (version<= "26" emacs-version)
-;;   (set-face-background 'fringe (face-background 'line-number)))
+(when (version<= "26" emacs-version)
+  (set-face-background 'fringe (face-background 'line-number)))
 
 ;; disable the bigger scale on bold function fonts (manoj-dark)
-;; (set-face-attribute 'font-lock-function-name-face nil :height 1.0)
+(set-face-attribute 'font-lock-function-name-face nil :height 1.0)
 
-;; make comments grey (manoj-dark and default)
-;; (set-face-foreground 'font-lock-comment-face "dimgray")
-;; (set-face-foreground 'font-lock-comment-delimiter-face "dimgray")
+;; make comments DimGrey (manoj-dark and default)
+(set-face-foreground 'font-lock-comment-face "DimGrey")
+(set-face-foreground 'font-lock-comment-delimiter-face "DimGrey")
 
 ;; change mode-line's face (manoj-dark)
-;; (set-face-attribute 'mode-line nil :height 1.0 :underline nil) ;
-;; (set-face-attribute 'mode-line-buffer-id nil :height 1.0)
-;; (set-face-attribute 'mode-line-inactive nil :underline nil)
+(set-face-attribute 'mode-line nil :height 1.0 :underline nil) ;
+(set-face-attribute 'mode-line-buffer-id nil :height 1.0)
+(set-face-attribute 'mode-line-inactive nil :height 1.0)
+
+;; some customizations to the color of matching parenthesis
+(after 'paren
+  (set-face-foreground 'show-paren-match (face-background 'default))
+  (set-face-background 'show-paren-match (face-foreground 'default)))
+
+;; some customizations to the color of whitespace
+(after 'whitespace
+  (set-face-attribute 'whitespace-line nil
+                      :background "grey20"
+                      :foreground nil)) ; keep syntax highlighting
+
+;; some customizations to the color of the highlighted line
+(after 'hl-line
+  ;; keep colors when on `hl-line'
+  (set-face-foreground 'hl-line nil))
+
+;; i don't like these defaults because of colorblindness (mostly lsp)
+(set-face-foreground 'error "OrangeRed")
+(set-face-foreground 'warning "blue")
+(set-face-foreground 'success "DarkGreen")
 
 ;; a custom theme to run on top of the other custom themes loaded (so it should
 ;; be here, after (load-theme 'blah)) that shows the name of the host when in
@@ -87,6 +93,7 @@
     lsp-ui-imenu-mode-hook
     magit-status-mode-hook
     org-agenda-mode-hook
+    man-mode-hook
     pomidor-mode-hook
     proof-goals-mode-hook
     proof-response-mode-hook)
@@ -95,15 +102,26 @@
 (when (fboundp 'display-line-numbers-mode)
   (setvar 'display-line-numbers t)
   (setvar 'display-line-numbers-current-absolute t)
-  (set-face-attribute 'line-number-current-line nil
-                      :weight 'extra-bold
-                      :foreground (face-foreground 'default))
 
   (dolist (hook eyecandy-line-numbers-disabled-hooks)
     (add-hook hook (lambda ()
                      "Disable `display-line-numbers-mode'."
                      (display-line-numbers-mode -1)))))
 
+;;; hl-line
+(defconst eyecandy-hl-line-enabled-hooks
+  '(treemacs-mode-hook
+    dired-mode-hook
+    org-agenda-mode-hook
+    package-menu-mode-hook
+    profiler-report-mode-hook
+    ibuffer-mode-hook)
+  "Modes to enable `hl-line-mode'.")
+
+(dolist (hook eyecandy-hl-line-enabled-hooks)
+  (add-hook hook (lambda ()
+                   "Enable `hl-line-mode'."
+                   (hl-line-mode t))))
 ;;; whitespace
 (setvar 'whitespace-style '(face trailing tabs tab-mark lines-tail empty))
 
@@ -137,8 +155,10 @@
 
 ;; hide all minor modes from mode line (not needed with doom-modeline)
 (require-package 'rich-minority)
-(unless rich-minority-mode
-  (rich-minority-mode t))
+(rich-minority-mode t)
+;; TODO: make it so that flycheck only displays erros and warnings without the
+;; FlyC text and make a better way to display LSP information without the
+;; obnoxious [Disconnected] or [blablabla_server:123412]
 ;; only show lsp and flycheck on mode line
 (setvar 'rm-whitelist (format "^ \\(%s\\)$"
                               (mapconcat #'identity

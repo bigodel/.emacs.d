@@ -20,6 +20,7 @@
     compilation-mode
     comint-mode
     occur-mode
+    image-mode
     ivy-occur-mode
     package-menu-mode
     profiler-report-mode
@@ -50,8 +51,8 @@
 (setvar 'evil-mode-line-format '(before . mode-line-front-space))
 ;; set the cursor for each state
 (setvar 'evil-emacs-state-cursor    '("red" box))
-(setvar 'evil-motion-state-cursor   '("magenta" box))
-(setvar 'evil-normal-state-cursor   '("white" box))
+(setvar 'evil-motion-state-cursor   '("white" box))
+(setvar 'evil-normal-state-cursor   '("magenta" box))
 (setvar 'evil-visual-state-cursor   '("orange" box))
 (setvar 'evil-insert-state-cursor   '("red" bar))
 (setvar 'evil-replace-state-cursor  '("red" hbar))
@@ -116,17 +117,21 @@
   "Recenter after going to the previous result of a ex search."
   (recenter))
 
-;; some configurations for the terminal emacs
-(unless (display-graphic-p)
-  ;; this package shows different cursors for different modes like in GUI emacs
-  (require-package 'evil-terminal-cursor-changer)
-  (evil-terminal-cursor-changer-activate)
-  (evil-esc-mode 1))                    ; make esc behave correctly
+;; this package shows different cursors for different modes like in GUI emacs
+(require-package 'evil-terminal-cursor-changer)
+(evil-terminal-cursor-changer-activate)
+(evil-esc-mode 1)                       ; make esc behave correctly
 
 (after 'org
   (require-package 'evil-org)
   (add-hook 'org-mode-hook #'evil-org-mode)
-  (add-hook 'evil-org-mode-hook (lambda () (evil-org-set-key-theme))))
+  (after 'evil-org
+    (evil-org-set-key-theme '(navigation
+                              insert
+                              textobjects
+                              additional
+                              shift
+                              calendar))))
 
 ;; match tags like <b> in html or \begin{env} in LaTeX
 (require-package 'evil-matchit)

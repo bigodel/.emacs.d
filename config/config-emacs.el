@@ -88,13 +88,13 @@
 (defconst original-gc-cons-threshold gc-cons-threshold-before-init
   "The original value for the `gc-cons-threshold' variable.")
 
-(defvar default-gc-cons-threshold 16777216
+(defvar default-gc-cons-threshold 100000000 ; 16777216
   "The default value for the `gc-cons-threshold' variable.
 
 Note that this is different from its original value.")
 
 ;; tell emacs to garbage collect when idle for 5 seconds
-(run-with-idle-timer 5 t #'garbage-collect)
+;; (run-with-idle-timer 5 t #'garbage-collect)
 
 (defun basic-minibuffer-setup-hook ()
   "Hook to optimize garbage collection when entering or exiting minibuffer.
@@ -270,7 +270,7 @@ buffer name."
 (setvar 'show-paren-delay 0)
 (setvar 'show-paren-highlight-openparen t)
 (setvar 'show-paren-when-point-inside-paren t)
-(setvar 'show-paren-when-point-in-periphery t)
+(setvar 'show-paren-when-point-in-periphery nil)
 (show-paren-mode t)
 
 ;;; don't kill important buffers
@@ -315,14 +315,14 @@ buffer name."
         (setf (caar profiler-report-cpu-line-format) 80
               (caar profiler-report-memory-line-format) 80)
       (setf (caar profiler-report-cpu-line-format) 50
-            (caar profiler-report-memory-line-format) 55)))
+            (caar profiler-report-memory-line-format) 55))))
 
-  ;; enable `hl-line-mode' on the report
-  (add-hook 'profiler-report-mode-hook #'hl-line-mode))
-
-;;; ansi-term
-;; TODO give this a keybinding and maybe move it somewhere else with more
-;; configurations to make it better
+;;; term
+;; TODO configurations to make *term better
+(setvar 'explicit-shell-file-name (or (getenv "SHELL")
+                                      (if (string= system-type "berkley-unix")
+                                          "/usr/local/bin/zsh"
+                                        "/usr/bin/zsh")))
 (defun ansi-term-new-window ()
   "Opens up a new `ansi-term' in the directory of the current file.
 The buffer is renamed to match that directory to make multiple
@@ -365,11 +365,14 @@ terminal windows easier."
 (setvar 'truncate-lines nil)             ; display or not continuous lines
 (setvar 'truncate-partial-width-windows nil) ; respect the value of the above
 (toggle-truncate-lines -1)               ; don't truncate!!!!
-(setvar 'word-wrap t)                    ; wrap words
 (setvar 'global-auto-revert-non-file-buffers t) ; revert nonfile buffers (dired)
 (global-auto-revert-mode t)             ; revert buffers when files change
 (xterm-mouse-mode t)                    ; mouse on in xterm compatible terminals
 (electric-indent-mode t)                ; indent automatically on some keys
+
+(add-hook 'text-mode-hook (lambda ()
+                            "Set `word-warp' to `t' in `text-mode'."
+                            (setvar 'word-wrap t 'local))) ; wrap words
 
 ;; create e new notepad file if it doesn't exist
 (defconst notepad-file
@@ -380,9 +383,6 @@ terminal windows easier."
   "File used to take quick notes on my system.")
 ;; set it to be in org mode
 (add-to-list 'auto-mode-alist `(,notepad-file . org-mode))
-
-;; active `hl-line-mode' on the package menu
-(add-hook 'package-menu-mode-hook #'hl-line-mode)
 
 (provide 'config-emacs)
 ;;; config-emacs.el ends here

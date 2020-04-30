@@ -27,6 +27,7 @@ Try again or remove the file `%s' from the config folder" load-file-name))))))
 (setvar 'org-startup-indented t)      ; startup indented?
 (setvar 'org-startup-truncated t)     ; truncate lines in org? D:<
 (setvar 'org-src-fontify-natively t)  ; fontify src code blocks?
+(setvar 'org-return-follows-link t)   ; return works like C-c C-o
 
 ;;; constants
 (defconst org-inbox-file (concat org-directory "/inbox.org")
@@ -52,19 +53,20 @@ Try again or remove the file `%s' from the config folder" load-file-name))))))
 (setvar 'org-agenda-skip-scheduled-if-done nil) ; skip scheduled task if done
 (setvar 'org-agenda-window-setup 'only-window)  ; how to show the agenda window
 (setvar 'org-agenda-restore-windows-after-quit t) ; restore window configuration
+(setvar 'org-agenda-show-all-dates t)             ; show every date?
 ;; NOTE if this is set to nil then it will always start on the current day!
 (setvar 'org-agenda-start-on-weekday 0)       ; day to start the agenda on
-
-;; activate `hl-line-mode' on the agenda view
-(add-hook 'org-agenda-mode-hook #'hl-line-mode)
 
 ;;; capture configuration
 ;; TODO: make better capture templates
 (setvar 'org-capture-templates
-        '(("t" "Todo" entry
-           (file org-inbox-file) "* TODO %?\n%T\n%A\n")
-          ("n" "Note" entry
-           (file+headline org-notes-file "Refile") "* %? :refile:\n%U\n%A\n")))
+        '(("t" "task" entry
+           (file org-inbox-file)
+           "* TODO %?\n:LOGBOOK:\n- Captured on %U\n:END:\n%a\n\n"
+           :empty-lines-after 1)
+          ("n" "note" entry
+           (file+headline org-notes-file "Refile") "* %? :refile:\n%U\n%a\n\n"
+           :empty-lines-after 1)))
 ;; default file for capturing
 (setvar 'org-default-notes-file org-inbox-file)
 
@@ -74,8 +76,9 @@ Try again or remove the file `%s' from the config folder" load-file-name))))))
 (setvar 'org-enforce-todo-dependencies t) ; until everything is really done
 (setvar 'org-hierarchical-todo-statistics nil) ; stats should cover whole tree
 (setvar 'org-log-into-drawer t)           ; log state changes in a drawer
+(setvar 'org-log-done 'note)
 (setvar 'org-todo-keywords
-        '((sequence "TODO(t!)" "NEXT(n!)" "STARTED(s@)" "|" "DONE(d@/@)")
+        '((sequence "TODO(t!)" "NEXT(n/!)" "STARTED(s@)" "|" "DONE(d@)")
           (sequence "WAITING(w@/!)" "|" "CANCELLED(c@/!)")))
 
 (setvar 'org-todo-keyword-faces
@@ -98,7 +101,6 @@ Try again or remove the file `%s' from the config folder" load-file-name))))))
   "Switch entry to DONE when all subentries are done."
   (let (org-log-done org-log-states)   ; turn off logging
     (org-todo (if (= n-not-done 0) "DONE" 'none))))
-;; (org-todo (if (= n-not-done 0) "DONE" "TODO"))))
 
 (add-hook 'org-after-todo-statistics-hook 'org-summary-todo)
 
@@ -126,11 +128,11 @@ Try again or remove the file `%s' from the config folder" load-file-name))))))
 ;; https://emacs.stackexchange.com/questions/26923/org-mode-getting-errors-when-auto-saving-after-refiling
 (advice-add 'org-refile :after
             (lambda (&rest _)
-              (funcal #'org-save-all-org-buffers)))
+              (funcall #'org-save-all-org-buffers)))
 
 ;;; additional modules
 (after 'org
-  (setvar 'org-habit-graph-column 50)   ; column at which to show the graph
+  (setvar 'org-habit-graph-column 100)  ; column at which to show the graph
   ;; add `org-habit' to the loaded modules
   (add-to-list 'org-modules 'org-habit t))
 

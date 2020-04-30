@@ -12,6 +12,10 @@
 ;;; variables
 (setvar 'yas-fallback-behaviour 'return-nil)
 (setvar 'yas-also-auto-indent-first-line t)
+(setvar 'yas-snippet-dirs `(,(concat user-emacs-directory "snippets")))
+(after 'yasnippet-snippets
+  (setvar 'yas-snippet-dirs `(,(concat user-emacs-directory "snippets")
+                              ,yasnippet-snippets-dir)))
 
 ;; active yasnippet globally
 (add-hook 'prog-mode-hook #'yas-minor-mode)

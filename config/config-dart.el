@@ -22,29 +22,31 @@
     (add-to-list 'projectile-project-root-files-bottom-up "pubspec.yaml")
     (add-to-list 'projectile-project-root-files-bottom-up "BUILD"))
 
-  (require-package 'flutter)            ; we use dart with flutter
-  (setvar 'flutter-sdk-path             ; path to flutter sdk
-          (if (null (getenv "FLUTTER_SDK"))
-              (concat (getenv "HOME") "/proj/flutter")
-            (getenv "FLUTTER_SDK")))
+  ;; (require-package 'flutter)            ; we use dart with flutter
+  ;; (setvar 'flutter-sdk-path             ; path to flutter sdk
+  ;;         (if (null (getenv "FLUTTER_SDK"))
+  ;;             (concat (getenv "HOME") "/proj/flutter")
+  ;;           (getenv "FLUTTER_SDK")))
 
-  (add-hook 'after-save-hook
-            (lambda ()
-              "Only call `flutter-run-or-hot-reload' after save
-              when on `dart-mode'."
-              (when (and (eq major-mode 'dart-mode)
-                         (flutter--running-p))
-                (flutter-hot-reload))))
+  ;; (add-hook 'after-save-hook
+  ;;           (lambda ()
+  ;;             "Only call `flutter-run-or-hot-reload' after save
+  ;;             when on `dart-mode'."
+  ;;             (when (and (eq major-mode 'dart-mode)
+  ;;                        (flutter--running-p))
+  ;;               (flutter-hot-reload))))
 
   ;; start LSP when on dart files. note that `lsp-dart' has `treemacs',
   ;; `lsp-treemacs' and `lsp-ui' as dependency
   (after "lsp-mode-autoloads"
     ;; install `lsp-dart'
     (require-package 'lsp-dart)
-    ;; dart configuration regarding lsp
-    (setvar 'lsp-dart-suggest-from-unimported-libraries nil) ; TODO: change
-                                        ; this to t when on emacs 27
-    (setvar 'lsp-dart-sdk-dir dart-sdk-path)
+    (setvar 'lsp-dart-suggest-from-unimported-libraries nil)
+    (setvar 'lsp-dart-project-sdk-dir dart-sdk-path)
+    (setvar 'lsp-dart-outline t)
+    (setvar 'lsp-dart-flutter-outline t)
+    (setvar 'lsp-dart-flutter-widget-guides nil)
+    (setvar 'lsp-dart-flutter-fringe-colors nil)
     (add-hook 'dart-mode-hook #'lsp)))
 
 (provide 'config-dart)

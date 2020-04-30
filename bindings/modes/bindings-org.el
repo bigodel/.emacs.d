@@ -5,33 +5,46 @@
 ;;; Commentary:
 
 ;;; Code:
-(bindings-define-keys (current-global-map)
-  ((kbd "C-c o c") #'org-capture)
-  ((kbd "C-c o a") #'org-agenda)
-  ((kbd "C-c o o") #'org-agenda-list)
-  ((kbd "C-c o l") #'org-store-link)
-  ((kbd "C-c o t") #'org-todo-list)
-  ((kbd "C-c o i") (bind () (find-file org-inbox-file)))
-  ((kbd "C-c o n") (bind () (find-file org-default-notes-file)))
-  ((kbd "C-c o p") (bind () (find-file (concat org-directory "/personal.org"))))
-  ((kbd "C-c o u") (bind () (find-file (concat org-directory "/uni.org"))))
-  ((kbd "C-c o w") (bind () (find-file (concat org-directory "/work.org")))))
+(setvar 'org-global-map (make-sparse-keymap))
+
+(bindings-define-prefix-keys org-global-map "C-c o"
+  ("c" #'org-capture)
+  ("a" #'org-agenda)
+  ("o" #'org-agenda-list)
+  ("l" #'org-store-link)
+  ("t" #'org-todo-list)
+  ("b" #'org-switchb)
+  ("i" (bind () (find-file
+                 (if (boundp 'org-inbox-file)
+                     org-inbox-file
+                   (expand-file-name "inbox.org" org-directory))) "inbox"))
+  ("n" (bind () (find-file
+                 (if (boundp 'org-notes-file)
+                     org-notes-file
+                   (expand-file-name "notes.org" org-directory))) "notes"))
+  ("p" (bind () (find-file
+                 (expand-file-name "personal.org" org-directory))) "personal")
+  ("u" (bind () (find-file
+                 (expand-file-name "uni.org" org-directory))) "uni")
+  ("w" (bind () (find-file
+                 (expand-file-name "work.org" org-directory))) "work"))
+
+(bindings-define-key (current-global-map)
+  (kbd "C-c o") org-global-map)
 
 (after 'evil
   (evil-define-key '(normal visual motion) 'global
-    "goa" #'org-agenda
-    "goo" #'org-agenda-list
-    "goc" #'org-capture
-    "gol" #'org-store-link
-    "got" #'org-todo-list
-    "goi" (bind () (find-file org-inbox-file))
-    "gon" (bind () (find-file org-default-notes-file))
-    "gop" (bind () (find-file (concat org-directory "/personal.org")))
-    "gou" (bind () (find-file (concat org-directory "/uni.org")))
-    "gow" (bind () (find-file (concat org-directory "/work.org"))))
+    "go" org-global-map)
 
   (evil-define-key '(normal visual) org-mode-map
-    "gt" #'org-todo))
+    "gt" #'org-todo)
+
+  ;; use `evil-org-return' everywhere (i use this instead of return in the
+  ;; keythemes so that i can use it even on normal mode)
+  (after 'evil-org
+    (bindings-define-keys org-mode-map
+      ((kbd "RET") #'evil-org-return)
+      ((kbd "<return>") #'evil-org-return))))
 
 (provide 'config-bindings-org)
 ;;; bindings-org.el ends here

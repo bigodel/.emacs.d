@@ -80,12 +80,12 @@ PREFIX arg as nil. Check its documentation for more details."
 ;; TODO: this package is part of magit, so maybe add this to the vcs
 ;; configuration file (where magit configuration is)
 (require-package 'transient)
-(setvar 'transient-history-file (concat dotemacs-cache-directory
-                                        "transient/history.el"))
-(setvar 'transient-levels-file (concat dotemacs-cache-directory
-                                       "transient/levels.el"))
-(setvar 'transient-values-file (concat dotemacs-cache-directory
-                                       "transient/values.el"))
+(setvar 'transient-history-file (expand-file-name "transient/history.el"
+                                                  dotemacs-cache-directory))
+(setvar 'transient-levels-file (expand-file-name "transient/levels.el"
+                                                 dotemacs-cache-directory))
+(setvar 'transient-values-file (expand-file-name "transient/values.el"
+                                                 dotemacs-cache-directory))
 
 ;;; bindings
 ;;; SPC as a prefix key
@@ -108,6 +108,14 @@ PREFIX arg as nil. Check its documentation for more details."
   ("h" help-map "help")
   ("4" ctl-x-4-map "other window")
   ("5" ctl-x-5-map "other frame"))
+
+;; (after 'config-emacs
+;;   (bindings-define-key bindings-space-map
+;;     "'" #'ansi-term-new-window))
+
+(after 'config-eshell
+  (bindings-define-key bindings-space-map
+    "'" #'eshell/new-window))
 
 ;;; C-x bindings
 (bindings-define-keys (current-global-map)

@@ -7,12 +7,8 @@
 ;; Most (if not all,) of this configuration was inspired/copied from Bailey
 ;; Ling's Emacs configuration, found on https://github.com/bling/dotemacs
 ;;
-;; NEXT: flyspell!!!
-;; TODO: separate the configuration for languages in the langs folder and also
-;; don't forget to wrap it on (after 'XXX-mode)
-;; TODO: add config-aux-modes for modes that don't require config only install
-;; TODO: check if whithout the provide's it makes it faster
-;; TODO: changed all dotemacs-bla constants to bla
+;; TODO: change all concat bla "bla.bla" to expand-file-name
+;; TODO: check if without the provide's it makes it faster
 ;; TODO: add a comment to all non-local variables
 ;;; Code:
 ;; some common lisp functions
@@ -38,8 +34,8 @@
 (let ((gc-cons-threshold most-positive-fixnum) ; the value for the gc is too low
       (gc-cons-percentage 0.6)
       (file-name-handler-alist nil)
-      (bindings-directory (concat user-emacs-directory "bindings/"))
-      (config-directory (concat user-emacs-directory "config/")))
+      (bindings-directory (expand-file-name "bindings/" user-emacs-directory))
+      (config-directory (expand-file-name "config/" user-emacs-directory)))
 
   ;;; constants
   (defconst dotemacs-globally-ignored-directories
@@ -49,7 +45,7 @@
 involves searching.")
 
   (defconst dotemacs-cache-directory
-    (concat user-emacs-directory ".cache/")
+    (expand-file-name ".cache/" user-emacs-directory)
     "The storage location for various persistent files.")
 
   ;; check if the cache dir exists, if not ask to create it
@@ -80,10 +76,10 @@ involves searching.")
   (package-initialize)
 
   ;;; load some core stuff
-  (load (concat user-emacs-directory "core"))
+  (load (expand-file-name "core.el" user-emacs-directory))
 
   ;;; set and load custom file
-  (setq custom-file (concat user-emacs-directory "custom.el"))
+  (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
   ;; (when (file-exists-p custom-file)
   ;;   (load custom-file))
 

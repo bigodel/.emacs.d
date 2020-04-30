@@ -25,12 +25,11 @@ Set `dired-x' and `dired-aux' global variables here."
             ))
 (add-hook 'dired-mode-hook
           (lambda ()
-            "Activate `hl-line-mode' when `dired' starts. Set
-`dired-x' and `dired-aux' buffer-local variables here."
+            "Set `dired-x' and `dired-aux' buffer-local variables
+here."
             ;; Set dired-x and dired-aux buffer-local variables here.
             ;; For example:
             ;; (dired-omit-mode 1)
-            (hl-line-mode)
             ))
 
 ;; *BSD's 'ls' command does not support the "--dired" option needed by Emacs

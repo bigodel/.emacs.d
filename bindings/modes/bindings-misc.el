@@ -25,7 +25,7 @@
 
 ;;; treemacs
 (after "treemacs-autoloads"
-  (bindings-define-keys ctl-x-map
+  (bindings-define-keys mode-specific-map
     ((kbd "t t") #'treemacs)
     ((kbd "t 1") #'treemacs-delete-other-windows)
     ((kbd "t B") #'treemacs-bookmark)

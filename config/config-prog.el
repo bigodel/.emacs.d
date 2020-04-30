@@ -73,10 +73,6 @@ tabs."
 (dolist (hook dotemacs-misc-aggressive-indent-hooks)
   (add-hook hook #'aggressive-indent-mode))
 
-;;; rainbow delimiters
-(require-package 'rainbow-delimiters)
-(add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
-
 ;;; rainbow mode (show background color for strings)
 (require-package 'rainbow-mode)
 (add-hook 'prog-mode-hook #'rainbow-mode)

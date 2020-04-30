@@ -24,13 +24,13 @@
 (setvar 'lsp-diagnostic-package :auto) ; package to use for findings errors
 (setvar 'lsp-enable-semantic-highlighting t) ; experimental semantic highlight
 (setvar 'lsp-enable-snippet t)               ; enable snippet completion
+(setvar 'lsp-signature-auto-activate nil)    ; don't auto activate signature
 (setvar 'lsp-log-io nil)                     ; log msgs from the ls in *lsp-log*
 (setvar 'lsp-print-performance nil)          ; print performance information
 (setvar 'lsp-session-file                ; where to store the session file
         (concat dotemacs-cache-directory "lsp-session-v1"))
 (setvar 'lsp-diagnostics-modeline-scope :project) ; modeline show project err
 (setvar 'lsp-prefer-capf t)             ; whether or not to prefer capf
-        ;; (not (featurep 'company-lsp)))
 
 ;; the performance section recommends settings this variable. it is the amount
 ;; of data which emacs reads from processes. the default (at the time of

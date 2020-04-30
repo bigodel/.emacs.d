@@ -10,7 +10,7 @@
 ;;
 ;;; Code:
 ;;; load custom elisp files in the elisp/ directory
-(let ((base (concat user-emacs-directory "elisp/")))
+(let ((base (expand-file-name "elisp/" user-emacs-directory)))
   (when (file-directory-p base)
     (add-to-list 'load-path base)
     (dolist (dir (directory-files base t "^[^.]"))
