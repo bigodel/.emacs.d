@@ -41,12 +41,20 @@
   (after "lsp-mode-autoloads"
     ;; install `lsp-dart'
     (require-package 'lsp-dart)
-    (setvar 'lsp-dart-suggest-from-unimported-libraries nil)
-    (setvar 'lsp-dart-project-sdk-dir dart-sdk-path)
+    (setvar 'lsp-dart-project-sdk-dir
+            (if (boundp 'dart-sdk-path)
+                dart-sdk-path
+              (if (null (getenv "DART_SDK"))
+                  (concat (getenv "HOME") "/proj/flutter/bin/cache/dart-sdk")
+                (getenv "DART_SDK"))))
+    (setvar 'lsp-dart-only-analyze-projects-with-open-files t)
+    (setvar 'lsp-dart-suggest-from-unimported-libraries t)
     (setvar 'lsp-dart-outline t)
     (setvar 'lsp-dart-flutter-outline t)
+    (setvar 'lsp-dart-closing-labels t)
     (setvar 'lsp-dart-flutter-widget-guides nil)
     (setvar 'lsp-dart-flutter-fringe-colors nil)
+    (setvar 'lsp-dart-test-code-lens t)
     (add-hook 'dart-mode-hook #'lsp)))
 
 (provide 'config-dart)
