@@ -62,7 +62,7 @@ Try again or remove the file `%s' from the config folder" load-file-name))))))
 (setvar 'org-capture-templates
         '(("t" "task" entry
            (file org-inbox-file)
-           "* TODO %?\n:LOGBOOK:\n- Captured on %U\n:END:\n%a\n\n"
+           "* TODO %?\n:LOGBOOK:\n- Captured on %U\n:END:\n%A\n\n"
            :empty-lines-after 1)
           ("n" "note" entry
            (file+headline org-notes-file "Refile") "* %? :refile:\n%U\n%a\n\n"
@@ -115,7 +115,9 @@ Try again or remove the file `%s' from the config folder" load-file-name))))))
 ;; (setvar 'org-completion-use-ido t)
 
 ;; save every time we make a modification on our agenda or refile
-;; got this from https://emacs.stackexchange.com/questions/21754/how-to-automatically-save-all-org-files-after-marking-a-repeating-item-as-done-i
+;; got this from
+;; https://emacs.stackexchange.com/questions/21754/how-to-automatically-save-all-org-files-after-marking-a-repeating-item-as-done-i
+;; https://emacs.stackexchange.com/questions/26923/org-mode-getting-errors-when-auto-saving-after-refiling
 (advice-add 'org-deadline :after
             (lambda (&rest _) (funcall #'org-save-all-org-buffers)))
 (advice-add 'org-schedule :after
@@ -124,14 +126,19 @@ Try again or remove the file `%s' from the config folder" load-file-name))))))
             (lambda (&rest _) (funcall #'org-save-all-org-buffers)))
 (advice-add 'org-todo :after
             (lambda (&rest _) (funcall #'org-save-all-org-buffers)))
-;; for refiling this has to be the advice and the explanation is here:
-;; https://emacs.stackexchange.com/questions/26923/org-mode-getting-errors-when-auto-saving-after-refiling
+(advice-add 'org-clock-in :after
+            (lambda (&rest _) (funcall #'org-save-all-org-buffers)))
+(advice-add 'org-clock-out :after
+            (lambda (&rest _) (funcall #'org-save-all-org-buffers)))
 (advice-add 'org-refile :after
             (lambda (&rest _)
               (funcall #'org-save-all-org-buffers)))
 
-;;; additional modules
+;;; additional modules and variables that are loaded with org
 (after 'org
+  (setvar 'org-format-latex-options     ; make latex preview bigger
+          (plist-put org-format-latex-options :scale 2.0))
+
   (setvar 'org-habit-graph-column 100)  ; column at which to show the graph
   ;; add `org-habit' to the loaded modules
   (add-to-list 'org-modules 'org-habit t))
