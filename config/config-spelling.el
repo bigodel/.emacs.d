@@ -16,11 +16,12 @@
     (setvar 'ispell-program-name (executable-find "hunspell"))
     ;; default dictionary (overrided by `ispell-local-dictionary')
     (setvar 'ispell-dictionary "en_US,pt_BR")
-    ;; enable the use of multiple dictionaries with hunspell
-    ;; `ispell-set-spellchecker-params' has to be called
-    ;; before `ispell-hunspell-add-multi-dic' will work
-    (ispell-set-spellchecker-params)
-    (ispell-hunspell-add-multi-dic "en_US,pt_BR"))
+    (after 'ispell
+      ;; enable the use of multiple dictionaries with hunspell
+      ;; `ispell-set-spellchecker-params' has to be called
+      ;; before `ispell-hunspell-add-multi-dic' will work
+      (ispell-set-spellchecker-params)
+      (ispell-hunspell-add-multi-dic "en_US,pt_BR")))
    ;; configuration for aspell
    ((executable-find "aspell")
     (setvar 'ispell-program-name "aspell"))
