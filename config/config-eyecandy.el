@@ -26,22 +26,26 @@
 ;; (setvar 'solarized-height-plus-2 1.0)
 ;; (setvar 'solarized-height-plus-3 1.0)
 ;; (setvar 'solarized-height-plus-4 1.0)
-(load-theme 'manoj-dark t)
+(load-theme 'misterioso t)
 ;; make fringe same background color as line-number face
 (when (version<= "26" emacs-version)
   (set-face-background 'fringe (face-background 'line-number)))
 
-;; disable the bigger scale on bold function fonts (manoj-dark)
+;; disable the bigger scale on bold function fonts (manoj-dark & misterioso)
 (set-face-attribute 'font-lock-function-name-face nil :height 1.0)
 
 ;; make comments DimGrey (manoj-dark and default)
-(set-face-foreground 'font-lock-comment-face "DimGrey")
-(set-face-foreground 'font-lock-comment-delimiter-face "DimGrey")
+;; (set-face-foreground 'font-lock-comment-face "DimGrey")
+;; (set-face-foreground 'font-lock-comment-delimiter-face "DimGrey")
+
+;; make comment grey60 (misterioso)
+(set-face-foreground 'font-lock-comment-face "grey60")
+(set-face-foreground 'font-lock-comment-delimiter-face "grey60")
 
 ;; change mode-line's face (manoj-dark)
-(set-face-attribute 'mode-line nil :height 1.0 :underline nil) ;
-(set-face-attribute 'mode-line-buffer-id nil :height 1.0)
-(set-face-attribute 'mode-line-inactive nil :height 1.0)
+;; (set-face-attribute 'mode-line nil :height 1.0 :underline nil) ;
+;; (set-face-attribute 'mode-line-buffer-id nil :height 1.0)
+;; (set-face-attribute 'mode-line-inactive nil :height 1.0)
 
 ;; some customizations to the color of matching parenthesis
 (after 'paren
@@ -51,18 +55,24 @@
 ;; some customizations to the color of whitespace
 (after 'whitespace
   (set-face-attribute 'whitespace-line nil
-                      :background "grey20"
+                      :background "grey30"
                       :foreground nil)) ; keep syntax highlighting
 
 ;; some customizations to the color of the highlighted line
 (after 'hl-line
   ;; keep colors when on `hl-line'
-  (set-face-foreground 'hl-line nil))
+  (set-face-attribute 'hl-line nil
+                      :inherit nil
+                      :background (face-background 'highlight)))
 
 ;; i don't like these defaults because of colorblindness (mostly lsp)
 (set-face-foreground 'error "OrangeRed")
-(set-face-foreground 'warning "blue")
-(set-face-foreground 'success "DarkGreen")
+;; manoj-dark
+;; (set-face-foreground 'warning "blue")
+;; (set-face-foreground 'success "DarkGreen")
+;; misterioso
+(set-face-foreground 'warning "DeepSkyBlue")
+(set-face-foreground 'success "YellowGreen")
 
 ;; a custom theme to run on top of the other custom themes loaded (so it should
 ;; be here, after (load-theme 'blah)) that shows the name of the host when in
