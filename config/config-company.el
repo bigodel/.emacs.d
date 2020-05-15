@@ -20,7 +20,7 @@
 ;;; variables
 (setvar 'company-tooltip-align-annotations t) ; align annotations to the right
 (setvar 'company-tooltip-limit 12)            ; limit of completions per pop up
-(setvar 'company-idle-delay 0.5)        ; idle time to show completion. if set
+(setvar 'company-idle-delay nil)        ; idle time to show completion. if set
                                         ; to nil then only complete when asked
 (setvar 'company-show-numbers t)         ; show numbers for quick nav with M-num
 (setvar 'company-echo-delay (if (display-graphic-p) nil 0)) ; disable blinking
