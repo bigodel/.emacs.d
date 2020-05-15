@@ -345,6 +345,13 @@ terminal windows easier."
 ;; set eww as the default browser
 ;; (setvar 'browse-url-browser-function 'eww-browse-url)
 
+;;; file and dir local variables
+(after 'helpful                          ; for some reason helpful resets this
+  (setvar 'enable-local-variables :all)) ; always enable local variables
+(setvar 'enable-local-eval t)           ; enable eval in local variables
+(setvar 'enable-dir-local-variables t)  ; enable dir local variables
+(setvar 'enable-remote-dir-locals t)    ; dir-locals applied to remote files
+
 ;;; misc
 ;; TODO: some of this might deserve its own section
 ;; add a new place to store authentication info
