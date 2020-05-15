@@ -87,8 +87,8 @@ involves searching.")
   ;; the bindings configuration needs to get loaded before every thing else,
   ;; since it has the definitions for the macros of defining keys and what not,
   ;; that's why we use the reverse on the bindings.
-  (cl-loop for file in (append (directory-files-recursively
-                                config-directory "\\.el\\'")
+  (cl-loop for file in (append (reverse (directory-files-recursively
+                                         config-directory "\\.el\\'"))
                                (reverse (directory-files-recursively
                                          bindings-directory "\\.el$")))
            do (condition-case ex
