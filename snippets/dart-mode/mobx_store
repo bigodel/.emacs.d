@@ -1,0 +1,12 @@
+# key: store
+# name: mobx_store
+# --
+import 'package:mobx/mobx.dart';
+
+part '`(buffer-name (current-buffer))`.g.dart';
+
+class $1 = _$1Base with _$$1;
+
+abstract class _$1Base with Store {
+  $0
+}
