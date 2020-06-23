@@ -44,18 +44,20 @@
 (setvar 'lsp-ui-peek-enable t)           ; enable or disable peek
 (setvar 'lsp-ui-peek-show-directories t) ; show the directories of files
 ;; doc
-(setvar 'lsp-ui-doc-enable nil)          ; enable or disable doc
+(setvar 'lsp-ui-doc-enable t)            ; enable or disable doc
+(setvar 'lsp-ui-doc-delay 0.5)           ; delay to wait and show doc
 (setvar 'lsp-ui-doc-max-width 80)        ; max width of the doc pop-up
-(setvar 'lsp-ui-doc-use-webkit nil)      ; use emacs native pop ups
+(setvar 'lsp-ui-doc-use-webkit t)        ; use emacs native pop ups
 (setvar 'lsp-ui-doc-include-signature t) ; include object signature
 (setvar 'lsp-ui-doc-position 'top)       ; position of the doc pop up
 (setvar 'lsp-ui-doc-header t)            ; display the symbol string
 ;; sideline
-(setvar 'lsp-ui-sideline-enable nil)  ; enable or disable sideline
-(setvar 'lsp-ui-sideline-delay 0.5)   ; how many secs to wait before showing
+(setvar 'lsp-ui-sideline-enable t)      ; enable or disable sideline
+(setvar 'lsp-ui-sideline-delay 0.5)     ; how many secs to wait before showing
 (setvar 'lsp-ui-sideline-show-code-actions nil) ; don't show code actions
 (setvar 'lsp-ui-sideline-show-hover t)          ; show hover messages
 (setvar 'lsp-ui-sideline-show-diagnostics t)    ; show diagnostics messages
+(setvar 'lsp-ui-sideline-ignore-duplicate t)    ; ignore duplicates
 ;; imenu
 (setvar 'lsp-ui-imenu-enable t)       ; enable or disable imenu
 
@@ -68,10 +70,18 @@
 ;; (add-hook 'before-save-hook #'lsp-format-buffer t t)
 ;; (add-hook 'before-save-hook #'lsp-organize-imports t t)
 
-(add-hook 'lsp-ui-doc-frame-mode-hook
-          (lambda ()
-            "Disable `whitespace-mode' in `lsp-ui-doc-frame'."
-            (whitespace-mode -1)))
+(after 'lsp-ui-doc
+  (add-hook 'lsp-ui-doc-frame-mode-hook
+            (lambda ()
+              "Disable 'lines-tail and 'empty for
+`whitespace-mode' in `lsp-ui-doc-frame-mode'."
+              (setvar 'whitespace-line-column nil 'local)
+              (setvar 'whitespace-style
+                      (remove 'lines-tail whitespace-style) 'local)
+              (setvar 'whitespace-style
+                      (remove 'empty whitespace-style) 'local)
+              (whitespace-mode -1)
+              (whitespace-mode t))))
 
 ;; enable which key integration
 (after 'which-key
