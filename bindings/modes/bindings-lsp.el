@@ -67,6 +67,7 @@
     (defhydra hydras/lsp (:exit t)
       ("d" lsp-ui-peek-find-definitions "peek definition" :column "definitions")
       ("D" xref-find-definitions "xref definitions")
+      ("I" lsp-ivy-workspace-symbol "ivy symbols")
 
       ("r" lsp-ui-peek-find-references "peek references" :column "references")
       ("R" xref-find-references "xref references")
@@ -103,6 +104,9 @@
 
   (after 'evil
     (evil-define-key '(normal visual) lsp-mode-map
+      " cl" (key-binding (kbd lsp-keymap-prefix)))
+
+    (evil-define-key '(normal visual) lsp-mode-map
       "K" #'lsp-describe-thing-at-point
       "ga" #'lsp-execute-code-action
       "gr" #'lsp-rename)
@@ -114,6 +118,9 @@
         (kbd "<ret>") #'hydras/lsp/body
         "gD" #'lsp-ui-doc-glance
         "g?" #'lsp-ui-doc-glance)
+
+      (evil-define-key '(normal visual) lsp-ui-doc-frame-mode-map
+        "q" #'lsp-ui-doc-unfocus-frame)
 
       (evil-define-key '(normal visual) lsp-ui-imenu-mode-map
         "q" #'lsp-ui-imenu--kill)
