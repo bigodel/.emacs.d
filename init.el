@@ -7,7 +7,6 @@
 ;; Most (if not all,) of this configuration was inspired/copied from Bailey
 ;; Ling's Emacs configuration, found on https://github.com/bling/dotemacs
 ;;
-;; TODO: change all concat bla "bla.bla" to expand-file-name
 ;; TODO: check if without the provide's it makes it faster
 ;; TODO: add a comment to all non-local variables
 ;;; Code:

@@ -101,8 +101,8 @@
     ("s" utils-goto-scratch-buffer "scratch")
     ("n" utils-goto-notepad "notepad"))
 
-  (bindings-define-prefix-keys bindings-space-map "SPC"
-    ("U" #'hydras/utils/body)))
+  (bindings-define-key bindings-space-map
+    "U" #'hydras/utils/body))
 
 (after "dumb-jump-autoloads"
   (defhydra hydras/dump-jump (:color blue :columns 3)
