@@ -34,8 +34,8 @@
 
   (after 'evil
     (bindings-define-keys evil-insert-state-map
-      ;; use C-SPC to force company
-      ((kbd "C-SPC") #'company-complete-common-or-cycle))
+      ;; use M-SPC to force company
+      ((kbd "M-SPC") #'company-complete-common-or-cycle))
 
     (after 'yasnippet
       (bindings-define-keys evil-insert-state-map
