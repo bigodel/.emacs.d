@@ -62,7 +62,11 @@
   ;;; `counsel-tramp' doesn't get loaded, so i check if the package is installed
   (after "counsel-tramp-autoloads"
     (bindings-define-key (current-global-map)
-      (kbd "C-c c t") #'counsel-tramp)))
+      (kbd "C-c c t") #'counsel-tramp))
+
+  (after 'evil
+    (evil-define-key '(normal visual motion) 'global
+      "/" #'swiper)))
 
 (provide 'config-bindings-ivy)
 ;;; bindings-ivy.el ends here
