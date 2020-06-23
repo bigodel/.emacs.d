@@ -35,6 +35,13 @@
   (setvar 'magit-diff-arguments '("--histogram"))
   (setvar 'magit-completing-read-function 'ivy-completing-read)
   (setvar 'magit-auto-revert-mode t)
+  ;; this is set in my git configuration but because it uses a variable magit
+  ;; isn't able to use it (although it should), so I just set it here manually
+  (setvar 'magit-credential-cache-daemon-socket ; location of credential socket
+          (if (getenv "XDG_CACHE_HOME")
+              (expand-file-name "git/credential/socket"
+                                (getenv "XDG_CACHE_HOME"))
+            (expand-file-name ".cache/git/credential/socket" (getenv "HOME"))))
 
   ;; (require-package 'forge)              ; use forge to access pr's and issues
 
