@@ -13,7 +13,8 @@
   ;; TODO: add a way to automatically install dart sdk and probably flutter
   (setvar 'dart-sdk-path                ; the path for the sdk
           (if (null (getenv "DART_SDK"))
-              (concat (getenv "HOME") "/proj/flutter/bin/cache/dart-sdk")
+              (expand-file-name "proj/flutter/bin/cache/dart-sdk"
+                                (getenv "HOME"))
             (getenv "DART_SDK")))
   (setvar 'dart-format-on-save t)       ; use dartfmt to format code on save
 
@@ -21,20 +22,6 @@
   (after 'projectile
     (add-to-list 'projectile-project-root-files-bottom-up "pubspec.yaml")
     (add-to-list 'projectile-project-root-files-bottom-up "BUILD"))
-
-  ;; (require-package 'flutter)            ; we use dart with flutter
-  ;; (setvar 'flutter-sdk-path             ; path to flutter sdk
-  ;;         (if (null (getenv "FLUTTER_SDK"))
-  ;;             (concat (getenv "HOME") "/proj/flutter")
-  ;;           (getenv "FLUTTER_SDK")))
-
-  ;; (add-hook 'after-save-hook
-  ;;           (lambda ()
-  ;;             "Only call `flutter-run-or-hot-reload' after save
-  ;;             when on `dart-mode'."
-  ;;             (when (and (eq major-mode 'dart-mode)
-  ;;                        (flutter--running-p))
-  ;;               (flutter-hot-reload))))
 
   ;; start LSP when on dart files. note that `lsp-dart' has `treemacs',
   ;; `lsp-treemacs' and `lsp-ui' as dependency
@@ -45,17 +32,24 @@
             (if (boundp 'dart-sdk-path)
                 dart-sdk-path
               (if (null (getenv "DART_SDK"))
-                  (concat (getenv "HOME") "/proj/flutter/bin/cache/dart-sdk")
+                  (expand-file-name "proj/flutter/bin/cache/dart-sdk"
+                                    (getenv "HOME"))
                 (getenv "DART_SDK"))))
     (setvar 'lsp-dart-only-analyze-projects-with-open-files t)
-    (setvar 'lsp-dart-suggest-from-unimported-libraries t)
+    (setvar 'lsp-dart-suggest-from-unimported-libraries nil)
     (setvar 'lsp-dart-outline t)
     (setvar 'lsp-dart-flutter-outline t)
     (setvar 'lsp-dart-closing-labels t)
     (setvar 'lsp-dart-flutter-widget-guides nil)
-    (setvar 'lsp-dart-flutter-fringe-colors nil)
+    (setvar 'lsp-dart-flutter-fringe-colors t)
     (setvar 'lsp-dart-test-code-lens t)
-    (add-hook 'dart-mode-hook #'lsp)))
+    (add-hook 'dart-mode-hook #'lsp)
+    ;; (add-hook 'dart-mode-hook (lambda ()
+    ;;                             "`company' doesn't work very well
+    ;; with the Dart language server and Emacs, so I disable the idle
+    ;; delay, leaving it to autocomplete only when manually asked."
+    ;;                             (setvar 'company-idle-delay nil 'local)))
+    ))
 
 (provide 'config-dart)
 ;;; config-dart.el ends here
