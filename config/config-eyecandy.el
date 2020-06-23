@@ -26,7 +26,7 @@
 ;; (setvar 'solarized-height-plus-2 1.0)
 ;; (setvar 'solarized-height-plus-3 1.0)
 ;; (setvar 'solarized-height-plus-4 1.0)
-(load-theme 'misterioso t)
+(load-theme 'manoj-dark t)
 ;; make fringe same background color as line-number face
 (when (version<= "26" emacs-version)
   (set-face-background 'fringe (face-background 'line-number)))
@@ -35,17 +35,17 @@
 (set-face-attribute 'font-lock-function-name-face nil :height 1.0)
 
 ;; make comments DimGrey (manoj-dark and default)
-;; (set-face-foreground 'font-lock-comment-face "DimGrey")
-;; (set-face-foreground 'font-lock-comment-delimiter-face "DimGrey")
+(set-face-foreground 'font-lock-comment-face "DimGrey")
+(set-face-foreground 'font-lock-comment-delimiter-face "DimGrey")
 
 ;; make comment grey60 (misterioso)
 (set-face-foreground 'font-lock-comment-face "grey60")
 (set-face-foreground 'font-lock-comment-delimiter-face "grey60")
 
 ;; change mode-line's face (manoj-dark)
-;; (set-face-attribute 'mode-line nil :height 1.0 :underline nil) ;
-;; (set-face-attribute 'mode-line-buffer-id nil :height 1.0)
-;; (set-face-attribute 'mode-line-inactive nil :height 1.0)
+(set-face-attribute 'mode-line nil :height 1.0 :underline nil) ;
+(set-face-attribute 'mode-line-buffer-id nil :height 1.0)
+(set-face-attribute 'mode-line-inactive nil :height 1.0)
 
 ;; some customizations to the color of matching parenthesis
 (after 'paren
@@ -68,11 +68,11 @@
 ;; i don't like these defaults because of colorblindness (mostly lsp)
 (set-face-foreground 'error "OrangeRed")
 ;; manoj-dark
-;; (set-face-foreground 'warning "blue")
-;; (set-face-foreground 'success "DarkGreen")
+(set-face-foreground 'warning "blue")
+(set-face-foreground 'success "DarkGreen")
 ;; misterioso
-(set-face-foreground 'warning "DeepSkyBlue")
-(set-face-foreground 'success "YellowGreen")
+;; (set-face-foreground 'warning "DeepSkyBlue")
+;; (set-face-foreground 'success "YellowGreen")
 
 ;; a custom theme to run on top of the other custom themes loaded (so it should
 ;; be here, after (load-theme 'blah)) that shows the name of the host when in
@@ -166,14 +166,15 @@
 ;; hide all minor modes from mode line (not needed with doom-modeline)
 (require-package 'rich-minority)
 (rich-minority-mode t)
+(setvar 'rm-blacklist "")
 ;; TODO: make it so that flycheck only displays erros and warnings without the
 ;; FlyC text and make a better way to display LSP information without the
 ;; obnoxious [Disconnected] or [blablabla_server:123412]
 ;; only show lsp and flycheck on mode line
-(setvar 'rm-whitelist (format "^ \\(%s\\)$"
-                              (mapconcat #'identity
-                                         '("FlyC.*" "LSP.*")
-                                         "\\|")))
+;; (setvar 'rm-whitelist (format "^ \\(%s\\)$"
+;;                               (mapconcat #'identity
+;;                                          '("FlyC.*" "LSP.*")
+;;                                          "\\|")))
 
 ;; highlight TODO
 (require-package 'hl-todo)
