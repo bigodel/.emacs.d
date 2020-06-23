@@ -5,8 +5,11 @@
 ;;; Commentary:
 
 ;;; Code:
+;;; org key map
+;; create a keymap for org related maps
 (setvar 'org-global-map (make-sparse-keymap))
 
+;; bind org related maps intended to be used globally
 (bindings-define-prefix-keys org-global-map "C-c o"
   ("c" #'org-capture)
   ("a" #'org-agenda)
@@ -29,10 +32,18 @@
   ("w" (bind () (find-file
                  (expand-file-name "work.org" org-directory))) "work"))
 
+;; define C-c o to be the prefix for the org map globally
 (bindings-define-key (current-global-map)
   (kbd "C-c o") org-global-map)
 
+;;; org mode maps
+(after 'org
+  (bindings-define-key org-mode-map
+    (kbd "C-c C-x C-r") #'org-clock-report))
+
+;;; evil
 (after 'evil
+  ;; same as above but with evil mode
   (evil-define-key '(normal visual motion) 'global
     "go" org-global-map)
 
@@ -45,6 +56,10 @@
     (bindings-define-keys org-mode-map
       ((kbd "RET") #'evil-org-return)
       ((kbd "<return>") #'evil-org-return))))
+
+;;; misc
+(after "org-cliplink-autoloads"
+  (bindings-define-key org-global-map "L" #'org-cliplink))
 
 (provide 'config-bindings-org)
 ;;; bindings-org.el ends here
