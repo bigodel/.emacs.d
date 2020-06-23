@@ -1,0 +1,5 @@
+# key: _class
+# name: class_scheduling
+# --
+**** $0
+SCHEDULED: `(org-time-stamp t)`

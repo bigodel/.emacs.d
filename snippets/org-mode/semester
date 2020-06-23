@@ -1,0 +1,8 @@
+# key: semester
+# name: semester
+# --
+** $1.$2                                                           :$1:$2:
+
+*** Schedule
+
+This heading is specifically so that I can put the scheduling for the classes.
