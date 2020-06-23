@@ -80,16 +80,15 @@ behavior added."
   "Replace the preceding sexp with its value."
   (interactive)
   (let ((value (eval (elisp--preceding-sexp))))
-    ;; if in evil normal or visual state get to Emacs state and move forward
-    (after 'evil
-      (when (evil-normal-state-p)
-        (evil-emacs-state)
-        (forward-char)
-        (backward-kill-sexp)
-        (insert (format "%s" value))
-        (evil-normal-state)))
-    (backward-kill-sexp)
-    (insert (format "%s" value))))
+    ;; if in evil, save the state
+    (if (bound-and-true-p evil-mode)
+        (evil-save-state
+          (evil-emacs-state)
+          (forward-char)
+          (backward-kill-sexp)
+          (insert (format "%s" value)))
+      (backward-kill-sexp)
+      (insert (format "%s" value)))))
 
 (defun utils-rename-buffer-file (buffer)
   "Rename file associated to BUFFER."

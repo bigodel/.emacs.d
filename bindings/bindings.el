@@ -139,10 +139,10 @@ PREFIX arg as nil. Check its documentation for more details."
 ;;; C-c bindings
 (after 'config-utils
   (bindings-define-key emacs-lisp-mode-map
-    (kbd "C-c C-e") #'utils-evil-and-replace "eval and replace")
+    (kbd "C-c C-e") #'utils-eval-and-replace "eval and replace")
 
   (bindings-define-key lisp-interaction-mode-map
-    (kbd "C-c C-e") #'utils-evil-and-replace "eval and replace"))
+    (kbd "C-c C-e") #'utils-eval-and-replace "eval and replace"))
 
 (after 'projectile
   (bindings-define-keys mode-specific-map
