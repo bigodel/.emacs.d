@@ -174,5 +174,10 @@ behavior added."
        (concat "/doas::" file)
      (concat "/doas::" file))))
 
+(defun utils-restart-emacs ()
+  "Restart Emacs configuration."
+  (interactive)
+  (load (expand-file-name "init.el" user-emacs-directory)))
+
 (provide 'config-utils)
 ;;; config-utils.el ends here
