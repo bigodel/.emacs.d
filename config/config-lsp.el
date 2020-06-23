@@ -28,9 +28,10 @@
 (setvar 'lsp-log-io nil)                     ; log msgs from the ls in *lsp-log*
 (setvar 'lsp-print-performance nil)          ; print performance information
 (setvar 'lsp-session-file                ; where to store the session file
-        (concat dotemacs-cache-directory "lsp-session-v1"))
+        (expand-file-name "lsp-session-v1" dotemacs-cache-directory))
 (setvar 'lsp-diagnostics-modeline-scope :project) ; modeline show project err
 (setvar 'lsp-prefer-capf t)             ; whether or not to prefer capf
+(setvar 'lsp-eldoc-enable-hover nil)    ; i'd rather see doc on a popup
 
 ;; the performance section recommends settings this variable. it is the amount
 ;; of data which emacs reads from processes. the default (at the time of

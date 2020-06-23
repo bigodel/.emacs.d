@@ -9,9 +9,9 @@
 
 ;; variables
 (setvar 'projectile-cache-file
-        (concat dotemacs-cache-directory "projectile.cache"))
+        (expand-file-name "projectile.cache" dotemacs-cache-directory))
 (setvar 'projectile-known-projects-file
-        (concat dotemacs-cache-directory "projectile-bookmarks.eld"))
+        (expand-file-name "projectile-bookmarks.eld" dotemacs-cache-directory))
 (setvar 'projectile-indexing-method 'alien)
 (setvar 'projectile-enable-caching t)
 (setvar 'projectile-completion-system 'ivy)
@@ -28,17 +28,20 @@
   ;;; projectile-generic-command
   (cond
    ((executable-find "rg")
-    (setq projectile-generic-command
-          (concat "rg -0 --files --color never "
-                  (mapconcat (lambda (dir) (concat "--glob " "'!" dir "'"))
-                             projectile-globally-ignored-directories " "))))
+    (setvar 'projectile-generic-command
+            (concat "rg -0 --files --color never "
+                    (mapconcat (lambda (dir) (concat "--glob " "'!" dir "'"))
+                               projectile-globally-ignored-directories " "))))
    ((executable-find "ag")
-    (setq projectile-generic-command
-          (concat "ag -0 -l --nocolor "
-                  (mapconcat (lambda (dir) (concat "--ignore-dir=" dir))
-                             projectile-globally-ignored-directories " "))))
+    (setvar 'projectile-generic-command
+            (concat "ag -0 -l --nocolor "
+                    (mapconcat (lambda (dir) (concat "--ignore-dir=" dir))
+                               projectile-globally-ignored-directories " "))))
    ((executable-find "ack")
-    (setq projectile-generic-command
-          (concat "ack -f --print0"
-                  (mapconcat (lambda (dir) (concat "--ignore-dir=" dir))
-                             projectile-globally-ignored-directories " "))))))
+    (setvar 'projectile-generic-command
+            (concat "ack -f --print0"
+                    (mapconcat (lambda (dir) (concat "--ignore-dir=" dir))
+                               projectile-globally-ignored-directories " "))))))
+
+(provide 'config-projectile)
+;;; config-projectile.el ends here

@@ -12,9 +12,11 @@
 ;;; variables
 (setvar 'yas-fallback-behaviour 'return-nil)
 (setvar 'yas-also-auto-indent-first-line t)
-(setvar 'yas-snippet-dirs `(,(concat user-emacs-directory "snippets")))
+(setvar 'yas-snippet-dirs `(,(expand-file-name "snippets"
+                                               user-emacs-directory)))
 (after 'yasnippet-snippets
-  (setvar 'yas-snippet-dirs `(,(concat user-emacs-directory "snippets")
+  (setvar 'yas-snippet-dirs `(,(expand-file-name "snippets"
+                                                 user-emacs-directory)
                               ,yasnippet-snippets-dir)))
 
 ;; active yasnippet globally

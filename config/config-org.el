@@ -5,20 +5,24 @@
 ;;; Commentary:
 
 ;;; Code:
-(setvar 'org-directory (concat (getenv "HOME") "/docs/org"))
+;; TODO: create a default file with some configuration that should be shared
+;; among all org file such as author, email and languages (en, pt_BR)
+(setvar 'org-directory (expand-file-name "docs/org" (getenv "HOME")))
 
 ;; ask to create `org-directory' if non-existent and if it fails ask to use
 ;; ~/Documents/Org as the `org-directory'
 (unless (file-directory-p org-directory)
   (create-non-existent-directory org-directory)
   (unless (file-directory-p org-directory)
-    (let ((default-org (concat (getenv "HOME") "/Documents/Org")))
+    (let ((default-org (expand-file-name "Documents/Org" (getenv "HOME"))))
       (if (y-or-n-p
            (format
             "Failed to create `%s', use the default directory [%s]?"
             org-directory default-org))
-          (progn (make-directory (concat (getenv "HOME") "/Documents/Org") t)
-                 (setvar 'org-directory (concat (getenv "HOME") "/Documents")))
+          (progn (make-directory (expand-file-name "Documents/Org"
+                                                   (getenv "HOME")) t)
+                 (setvar 'org-directory (expand-file-name "Documents"
+                                                          (getenv "HOME"))))
         (error (concat "Couldn't load the configuration for `org-mode'.
 Try again or remove the file `%s' from the config folder" load-file-name))))))
 
@@ -27,25 +31,31 @@ Try again or remove the file `%s' from the config folder" load-file-name))))))
 (setvar 'org-startup-indented t)      ; startup indented?
 (setvar 'org-startup-truncated t)     ; truncate lines in org? D:<
 (setvar 'org-src-fontify-natively t)  ; fontify src code blocks?
+(setvar 'org-src-preserve-indentation t) ; preserve indentation (look the doc)
 (setvar 'org-return-follows-link t)   ; return works like C-c C-o
+(setvar 'org-preview-latex-image-directory (expand-file-name ; latex preview
+                                            "ltximg/"        ; image location
+                                            (if (getenv "TMPDIR")
+                                                (getenv "TMPDIR")
+                                              "/tmp")))
 
 ;;; constants
-(defconst org-inbox-file (concat org-directory "/inbox.org")
+(defconst org-inbox-file (expand-file-name "inbox.org" org-directory)
   "The path to the file where to capture notes.")
 
-(defconst org-notes-file (concat org-directory "/notes.org")
+(defconst org-notes-file (expand-file-name "notes.org" org-directory)
   "The path to the file where to add notes, cheatsheets and etc.")
 
-(defconst org-journal-file (concat org-directory "/journal.org")
+(defconst org-journal-file (expand-file-name "journal.org" org-directory)
   "The path to the file where you want to make journal entries.")
 
 ;;; agenda configuration
 (setvar 'org-agenda-files
         `(,org-inbox-file
-          ,(concat org-directory "/calendar.org")
-          ,(concat org-directory "/work.org")
-          ,(concat org-directory "/uni.org")
-          ,(concat org-directory "/personal.org"))
+          ,(expand-file-name "calendar.org" org-directory)
+          ,(expand-file-name "work.org"     org-directory)
+          ,(expand-file-name "uni.org"      org-directory)
+          ,(expand-file-name "personal.org" org-directory))
         nil "Where to look for TODO's for the agenda.")
 ;; TODO if there is too much clutter in the agenda, set these to t
 (setvar 'org-agenda-skip-timestamp-if-done nil) ; skip timestamped task if done

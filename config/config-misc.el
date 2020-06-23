@@ -32,7 +32,7 @@
   (setvar 'undo-tree-auto-save-history t)
   (setvar 'undo-tree-enable-undo-in-region nil)
   (setvar 'undo-tree-history-directory-alist
-          `(("." . ,(concat dotemacs-cache-directory "undo/"))))
+          `(("." . ,(expand-file-name "undo/" dotemacs-cache-directory))))
   (setvar 'undo-tree-visualizer-timestamps t)
   (setvar 'undo-tree-visualizer-diff t)
   (add-hook 'after-init-hook #'global-undo-tree-mode))

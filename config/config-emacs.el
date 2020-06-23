@@ -10,7 +10,7 @@
 (setvar 'user-mail-address "jpedrodeamorim@gmail.com")
 
 ;;; server
-(setvar 'server-auth-dir (concat dotemacs-cache-directory "server"))
+(setvar 'server-auth-dir (expand-file-name "server" dotemacs-cache-directory))
 (require 'server)
 (unless (server-running-p)
   (server-start))
@@ -34,11 +34,11 @@
 
 
 ;;; move cursor to the last position upon open
-(setvar 'save-place-file (concat dotemacs-cache-directory "places"))
+(setvar 'save-place-file (expand-file-name "places" dotemacs-cache-directory))
 (save-place-mode t)
 
 ;;; savehist
-(setvar 'savehist-file (concat dotemacs-cache-directory "savehist"))
+(setvar 'savehist-file (expand-file-name "savehist" dotemacs-cache-directory))
 (setvar 'savehist-additional-variables '(search
                                          ring
                                          regexp-search-ring
@@ -47,7 +47,8 @@
 (savehist-mode t)
 
 ;;; recent files
-(setvar 'recentf-save-file (concat dotemacs-cache-directory "recentf"))
+(setvar 'recentf-save-file (expand-file-name "recentf"
+                                             dotemacs-cache-directory))
 (setvar 'recentf-max-saved-items 1000)
 (setvar 'recentf-max-menu-items 500)
 (setvar 'recentf-auto-cleanup 300)
@@ -61,7 +62,7 @@
 
 ;;; save desktop settings and configuration between sessions
 (when (display-graphic-p)
-  (setvar 'desktop-restore-frames t)    ; save and restore frame and win config
+  (setvar 'desktop-restore-frames nil)  ; save and restore frame and win config
   (setvar 'desktop-path `(,dotemacs-cache-directory ; paths to look for desktops
                           ,user-emacs-directory
                           ,(getenv "HOME")))
@@ -70,7 +71,7 @@
   (setvar 'desktop-base-lock-name       ; the default name of the lock file
           (concat desktop-base-file-name ".lock"))
   (setvar 'desktop-save 'if-exists)     ; whether to save desktop when killed
-  (desktop-save-mode -1))
+  (desktop-save-mode t))
 
 ;;; garbage collector
 ;; TODO: investigate gcmh (garbage collector magic hack) package and maybe
@@ -118,7 +119,7 @@ after will enjoy the benefits."
 ;;; abbrev
 (setvar 'abbrev-mode t)                  ; start `abbrev-mode'
 (setvar 'abbrev-file-name                ; default abbrevs file
-        (concat user-emacs-directory "abbrevs"))
+        (expand-file-name "abbrevs" user-emacs-directory))
 (setvar 'save-abbrevs 'silently)         ; save abbrev when file is saved
 
 (defun basic-abbrev-dont-insert-char ()
@@ -153,10 +154,13 @@ inserted." t)
 (setvar 'compilation-ask-about-save nil) ; save without asking
 
 ;;; tramp
-(setvar 'tramp-persistency-file-name (concat dotemacs-cache-directory "tramp"))
+(setvar 'tramp-persistency-file-name (expand-file-name
+                                      "tramp"
+                                      dotemacs-cache-directory))
 
 ;;; bookmarks
-(setvar 'bookmark-default-file (concat dotemacs-cache-directory "bookmarks"))
+(setvar 'bookmark-default-file (expand-file-name "bookmarks"
+                                                 dotemacs-cache-directory))
 
 ;;; fringe
 (when (display-graphic-p)
@@ -240,14 +244,13 @@ buffer name."
              (ibuffer-jump-to-buffer recent-buffer-name)))
 
 ;;; move auto-save to cache directory
-(let ((dir (concat dotemacs-cache-directory "auto-save/")))
+(let ((dir (expand-file-name "auto-save/" dotemacs-cache-directory)))
   (setvar 'auto-save-list-file-prefix (concat dir "saves-"))
   (setvar 'auto-save-file-name-transforms `((".*" ,(concat dir "save-") t))))
 
 ;;; multiple backups
 (setvar 'backup-directory-alist
-        `((".*" . ,(expand-file-name
-                    (concat dotemacs-cache-directory "backups/")))))
+        `((".*" . ,(expand-file-name "backups/" dotemacs-cache-directory))))
 (setvar 'backup-by-copying t)
 (setvar 'version-control t)
 (setvar 'kept-old-versions 0)
@@ -355,7 +358,9 @@ terminal windows easier."
 ;;; misc
 ;; TODO: some of this might deserve its own section
 ;; add a new place to store authentication info
-(add-to-list 'auth-sources (concat dotemacs-cache-directory ".authinfo"))
+(add-to-list 'auth-sources (expand-file-name ".authinfo"
+                                             dotemacs-cache-directory))
+(setvar 'confirm-kill-emacs 'y-or-n-p)  ; y-or-n confirmation when quitting
 (setvar 'x-gtk-use-system-tooltips nil) ; use emacs tooltips, not gtk's
 (setvar 'debug-on-error nil)            ; enter debugger if error is signaled
 (setvar 'sentence-end-double-space nil)  ; setences don't end with double space
