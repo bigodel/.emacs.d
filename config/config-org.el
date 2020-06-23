@@ -73,10 +73,13 @@ Try again or remove the file `%s' from the config folder" load-file-name))))))
         '(("t" "task" entry
            (file org-inbox-file)
            "* TODO %?\n:LOGBOOK:\n- Captured on %U\n:END:\n%A\n\n"
-           :empty-lines-after 1)
+           :empty-lines 1)
           ("n" "note" entry
-           (file+headline org-notes-file "Refile") "* %? :refile:\n%U\n%a\n\n"
-           :empty-lines-after 1)))
+           (file+headline org-notes-file "Refile") "* %? :refile:\n:LOGBOOK:\n- Captured on %U\n:END:\n%a\n\n"
+           :empty-lines 1)
+          ("e" "event" entry
+           (file org-inbox-file) "* %?\n%^T\n:LOGBOOK:\n- Capture on %U\n:END:\n%a\n\n"
+           :empty-lines 1)))
 ;; default file for capturing
 (setvar 'org-default-notes-file org-inbox-file)
 
@@ -147,11 +150,27 @@ Try again or remove the file `%s' from the config folder" load-file-name))))))
 ;;; additional modules and variables that are loaded with org
 (after 'org
   (setvar 'org-format-latex-options     ; make latex preview bigger
-          (plist-put org-format-latex-options :scale 2.0))
+          (plist-put org-format-latex-options :scale 1.8))
 
   (setvar 'org-habit-graph-column 100)  ; column at which to show the graph
   ;; add `org-habit' to the loaded modules
-  (add-to-list 'org-modules 'org-habit t))
+  (add-to-list 'org-modules 'org-habit t)
+
+  ;; add `org-checklist' to loaded modules
+  (add-to-list 'org-modules 'org-checklist t))
+
+;;; exporting
+(after 'org
+  (setvar 'org-export-backends (cons 'md org-export-backends))
+
+  ;; github flavored markdown
+  (require-package 'ox-gfm)
+  (setvar 'org-export-backends (cons 'gfm org-export-backends)))
+
+;;; {La}TeX configuration
+;; TODO: create an article.tex inside tex/ for article templates and other kinds
+;; of latex templates; this might be an yasnippet snippet in the future as well
+;; and it would be a snippet based on this template (ideally)
 
 ;;; misc
 (add-hook 'org-babel-after-execute-hook #'org-redisplay-inline-images)
@@ -172,6 +191,11 @@ currently editing as being empty and other strange behaviors."
                       (remove 'empty whitespace-style) 'local)
               (whitespace-mode -1)
               (whitespace-mode t))))
+
+;; third party packages
+(after 'org
+  ;; paste urls in org with the description as the title of the page
+  (require-package 'org-cliplink))
 
 (provide 'config-org)
 ;;; config-org.el ends here
