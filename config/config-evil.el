@@ -17,6 +17,7 @@
     calculator-mode
     makey-key-mode
     dired-mode
+    diff-mode
     compilation-mode
     comint-mode
     occur-mode
@@ -127,7 +128,6 @@
   (add-hook 'org-mode-hook #'evil-org-mode)
   (after 'evil-org
     (evil-org-set-key-theme '(navigation
-                              insert
                               textobjects
                               additional
                               shift
@@ -144,6 +144,10 @@
 (add-hook 'emacs-lisp-mode-hook
           (lambda ()
             "Add `' as surrounds for `elisp-mode'."
+            (push '(?` . ("`" . "'")) evil-surround-pairs-alist)))
+(add-hook 'org-mode-hook
+          (lambda ()
+            "Add `' as surrounds for `org-mode'."
             (push '(?` . ("`" . "'")) evil-surround-pairs-alist)))
 
 ;; add comment text objects

@@ -110,6 +110,27 @@
 ;;   (sp-local-pair 'emacs-lisp-mode "`" "'")
 ;;   (sp-local-pair 'emacs-lisp-mode "'" nil :actions nil))
 (electric-pair-mode t)
+(defmacro misc-add-electric-pairs (hook pairs)
+  "Add PAIRS on HOOK to `electric-pair-pairs'.
+If HOOK is nil, make it a new global pair."
+  (after 'electric
+    `(if ,hook
+         (add-hook
+          ,hook
+          (lambda ()
+            (setvar 'electric-pair-pairs
+                    (append electric-pair-pairs ,pairs) 'local)
+            (setvar 'electric-pair-text-pairs electric-pair-pairs 'local)))
+       (setvar 'electric-pair-pairs (append electric-pair-pairs ,pairs))
+       (setvar 'electric-pair-text-pairs electric-pair-pairs))))
+
+;; add pairs to org mode
+(misc-add-electric-pairs 'org-mode-hook '((?= . ?=)
+                                          (?/ . ?/)
+                                          (?~ . ?~)
+                                          (?_ . ?_)
+                                          (?` . ?')))
+
 
 ;;; jump to definitions without TAGS
 (require-package 'dumb-jump)
