@@ -50,11 +50,12 @@
   (require-package 'treemacs-magit))
 
 (setvar 'treemacs-persist-file               ; location of persist file
-        (concat dotemacs-cache-directory "treemacs-persist"))
+        (expand-file-name "treemacs-persist" dotemacs-cache-directory))
 (setvar 'treemacs-indentation 2)        ; number of spaces for indentation
 ;; (setvar 'treemacs-indentation-string    ; the string to show on indent level
 ;;         (propertize "|" 'face 'font-lock-comment-face))
-(setvar 'treemacs-width 35)             ; default width of the treemacs window
+(setvar 'treemacs-width 45)             ; default width of the treemacs window
+(setvar 'treemacs--width-is-locked nil) ; let us resize
 ;; some option only behave well if python3 is installed
 (setvar 'treemacs-collapse-dirs (if (executable-find "python3") 3 0))
 (setvar 'treemacs-project-follow-cleanup t) ; close projects and expand current
