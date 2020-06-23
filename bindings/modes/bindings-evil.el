@@ -58,8 +58,9 @@ of point."
     (kbd "<S-insert>") #'evil-mouse-yank-primary)
 
   (after 'evil-commentary
-    (bindings-define-key (current-global-map)
-      (kbd "M-SPC") #'evil-commentary-line)))
+    (bindings-define-keys evil-commentary-mode-map
+      ((kbd "s-/") nil)
+      ((kbd "C-M-;") #'evil-commentary-line))))
 
 (provide 'config-bindings-evil)
 ;;; bindings-evil.el ends here
