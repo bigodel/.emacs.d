@@ -8,8 +8,8 @@
 ;;
 ;;; Code:
 ;;; install `markdown-mode'
-(lazy-major-mode "\\.md\\'" markdown-mode)
-(lazy-major-mode "\\.markdown\\'" markdown-mode)
+(lazy-major-mode "\\.md\\'" 'markdown-mode)
+(lazy-major-mode "\\.markdown\\'" 'markdown-mode)
 
 (after 'markdown-mode
   ;;; variables

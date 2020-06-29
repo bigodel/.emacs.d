@@ -6,7 +6,7 @@
 
 ;;; Code:
 ;;; install `dart-mode' only if we visit a dart file
-(lazy-major-mode "\\.dart\\'" dart-mode)
+(lazy-major-mode "\\.dart\\'" 'dart-mode)
 
 ;;; `dart-mode' configuration
 (after 'dart-mode

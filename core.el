@@ -125,14 +125,17 @@ variable locally."
       `(setq-local ,(eval var) ,value)
     `(customize-set-variable ,var ,value ,comment)))
 
-(defmacro lazy-major-mode (pattern mode)
+(defmacro lazy-major-mode (pattern mode &optional command)
   "Define a new MODE matched by PATTERN.
 MODE has to be a `major-mode'. Install MODE if not installed
-already. This macro depends on `require-package'."
+already. This macro depends on `require-package'. Optionally, run
+COMMAND instead of MODE when entering MODE."
   `(add-to-list 'auto-mode-alist
                 '(,pattern . (lambda ()
-                               (require-package (quote ,mode))
-                               (,mode)))))
+                               (require-package ,mode)
+                               (if ,command
+                                   (funcall ,command)
+                                 (funcall ,mode))))))
 
 (defun create-non-existent-directory (&optional dir)
   "When trying to access non-existing directories, ask to create them.

@@ -19,9 +19,9 @@
             (setvar 'fill-column 72 'local)))
 
 ;;; packages
-(lazy-major-mode "\\.gitignore\\'" gitignore-mode)
-(lazy-major-mode "\\.gitconfig\\'" gitconfig-mode)
-(lazy-major-mode "\\.gitattributes\\'" gitattributes-mode)
+(lazy-major-mode "\\.gitignore\\'" 'gitignore-mode)
+(lazy-major-mode "\\.gitconfig\\'" 'gitconfig-mode)
+(lazy-major-mode "\\.gitattributes\\'" 'gitattributes-mode)
 
 ;;; magit
 (when (executable-find "git")
