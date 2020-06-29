@@ -8,6 +8,7 @@
 ;; install flycheck
 (require-package 'flycheck)
 
+(setvar 'flycheck-keymap-prefix (kbd "C-c f")) ; change flyspell prefix
 (setvar 'flycheck-display-errors-function ; only display errors if the error
         #'flycheck-display-error-messages-unless-error-list) ; list is not on
 (setvar 'flycheck-indication-mode 'right-fringe) ; where to show the error
