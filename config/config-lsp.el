@@ -56,7 +56,7 @@
 (setvar 'lsp-ui-sideline-delay 0.5)     ; how many secs to wait before showing
 (setvar 'lsp-ui-sideline-show-code-actions nil) ; don't show code actions
 (setvar 'lsp-ui-sideline-show-hover t)          ; show hover messages
-(setvar 'lsp-ui-sideline-show-diagnostics t)    ; show diagnostics messages
+(setvar 'lsp-ui-sideline-show-diagnostics nil)  ; show diagnostics messages
 (setvar 'lsp-ui-sideline-ignore-duplicate t)    ; ignore duplicates
 ;; imenu
 (setvar 'lsp-ui-imenu-enable t)       ; enable or disable imenu
