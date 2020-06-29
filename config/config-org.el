@@ -66,6 +66,17 @@ Try again or remove the file `%s' from the config folder" load-file-name))))))
 (setvar 'org-agenda-show-all-dates t)             ; show every date?
 ;; NOTE if this is set to nil then it will always start on the current day!
 (setvar 'org-agenda-start-on-weekday 0)       ; day to start the agenda on
+(setvar 'org-agenda-include-diary t)          ; include Emacs diary entries
+(setvar 'calendar-date-style 'european)       ; format of dates in the calendar
+
+(defun org-diary-last-day-of-month (date)
+  "Return t if DATE is the last day of the month."
+  (let* ((day (calendar-extract-day date))
+         (month (calendar-extract-month date))
+         (year (calendar-extract-year date))
+         (last-day-of-month
+          (calendar-last-day-of-month month year)))
+    (= day last-day-of-month)))
 
 ;;; capture configuration
 ;; TODO: make better capture templates
@@ -156,8 +167,22 @@ Try again or remove the file `%s' from the config folder" load-file-name))))))
   ;; add `org-habit' to the loaded modules
   (add-to-list 'org-modules 'org-habit t)
 
-  ;; add `org-checklist' to loaded modules
-  (add-to-list 'org-modules 'org-checklist t))
+  ;; i tried using `org-checklist.el' but it is not working, so i just got what
+  ;; i need to reset the checkboxes here
+  (defun org-reset-checkbox-state-maybe ()
+    "Reset all checkboxes in an entry if the `RESET_CHECK_BOXES'
+property is set"
+    (interactive "*")
+    (if (org-entry-get (point) "RESET_CHECK_BOXES")
+        (org-reset-checkbox-state-subtree)))
+
+  (defun org-checklist ()
+    "Call `org-reset-checkbox-state-maybe' if in a not DONE
+task."
+    (when (member org-state org-done-keywords) ; org-state dynamically bound in
+      (org-reset-checkbox-state-maybe))) ; org.el/org-todo
+
+  (add-hook 'org-after-todo-state-change-hook 'org-checklist))
 
 ;;; exporting
 (after 'org
