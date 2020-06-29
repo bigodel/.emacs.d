@@ -61,17 +61,17 @@
 (run-with-idle-timer 600 t #'recentf-save-list)
 
 ;;; save desktop settings and configuration between sessions
-(when (display-graphic-p)
-  (setvar 'desktop-restore-frames nil)  ; save and restore frame and win config
-  (setvar 'desktop-path `(,dotemacs-cache-directory ; paths to look for desktops
-                          ,user-emacs-directory
-                          ,(getenv "HOME")))
-  (setvar 'desktop-dirname (car desktop-path))
-  (setvar 'desktop-base-file-name "emacs.desktop") ; default name of the file
-  (setvar 'desktop-base-lock-name       ; the default name of the lock file
-          (concat desktop-base-file-name ".lock"))
-  (setvar 'desktop-save 'if-exists)     ; whether to save desktop when killed
-  (desktop-save-mode t))
+;; (when (display-graphic-p)
+;;   (setvar 'desktop-restore-frames nil)  ; save and restore frame and win config
+;;   (setvar 'desktop-path `(,dotemacs-cache-directory ; paths to look for desktops
+;;                           ,user-emacs-directory
+;;                           ,(getenv "HOME")))
+;;   (setvar 'desktop-dirname (car desktop-path))
+;;   (setvar 'desktop-base-file-name "emacs.desktop") ; default name of the file
+;;   (setvar 'desktop-base-lock-name       ; the default name of the lock file
+;;           (concat desktop-base-file-name ".lock"))
+;;   (setvar 'desktop-save 'if-exists)     ; whether to save desktop when killed
+;;   (desktop-save-mode t))
 
 ;;; garbage collector
 ;; TODO: investigate gcmh (garbage collector magic hack) package and maybe
