@@ -119,7 +119,7 @@
         "gD" #'lsp-ui-doc-glance
         "g?" #'lsp-ui-doc-glance)
 
-      (evil-define-key '(normal visual) lsp-ui-doc-frame-mode-map
+      (evil-define-key '(normal visual motion) lsp-ui-doc-frame-mode-map
         "q" #'lsp-ui-doc-unfocus-frame)
 
       (evil-define-key '(normal visual) lsp-ui-imenu-mode-map

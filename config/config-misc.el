@@ -125,11 +125,7 @@ If HOOK is nil, make it a new global pair."
        (setvar 'electric-pair-text-pairs electric-pair-pairs))))
 
 ;; add pairs to org mode
-(misc-add-electric-pairs 'org-mode-hook '((?= . ?=)
-                                          (?/ . ?/)
-                                          (?~ . ?~)
-                                          (?_ . ?_)
-                                          (?` . ?')))
+(misc-add-electric-pairs 'org-mode-hook '((?` . ?')))
 
 
 ;;; jump to definitions without TAGS

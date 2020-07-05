@@ -30,6 +30,7 @@
 (setvar 'lsp-session-file                ; where to store the session file
         (expand-file-name "lsp-session-v1" dotemacs-cache-directory))
 (setvar 'lsp-diagnostics-modeline-scope :project) ; modeline show project err
+(setvar 'lsp-modeline-code-actions-enable nil) ; disable modeline code actions
 (setvar 'lsp-prefer-capf t)             ; whether or not to prefer capf
 (setvar 'lsp-eldoc-enable-hover nil)    ; i'd rather see doc on a popup
 
@@ -66,6 +67,7 @@
 ;;; hooks
 ;; see error statistics in modeline
 (add-hook 'lsp-managed-mode-hook #'lsp-diagnostics-modeline-mode)
+
 ;; format and organize imports on save
 ;; (add-hook 'before-save-hook #'lsp-format-buffer t t)
 ;; (add-hook 'before-save-hook #'lsp-organize-imports t t)
