@@ -122,15 +122,6 @@ after will enjoy the benefits."
         (expand-file-name "abbrevs" user-emacs-directory))
 (setvar 'save-abbrevs 'silently)         ; save abbrev when file is saved
 
-(defun basic-abbrev-dont-insert-char ()
-  "Abbrev hook function, used for `define-abbrev'.
-Our use is to prevent inserting the char that triggered
-expansion. Put this function as a hook function whenever you
-don't want the character that triggered the expansion to be
-inserted." t)
-;; we need to give the function the no-self-insert propertie
-(put 'basic-abbrev-dont-insert-char 'no-self-insert t)
-
 ;;; fill column and auto fill
 (setvar 'fill-column 80)
 
