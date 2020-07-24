@@ -40,12 +40,8 @@
       [mouse-1] #'treemacs-single-click-expand-action)
 
     (after 'evil
-      (bindings-define-keys treemacs-mode-map
-        ((kbd "C-w") evil-window-map)
-        ((kbd "M-h") #'evil-window-left)
-        ((kbd "M-j") #'evil-window-down)
-        ((kbd "M-k") #'evil-window-up)
-        ((kbd "M-l") #'evil-window-right)))))
+      (bindings-define-key treemacs-mode-map
+        (kbd "C-w") evil-window-map))))
 ;;; pdf
 (after 'doc-view
   (bindings-define-keys doc-view-mode-map
@@ -86,6 +82,14 @@
     ((kbd "M-g l") #'dumb-jump-quick-look)
     ((kbd "M-g x") #'dumb-jump-prefer-external)
     ((kbd "M-g z") #'dumb-jump-go-prefer-external-other-window)))
+
+;;; folding
+(after [vimish-fold evil]
+  (evil-define-key '(normal motion) 'global
+    "zf" #'vimish-fold
+    "zd" #'vimish-fold-delete
+    "zE" #'vimish-fold-delete-all
+    "zA" #'vimish-fold-toggle-all))
 
 (provide 'config-bindings-misc)
 ;;; bindings-misc.el ends here

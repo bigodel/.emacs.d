@@ -127,7 +127,6 @@ If HOOK is nil, make it a new global pair."
 ;; add pairs to org mode
 (misc-add-electric-pairs 'org-mode-hook '((?` . ?')))
 
-
 ;;; jump to definitions without TAGS
 (require-package 'dumb-jump)
 (after 'ivy
@@ -149,6 +148,25 @@ If HOOK is nil, make it a new global pair."
 (setvar 'pomidor-sound-tick nil)
 (setvar 'pomidor-sound-tack nil)
 (setvar 'alert-default-style 'libnotify) ; `alert' is a dep of `pomidor'
+
+;;; folding
+;; i like hideshow from Emacs, the problem i have with it is that it doesn't
+;; have persistent folds... so let's use vimish-fold, i guess
+(require-package 'vimish-fold)
+(setvar 'vimish-fold-dir (expand-file-name "vimish-fold/"
+                                           dotemacs-cache-directory))
+(setvar 'vimish-fold-include-last-empty-line t)
+(setvar 'vimish-fold-indication-mode nil)
+(after 'evil
+  (add-to-list 'evil-fold-list
+               `((vimish-fold-mode)
+                 :open-all   vimish-fold-unfold-all
+                 :close-all  vimish-fold-refold-all
+                 :toggle     vimish-fold-toggle
+                 :open       vimish-fold-unfold
+                 :open-rec   nil
+                 :close      vimish-fold-refold)))
+(vimish-fold-global-mode t)
 
 (provide 'config-misc)
 ;;; config-misc.el ends here
