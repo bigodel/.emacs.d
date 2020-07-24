@@ -169,6 +169,7 @@
 (setvar 'rm-blacklist "")
 ;; TODO: make it so that flycheck only displays erros and warnings without the
 ;; FlyC text and make a better way to display LSP information without the
+;; TODO: use a better alternative, this is pretty memory intensive...
 ;; obnoxious [Disconnected] or [blablabla_server:123412]
 ;; only show lsp and flycheck on mode line
 ;; (setvar 'rm-whitelist (format "^ \\(%s\\)$"
