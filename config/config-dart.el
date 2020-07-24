@@ -18,10 +18,18 @@
             (getenv "DART_SDK")))
   (setvar 'dart-format-on-save t)       ; use dartfmt to format code on save
 
-  ;; make projectile aware of dart projects
   (after 'projectile
+    ;; make projectile aware of dart projects
     (add-to-list 'projectile-project-root-files-bottom-up "pubspec.yaml")
-    (add-to-list 'projectile-project-root-files-bottom-up "BUILD"))
+    (add-to-list 'projectile-project-root-files-bottom-up "BUILD")
+
+    ;; ignore some dart and flutter specific directories
+    (add-to-list 'projectile-globally-ignored-directories dart-sdk-path)
+    (add-to-list 'projectile-globally-ignored-directories ".pub-cache")
+    (add-to-list 'projectile-globally-ignored-directories
+                 (if (null (getenv "FLUTTER_SDK"))
+                     (expand-file-name "proj/flutter" (getenv "HOME"))
+                   (getenv "FLUTTER_SDK"))))
 
   ;; start LSP when on dart files. note that `lsp-dart' has `treemacs',
   ;; `lsp-treemacs' and `lsp-ui' as dependency
