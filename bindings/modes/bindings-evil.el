@@ -42,6 +42,7 @@
 
   ;;; normal and visual state bindings
   (evil-define-key '(normal visual) 'global
+    "g=" #'align-regexp
     "[e" #'previous-error
     "]e" #'next-error)
 
