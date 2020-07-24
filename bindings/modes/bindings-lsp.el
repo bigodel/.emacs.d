@@ -90,17 +90,11 @@
   (after 'lsp-ui
     (bindings-define-keys lsp-ui-mode-map
       ([remap imenu] #'lsp-ui-imenu)
-      ;; these are causing an extreme amount of lag, investigate
-      ;; ([remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
-      ;; ([remap xref-find-references] #'lsp-ui-peek-find-references)
+      ([remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
+      ([remap xref-find-references] #'lsp-ui-peek-find-references)
       ((kbd "C-c l <tab>") #'lsp-ui-doc-focus-frame) ; gui
       ((kbd "C-c l tab") #'lsp-ui-doc-focus-frame) ; gui
       ((kbd "C-c l TAB") #'lsp-ui-doc-focus-frame))) ; terminal
-
-  (after 'lsp-treemacs
-    (bindings-define-keys lsp-mode-map
-      ([remap flycheck-list-errors] #'lsp-treemacs-errors-list)
-      ([remap xref-find-references] #'lsp-treemacs-references)))
 
   (after 'evil
     (evil-define-key '(normal visual) lsp-mode-map
