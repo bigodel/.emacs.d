@@ -28,7 +28,7 @@ tabs."
 (add-hook 'makefile-mode-hook (lambda () (setvar 'indent-tabs-mode t 'local)))
 
 ;;; folding
-(add-hook 'prog-mode-hook #'hs-minor-mode)
+;; (add-hook 'prog-mode-hook #'hs-minor-mode)
 
 (defun hs-fold-overlay (overlay)
   "Function set up the OVERLAY to be displayed by `hs-minor-mode'."
@@ -65,8 +65,7 @@ tabs."
     sh-mode-hook
     java-mode-hook
     python-mode-hook
-    makefile-mode-hook
-    proof-mode-hook)
+    makefile-mode-hook)
   "Hooks for major modes to activate `aggressive-indent-mode'.")
 
 (require-package 'aggressive-indent)

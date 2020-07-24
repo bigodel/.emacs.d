@@ -25,9 +25,7 @@
 
 ;;; magit
 (when (executable-find "git")
-  (require-package 'magit)
-  (require-package 'git-gutter)
-  (global-git-gutter-mode))             ; TODO: add bindings for git-gutter
+  (require-package 'magit))
 
 ;;; magit variables
 (after 'magit

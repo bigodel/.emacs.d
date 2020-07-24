@@ -5,6 +5,7 @@
 ;;; Commentary:
 
 ;;; Code:
+;;; install `projectile'
 (require-package 'projectile)
 
 ;; variables
@@ -18,14 +19,16 @@
 (setvar 'projectile-project-compilation-cmd "")
 (setvar 'projectile-project-run-cmd "")
 
-;; start projectile
+;;; start `projectile'
 (projectile-mode)
 
+;;; configuration
 (after 'projectile
+  ;; ignored directories
   (dolist (dir dotemacs-globally-ignored-directories)
     (add-to-list 'projectile-globally-ignored-directories dir))
 
-  ;;; projectile-generic-command
+  ;; projectile-generic-command
   (cond
    ((executable-find "rg")
     (setvar 'projectile-generic-command
