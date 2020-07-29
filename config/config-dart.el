@@ -52,11 +52,12 @@
     (setvar 'lsp-dart-flutter-fringe-colors nil)
     (setvar 'lsp-dart-test-code-lens t)
     (add-hook 'dart-mode-hook #'lsp)
-    (add-hook 'dart-mode-hook (lambda ()
-                                "`company' doesn't work very well
-    with the Dart language server and Emacs, so I disable the idle
-    delay, leaving it to autocomplete only when manually asked."
-                                (setvar 'company-idle-delay nil 'local)))))
+    ;; (add-hook 'dart-mode-hook (lambda ()
+    ;;                             "`company' doesn't work very well
+    ;; with the Dart language server and Emacs, so I disable the idle
+    ;; delay, leaving it to autocomplete only when manually asked."
+    ;;                             (setvar 'company-idle-delay nil 'local)))
+    ))
 
 (provide 'config-dart)
 ;;; config-dart.el ends here
