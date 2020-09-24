@@ -91,5 +91,39 @@
     "zE" #'vimish-fold-delete-all
     "zA" #'vimish-fold-toggle-all))
 
+;;; pomodoro timer
+(after "pomidor-autoloads"
+  ;; start pomidor
+  (bindings-define-key (current-global-map) (kbd "<f12>") #'pomidor)
+
+  ;; define a keymap to use pomidor commands everywhere
+  (setvar 'pomidor-global-map (make-sparse-keymap))
+
+  ;; bind the keys to the keymap
+  (bindings-define-prefix-keys pomidor-global-map "P"
+    ("H" #'pomidor-unhold)
+    ("Q" #'pomidor-quit)
+    ("R" #'pomidor-reset)
+    ((kbd "RET") #'pomidor-reset)
+    ((kbd "<return>") #'pomidor-reset)
+    ((kbd "S-SPC") #'pomidor-break)
+    ("h" #'pomidor-hold))
+
+  (bindings-define-key mode-specific-map
+    "P" pomidor-global-map)
+
+  (after 'evil
+    (evil-define-key '(motion normal visual) pomidor-mode-map
+      "H" #'pomidor-unhold
+      "Q" #'pomidor-quit
+      "R" #'pomidor-reset
+      (kbd "RET") #'pomidor-reset
+      (kbd "<return>") #'pomidor-reset
+      (kbd "S-SPC") #'pomidor-break
+      "h" #'pomidor-hold)
+
+    (evil-define-key '(motion normal visual) 'global
+      "gp" pomidor-global-map)))
+
 (provide 'config-bindings-misc)
 ;;; bindings-misc.el ends here
