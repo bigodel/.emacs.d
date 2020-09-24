@@ -33,7 +33,7 @@
     "[b" #'previous-buffer
     "]b" #'next-buffer
     "Y" "y$"
-    "K" #'man
+    "K" #'evil-lookup
     "gI" #'imenu
     (kbd "M-.") #'xref-find-definitions ; evil overrides this
     (kbd "M-?") #'xref-find-references  ; and this
@@ -42,10 +42,15 @@
 
   ;;; normal and visual state bindings
   (evil-define-key '(normal visual) 'global
-    "g=" #'align-regexp
+    "gA" #'align-regexp
     "[e" #'previous-error
     "]e" #'next-error)
 
+  (after 'config-utils
+    (evil-define-key '(normal visual) 'global
+      "gR" #'utils-rename-current-buffer-file))
+
+  ;;; misc
   (defun evil-mouse-yank-primary ()
     "Insert the contents of primary selection into the location
 of point."
@@ -58,6 +63,7 @@ of point."
   (evil-define-key '(insert normal visual) 'global
     (kbd "<S-insert>") #'evil-mouse-yank-primary)
 
+  ;;; third party
   (after 'evil-commentary
     (bindings-define-keys evil-commentary-mode-map
       ((kbd "s-/") nil)
