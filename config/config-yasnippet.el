@@ -19,7 +19,7 @@
                                                  user-emacs-directory)
                               ,yasnippet-snippets-dir)))
 
-;; active yasnippet globally
+;; active yasnippet "globally"
 (add-hook 'prog-mode-hook #'yas-minor-mode)
 (add-hook 'text-mode-hook #'yas-minor-mode)
 

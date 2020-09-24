@@ -29,10 +29,8 @@
 (setvar 'company-selection-wrap-around t) ; wrap when no more candidates
 (setvar 'company-dabbrev-other-buffers nil) ; only words of the current buffer
 (setvar 'company-backends                 ; default company backends
-        '(company-eclim                  ; completion for eclim
-          company-semantic               ; CEDET semantic
+        '(company-semantic               ; CEDET semantic
           company-clang                  ; clang
-          company-xcode                  ; Xcode
           company-cmake                 ; CMake
           company-capf                  ; Emacs' completion-at-point-functions
           company-files                 ; files (absolute and relative)

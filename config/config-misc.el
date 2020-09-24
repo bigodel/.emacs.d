@@ -148,6 +148,14 @@ If HOOK is nil, make it a new global pair."
 (setvar 'pomidor-sound-tick nil)
 (setvar 'pomidor-sound-tack nil)
 (setvar 'alert-default-style 'libnotify) ; `alert' is a dep of `pomidor'
+(add-hook 'pomidor-mode-hook
+          (lambda ()
+            "Update the fringe for `pomidor-mode'."
+            (setvar 'left-fringe-width 0 'local)
+            (setvar 'right-fringe-width 0 'local)
+            (setvar 'left-margin-width 2 'local)
+            (setvar 'right-margin-width 0 'local)
+            (set-window-buffer nil (current-buffer))))
 
 ;;; folding
 ;; i like hideshow from Emacs, the problem i have with it is that it doesn't
