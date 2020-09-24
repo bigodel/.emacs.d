@@ -32,6 +32,10 @@
     flycheck-error-list-mode)
   "List of major modes that should default to Emacs state.")
 
+(defconst dotemacs-evil-motion-state-major-modes
+  '(pomidor-mode)
+  "List of major modes that should default to Motion state.")
+
 (defconst dotemacs-evil-emacs-state-minor-modes
   '(magit-blame-mode)
   "List of minor modes that when active should switch to Emacs state.")
@@ -52,8 +56,8 @@
 (setvar 'evil-mode-line-format '(before . mode-line-front-space))
 ;; set the cursor for each state
 (setvar 'evil-emacs-state-cursor    '("red" box))
-(setvar 'evil-motion-state-cursor   '("white" box))
-(setvar 'evil-normal-state-cursor   '("magenta" box))
+(setvar 'evil-motion-state-cursor   '("grey" box))
+(setvar 'evil-normal-state-cursor   '("white" box))
 (setvar 'evil-visual-state-cursor   '("orange" box))
 (setvar 'evil-insert-state-cursor   '("red" bar))
 (setvar 'evil-replace-state-cursor  '("red" hbar))
@@ -76,6 +80,10 @@
 ;;; load `evil'
 (evil-mode 1)
 
+;;; evil ex commands config
+;; redefine :bd
+(evil-ex-define-cmd "bd[elete]" (bind (kill-buffer (current-buffer))))
+
 ;; emacs state hooks
 (cl-loop for hook in dotemacs-evil-emacs-state-hooks
          do (add-hook hook #'evil-emacs-state))
@@ -83,6 +91,10 @@
 ;; emacs state in major modes
 (cl-loop for mode in dotemacs-evil-emacs-state-major-modes
          do (evil-set-initial-state mode 'emacs))
+
+;; motion state in major modes
+(cl-loop for mode in dotemacs-evil-motion-state-major-modes
+         do (evil-set-initial-state mode 'motion))
 
 ;; emacs state in minor modes
 (cl-loop for mode in dotemacs-evil-emacs-state-minor-modes
@@ -94,13 +106,13 @@
                                            (evil-normal-state))))))
 ;;; change the modeline tag for each state
 (after 'evil-common
-  (evil-put-property 'evil-state-properties 'normal   :tag " NOR ")
-  (evil-put-property 'evil-state-properties 'insert   :tag " INS ")
-  (evil-put-property 'evil-state-properties 'visual   :tag " VIS ")
-  (evil-put-property 'evil-state-properties 'motion   :tag " MOT ")
-  (evil-put-property 'evil-state-properties 'emacs    :tag " EMA ")
-  (evil-put-property 'evil-state-properties 'replace  :tag " REP ")
-  (evil-put-property 'evil-state-properties 'operator :tag " OPE "))
+  (evil-put-property 'evil-state-properties 'normal   :tag "N")
+  (evil-put-property 'evil-state-properties 'insert   :tag "I")
+  (evil-put-property 'evil-state-properties 'visual   :tag "V")
+  (evil-put-property 'evil-state-properties 'motion   :tag "M")
+  (evil-put-property 'evil-state-properties 'emacs    :tag "E")
+  (evil-put-property 'evil-state-properties 'replace  :tag "R")
+  (evil-put-property 'evil-state-properties 'operator :tag "O"))
 
 (defadvice evil-ex-search-forward (after dotemacs activate)
   "Recenter after a forward search."
