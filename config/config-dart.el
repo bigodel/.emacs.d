@@ -51,13 +51,19 @@
     (setvar 'lsp-dart-flutter-widget-guides nil)
     (setvar 'lsp-dart-flutter-fringe-colors nil)
     (setvar 'lsp-dart-test-code-lens t)
-    (add-hook 'dart-mode-hook #'lsp)
-    ;; (add-hook 'dart-mode-hook (lambda ()
-    ;;                             "`company' doesn't work very well
-    ;; with the Dart language server and Emacs, so I disable the idle
-    ;; delay, leaving it to autocomplete only when manually asked."
-    ;;                             (setvar 'company-idle-delay nil 'local)))
-    ))
+
+    (after 'config-lsp
+      (add-to-list 'dotemacs-lsp-inhibit-paths dart-sdk-path)
+      (add-to-list 'dotemacs-lsp-inhibit-paths ".pub-cache")
+      (add-to-list 'dotemacs-lsp-inhibit-paths
+                   (if (null (getenv "FLUTTER_SDK"))
+                       (expand-file-name "proj/flutter" (getenv "HOME"))
+                     (getenv "FLUTTER_SDK")))
+
+      (add-hook 'dart-mode-hook #'lsp-init))
+
+    ;; setup `dap-mode'
+    (dap-dart-setup)))
 
 (provide 'config-dart)
 ;;; config-dart.el ends here
