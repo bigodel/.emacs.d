@@ -30,16 +30,16 @@
   (define-abbrev coq-mode-abbrev-table "sim" "simpl."))
 
 ;; install `company-coq'
-;; (after [company coq-mode]
-;;   (require-package 'company-coq)
-;;   ;; deactivate some features
-;;   (setvar 'company-coq-disabled-features
-;;           '(smart-subscripts            ; self explanatory
-;;             prettify-symbols            ; self explanatory
-;;             company-defaults))          ; automatic company config
+(after [company coq-mode]
+  (require-package 'company-coq)
+  ;; deactivate some features
+  (setvar 'company-coq-disabled-features
+          '(smart-subscripts            ; self explanatory
+            prettify-symbols            ; self explanatory
+            company-defaults))          ; automatic company config
 
-;;   ;; activate company-coq
-;;   (add-hook 'coq-mode-hook #'company-coq-mode))
+  ;; activate company-coq
+  (add-hook 'coq-mode-hook #'company-coq-mode))
 
 ;;; hooks and misc config
 (after [proof-site undo-tree]
