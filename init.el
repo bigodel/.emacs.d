@@ -39,7 +39,7 @@
   ;;; constants
   (defconst dotemacs-globally-ignored-directories
     '("elpa" ".cache" "target" "dist" "node_modules" ".git" ".hg" ".svn"
-      ".idea" ".vscode")
+      ".idea" ".vscode" "flow-typed")
     "A set of default directories to ignore for anything that
 involves searching.")
 
