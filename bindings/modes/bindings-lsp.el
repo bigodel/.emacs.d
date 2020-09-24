@@ -10,6 +10,11 @@
     ([remap xref-find-definitions] #'lsp-find-definition)
     ([remap xref-find-references] #'lsp-find-references))
 
+  (after 'lsp-ivy
+    (bindings-define-keys lsp-mode-map
+      ([remap xref-find-apropos] #'lsp-ivy-workspace-symbol)
+      ((kbd "C->") #'lsp-ivy-global-workspace-symbol)))
+
   ;; for some reason this needs to be defined here and can't be define in
   ;; bindings-hydra.el like i intended
   (after [hydra lsp-ui]
@@ -92,20 +97,29 @@
       ([remap imenu] #'lsp-ui-imenu)
       ([remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
       ([remap xref-find-references] #'lsp-ui-peek-find-references)
-      ((kbd "C-c l <tab>") #'lsp-ui-doc-focus-frame) ; gui
-      ((kbd "C-c l tab") #'lsp-ui-doc-focus-frame) ; gui
-      ((kbd "C-c l TAB") #'lsp-ui-doc-focus-frame))) ; terminal
+      ((kbd "C-c l <tab>") #'lsp-ui-doc-focus-frame)
+      ((kbd "C-c l TAB") #'lsp-ui-doc-focus-frame)))
 
   (after 'evil
-    (evil-define-key '(normal visual) lsp-mode-map
-      " cl" (key-binding (kbd lsp-keymap-prefix)))
+    (bindings-define-keys bindings-space-map
+      ("l" lsp-command-map "lsp")
+      ((kbd "l TAB") #'lsp-ui-doc-focus-frame)
+      ((kbd "l <tab>") #'lsp-ui-doc-focus-frame))
+
+    (bindings-define-key lsp-mode-map
+      [remap evil-lookup] #'lsp-describe-thing-at-point)
 
     (evil-define-key '(normal visual) lsp-mode-map
-      "K" #'lsp-describe-thing-at-point
       "ga" #'lsp-execute-code-action
-      "gr" #'lsp-rename)
+      "gr" #'lsp-rename
+      "g=" #'lsp-format-buffer
+      "g+" #'lsp-format-region)
 
-    ;; TODO: add lsp-ui-peek-find-definitions
+    (after 'lsp-ivy
+      (evil-define-key '(normal visual) lsp-mode-map
+        "g." #'xref-find-apropos
+        "g>" #'lsp-ivy-global-workspace-symbol))
+
     (after 'lsp-ui
       (evil-define-key '(normal visual) lsp-mode-map
         (kbd "RET") #'hydras/lsp/body
@@ -120,7 +134,13 @@
         "q" #'lsp-ui-imenu--kill)
 
       (evil-define-key '(normal visual) lsp-ui-doc-frame-mode-map
-        "q" #'lsp-ui-doc-unfocus-frame))))
+        "q" #'lsp-ui-doc-unfocus-frame)))
+
+  ;;; `dap-mode'
+  (after 'dap-mode
+    (bindings-define-keys lsp-mode-map
+      ((kbd "<f5>") #'dap-debug)
+      ((kbd "M-<f5>") #'dap-hydra))))
 
 (provide 'config-bindings-lsp)
 ;;; bindings-lsp.el ends here
