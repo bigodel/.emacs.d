@@ -2,6 +2,7 @@
 /*/
 !.gitignore
 !README.org
+!dotemacs.org
 !abbrevs
 !config/
 !core.el

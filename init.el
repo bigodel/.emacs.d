@@ -7,6 +7,8 @@
 ;; Most (if not all,) of this configuration was inspired/copied from Bailey
 ;; Ling's Emacs configuration, found on https://github.com/bling/dotemacs
 ;;
+;; TODO: make this a literate config
+;; TODO: [related to above] move bindings to the packages configs
 ;; TODO: check if without the provide's it makes it faster
 ;; TODO: add a comment to all non-local variables
 ;;; Code:
@@ -35,24 +37,6 @@
       (file-name-handler-alist nil)
       (bindings-directory (expand-file-name "bindings/" user-emacs-directory))
       (config-directory (expand-file-name "config/" user-emacs-directory)))
-
-  ;;; constants
-  (defconst dotemacs-globally-ignored-directories
-    '("elpa" ".cache" "target" "dist" "node_modules" ".git" ".hg" ".svn"
-      ".idea" ".vscode" "flow-typed")
-    "A set of default directories to ignore for anything that
-involves searching.")
-
-  (defconst dotemacs-cache-directory
-    (expand-file-name ".cache/" user-emacs-directory)
-    "The storage location for various persistent files.")
-
-  ;; check if the cache dir exists, if not ask to create it
-  (when (and (not (file-directory-p dotemacs-cache-directory))
-             (y-or-n-p
-              (format "Directory `%s' does not exist! Create it?"
-                      dotemacs-cache-directory)))
-    (make-directory dotemacs-cache-directory t))
 
   ;;; packages
   (setq package-archives

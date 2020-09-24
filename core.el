@@ -9,6 +9,23 @@
 ;; configuration in https://github.com/bling/dotemacs.
 ;;
 ;;; Code:
+;;; constants
+(defconst dotemacs-globally-ignored-directories
+  '("elpa" ".cache" "target" "dist" "node_modules" ".git" ".hg" ".svn"
+    ".idea" ".vscode" "flow-typed")
+  "Default directories to ignore for anything that searches.")
+
+(defconst dotemacs-cache-directory
+  (expand-file-name ".cache/" user-emacs-directory)
+  "The storage location for various persistent files.")
+
+;; check if the cache dir exists, if not ask to create it
+(when (and (not (file-directory-p dotemacs-cache-directory))
+           (y-or-n-p
+            (format "Directory `%s' does not exist! Create it?"
+                    dotemacs-cache-directory)))
+  (make-directory dotemacs-cache-directory t))
+
 ;;; load custom elisp files in the elisp/ directory
 (let ((base (expand-file-name "elisp/" user-emacs-directory)))
   (when (file-directory-p base)

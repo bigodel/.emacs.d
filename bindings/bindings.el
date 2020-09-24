@@ -146,10 +146,10 @@ PREFIX arg as nil. Check its documentation for more details."
 
 (after 'projectile
   (bindings-define-keys mode-specific-map
-    ("p" #'projectile-command-map))
+    ("p" projectile-command-map))
 
   (bindings-define-keys bindings-space-map
-    ("p" #'projectile-command-map)))
+    ("p" projectile-command-map)))
 
 ;; misc bindings
 (bindings-define-keys (current-global-map)
