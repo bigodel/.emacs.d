@@ -288,8 +288,9 @@ buffer name."
   (setvar 'buffer-file-coding-system coding))
 
 ;;; default tabs configuration
-(setvar 'indent-tabs-mode nil) ; spaces instead of tabs
-(setvar 'tab-width 4)
+(setvar 'indent-tabs-mode nil)          ; spaces instead of tabs
+(setvar 'tab-always-indent 'complete)   ; try indenting and then complete on tab
+(setvar 'tab-width 4)                   ; tab is equivalent to 4 spaces
 
 ;;; give me a clean *scratch* buffer upon startup
 (setvar 'inhibit-startup-screen t)
@@ -340,8 +341,9 @@ terminal windows easier."
 ;; (setvar 'browse-url-browser-function 'eww-browse-url)
 
 ;;; file and dir local variables
-(after 'helpful                          ; for some reason helpful resets this
-  (setvar 'enable-local-variables :all)) ; always enable local variables
+;; (after 'helpful                         ; for some reason helpful resets this
+;;   (setvar 'enable-local-variables t))   ; enable local variables
+(setvar 'enable-local-variables t)      ; enable local variables
 (setvar 'enable-local-eval t)           ; enable eval in local variables
 (setvar 'enable-dir-local-variables t)  ; enable dir local variables
 (setvar 'enable-remote-dir-locals t)    ; dir-locals applied to remote files
