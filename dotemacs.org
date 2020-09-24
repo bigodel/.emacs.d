@@ -17,3 +17,53 @@ of what you may encounter here was heavily inspired, or blatantly copied, from
 other people's configuration, and my Elisp skills aren't much better than a
 beginner level, so feel free to copy whatever you might find on this repository
 and incorporate it to your personal configuration.
+
+* Introduction
+
+** The actual =init.el=
+
+* Core
+
+** =core.el=
+
+** =bindings.el=
+
+* Default Emacs configuration
+
+** Dired
+
+** Eshell
+
+* Utility functions
+
+* Eyecandy
+
+* Ivy, Swiper and Counsel
+
+* Org-mode
+
+* Evil
+
+* Hydras
+
+* Snippets
+
+* Completion
+
+* Project interaction
+
+* Version control system
+
+* Prose and code
+
+** Syntax checking
+
+** LSP
+
+** =prog-mode=
+
+** Spelling
+
+** Languages
+
+* Miscellaneous
