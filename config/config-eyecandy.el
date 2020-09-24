@@ -26,31 +26,27 @@
 ;; (setvar 'solarized-height-plus-2 1.0)
 ;; (setvar 'solarized-height-plus-3 1.0)
 ;; (setvar 'solarized-height-plus-4 1.0)
-(load-theme 'manoj-dark t)
+(require-package 'zenburn-theme)
+(load-theme 'zenburn t)
 ;; make fringe same background color as line-number face
-(when (version<= "26" emacs-version)
-  (set-face-background 'fringe (face-background 'line-number)))
+;; (when (version<= "26" emacs-version)
+;;   (set-face-background 'fringe (face-background 'line-number)))
 
 ;; disable the bigger scale on bold function fonts (manoj-dark & misterioso)
-(set-face-attribute 'font-lock-function-name-face nil :height 1.0)
+;; (set-face-attribute 'font-lock-function-name-face nil :height 1.0)
 
 ;; make comments DimGrey (manoj-dark and default)
-(set-face-foreground 'font-lock-comment-face "DimGrey")
-(set-face-foreground 'font-lock-comment-delimiter-face "DimGrey")
+;; (set-face-foreground 'font-lock-comment-face "DimGrey")
+;; (set-face-foreground 'font-lock-comment-delimiter-face "DimGrey")
 
 ;; make comment grey60 (misterioso)
-(set-face-foreground 'font-lock-comment-face "grey60")
-(set-face-foreground 'font-lock-comment-delimiter-face "grey60")
-
-;; change mode-line's face (manoj-dark)
-(set-face-attribute 'mode-line nil :height 1.0 :underline nil) ;
-(set-face-attribute 'mode-line-buffer-id nil :height 1.0)
-(set-face-attribute 'mode-line-inactive nil :height 1.0)
+;; (set-face-foreground 'font-lock-comment-face "grey60")
+;; (set-face-foreground 'font-lock-comment-delimiter-face "grey60")
 
 ;; some customizations to the color of matching parenthesis
-(after 'paren
-  (set-face-foreground 'show-paren-match (face-background 'default))
-  (set-face-background 'show-paren-match (face-foreground 'default)))
+;; (after 'paren
+;;   (set-face-foreground 'show-paren-match (face-background 'default))
+;;   (set-face-background 'show-paren-match (face-foreground 'default)))
 
 ;; some customizations to the color of whitespace
 (after 'whitespace
@@ -66,10 +62,10 @@
                       :background (face-background 'highlight)))
 
 ;; i don't like these defaults because of colorblindness (mostly lsp)
-(set-face-foreground 'error "OrangeRed")
+;; (set-face-foreground 'error "OrangeRed")
 ;; manoj-dark
-(set-face-foreground 'warning "blue")
-(set-face-foreground 'success "DarkGreen")
+;; (set-face-foreground 'warning "blue")
+;; (set-face-foreground 'success "DarkGreen")
 ;; misterioso
 ;; (set-face-foreground 'warning "DeepSkyBlue")
 ;; (set-face-foreground 'success "YellowGreen")
@@ -81,17 +77,56 @@
 (require-package 'tramp-theme)
 (load-theme 'tramp t)
 
-;;; default font
+;;; modeline
+(require-package 'doom-modeline)
+;; function to check if a font is installed
+(defun eyecandy-font-installed-p (font-name)
+  "Check if font with FONT-NAME is available."
+  (if (find-font (font-spec :name font-name))
+      t
+    nil))
+;; if all the icons is not installed, install it
+(when (and (not (eyecandy-font-installed-p "all-the-icons"))
+           (window-system))
+  (all-the-icons-install-fonts t))
+(doom-modeline-mode t)
+;; variables
+(setvar 'doom-modeline-checker-simple-format nil) ; show one number on flycheck
+(setvar 'doom-modeline-vcs-max-length 20)         ; max length of branch name
+(setvar 'doom-modeline-github nil)      ; display the GitHub notifications
+(setvar 'doom-modeline-modal-icon nil)  ; i'd rather have the tag from evil
+(setvar 'doom-modeline-project-detection 'project) ; default way to find project
+;; (setvar 'doom-modeline-buffer-file-name-style 'relative-to-project)
+;; (setvar 'doom-modeline-indent-info t)           ; display indent info
+
+;; change mode-line's face (manoj-dark)
+;; (set-face-attribute 'mode-line nil :height 1.0 :underline nil) ;
+;; (set-face-attribute 'mode-line-buffer-id nil :height 1.0)
+;; (set-face-attribute 'mode-line-inactive nil :height 1.0)
+
+;; modeline indicators
+(line-number-mode t)
+(column-number-mode t)
+(size-indication-mode t)
+
+;; if using git, strip the backend string from the mode line
+;; (setcdr (assq 'vc-mode mode-line-format)
+;;         '((:eval (replace-regexp-in-string "^ Git" " " vc-mode))))
+
+;;; fonts
 ;; this is how it has to be set so it works on the daemon mode
 ;; or configure it on the XResources file
 ;; (add-to-list 'default-frame-alist '(font . "monospace-13"))
 (set-frame-font "monospace-13")
 
+;; tooltip font
+(set-face-attribute 'tooltip nil :font "Sans Serif-13")
+
 ;;; line numbers (only available in Emacs 26+)
 (defconst eyecandy-line-numbers-disabled-hooks
   '(eshell-mode-hook
     woman-mode-hook
-    man-mode-hook
+    Man-mode-hook
     helpful-mode-hook
     help-mode-hook
     treemacs-mode-hook
@@ -151,22 +186,13 @@
 ;;; misc
 (setvar 'x-underline-at-descent-line t)       ; underline below font baseline
 
-;; if using git, strip the backend string from the mode line
-(setcdr (assq 'vc-mode mode-line-format)
-        '((:eval (replace-regexp-in-string "^ Git" " " vc-mode))))
-
 ;; stop blinking cursor
 (blink-cursor-mode -1)
 
-;; modeline indicators
-(line-number-mode t)
-(column-number-mode t)
-(size-indication-mode t)
-
 ;; hide all minor modes from mode line (not needed with doom-modeline)
-(require-package 'rich-minority)
-(rich-minority-mode t)
-(setvar 'rm-blacklist "")
+;; (require-package 'rich-minority)
+;; (rich-minority-mode t)
+;; (setvar 'rm-blacklist "")
 ;; TODO: make it so that flycheck only displays erros and warnings without the
 ;; FlyC text and make a better way to display LSP information without the
 ;; TODO: use a better alternative, this is pretty memory intensive...
