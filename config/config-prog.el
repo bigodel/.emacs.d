@@ -45,16 +45,17 @@ tabs."
 
 (setvar 'hs-set-up-overlay #'hs-fold-overlay)
 
-;;; bunch of modes that don't come with emacs
+;;; bunch of modes that don't come with emacs and are not worth having a file
 (lazy-major-mode "\\.toml\\'" 'toml-mode)
 (lazy-major-mode "\\.yaml\\'" 'yaml-mode)
-(lazy-major-mode "\\.json\\'" 'json-mode)
 (lazy-major-mode "\\.exrc\\'" 'vimrc-mode)
 (lazy-major-mode "[._]?g?vimrc\\'" 'vimrc-mode)
 (lazy-major-mode "\\.vim\\'" 'vimrc-mode)
 (lazy-major-mode "\\.lua\\'" 'lua-mode)
 (lazy-major-mode "\\.csv\\'" 'csv-mode)
 (lazy-major-mode "\\.?cron\\() (tab\\)?\\'" 'crontab-mode)
+(lazy-major-mode "\\.js\\(?:on\\|[hl]int\\(?:rc\\)?\\)\\'" 'json-mode)
+
 
 ;;; aggressive indent
 (defconst dotemacs-misc-aggressive-indent-hooks
