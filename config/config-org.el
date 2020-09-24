@@ -83,14 +83,21 @@ Try again or remove the file `%s' from the config folder" load-file-name))))))
 (setvar 'org-capture-templates
         '(("t" "task" entry
            (file org-inbox-file)
-           "* TODO %?\n:LOGBOOK:\n- Captured on %U\n:END:\n%A\n\n"
-           :empty-lines 1)
+           "* TODO %?\n:LOGBOOK:\n- Captured on %U\n:END:\n[[%F][%f]]\n\n"
+           :empty-lines-before 1 :empty-lines-after 2)
+          ("q" "question" entry
+           (file org-inbox-file)
+           "* QUESTION %? :question:\n:LOGBOOK:\n- Captured on %U\n:END:\n\n"
+           :empty-lines-before 1 :empty-lines-after 2)
           ("n" "note" entry
-           (file+headline org-notes-file "Refile") "* %? :refile:\n:LOGBOOK:\n- Captured on %U\n:END:\n%a\n\n"
-           :empty-lines 1)
+           (file+headline org-notes-file "Refile") "* %? :refile:\n:LOGBOOK:\n- Captured on %U\n:END:\n\n"
+           :empty-lines-before 1 :empty-lines-after 2)
           ("e" "event" entry
-           (file org-inbox-file) "* %?\n%^T\n:LOGBOOK:\n- Capture on %U\n:END:\n%a\n\n"
-           :empty-lines 1)))
+           (file org-inbox-file) "* %? :event:\n%^T\n:LOGBOOK:\n- Captured on %U\n:END:\n\n"
+           :empty-lines-before 1 :empty-lines-after 2)
+          ("a" "appointment" entry
+           (file org-inbox-file) "* %? \n%^T\n:LOGBOOK:\n- Captured on %U\n:END:\n\n"
+           :empty-lines-before 1 :empty-lines-after 2)))
 ;; default file for capturing
 (setvar 'org-default-notes-file org-inbox-file)
 
@@ -103,23 +110,25 @@ Try again or remove the file `%s' from the config folder" load-file-name))))))
 (setvar 'org-log-done 'note)
 (setvar 'org-todo-keywords
         '((sequence "TODO(t!)" "NEXT(n/!)" "STARTED(s@)" "|" "DONE(d@)")
-          (sequence "WAITING(w@/!)" "|" "CANCELLED(c@/!)")))
+          (sequence "QUESTION(q!)" "WAITING(w@/!)" "|" "CANCELLED(c@/!)")))
 
 (setvar 'org-todo-keyword-faces
         '(("TODO" :foreground "red" :weight bold)
           ("NEXT" :foreground "orange" :weight bold)
           ("STARTED" :foreground "cyan" :weight bold)
           ("DONE" :foreground "green" :weight bold)
+          ("QUESTION" :foreground "magenta" :weight bold)
           ("WAITING" :foreground "yellow" :weight bold)
           ("CANCELLED" :foreground "dark red" :weight bold)))
 
 (setvar 'org-todo-state-tags-triggers
-        '(("CANCELLED" ("CANCELLED" . t))
-          ("WAITING" ("WAITING" . t))
-          ("TODO" ("WAITING") ("CANCELLED"))
-          ("NEXT" ("WAITING") ("CANCELLED"))
-          ("STARTED" ("WAITING") ("CANCELLED"))
-          ("DONE" ("WAITING") ("CANCELLED"))))
+        '(("CANCELLED" ("cancelled" . t))
+          ("WAITING" ("waiting" . t))
+          ("QUESTION" ("question" . t))
+          ("TODO" ("waiting") ("cancelled") ("question"))
+          ("NEXT" ("waiting") ("cancelled") ("question"))
+          ("STARTED" ("waiting") ("cancelled") ("question"))
+          ("DONE" ("waiting") ("cancelled") ("question"))))
 
 (defun org-summary-todo (n-done n-not-done)
   "Switch entry to DONE when all subentries are done."
@@ -160,6 +169,10 @@ Try again or remove the file `%s' from the config folder" load-file-name))))))
 
 ;;; additional modules and variables that are loaded with org
 (after 'org
+  ;; remove the default pdf rule for opening org export files and add my own
+  (delete '("\\.pdf\\'" . default) org-file-apps)
+  (add-to-list 'org-file-apps '("\\.pdf\\'" . emacs))
+
   (setvar 'org-format-latex-options     ; make latex preview bigger
           (plist-put org-format-latex-options :scale 1.8))
 
@@ -182,10 +195,9 @@ task."
     (when (member org-state org-done-keywords) ; org-state dynamically bound in
       (org-reset-checkbox-state-maybe))) ; org.el/org-todo
 
-  (add-hook 'org-after-todo-state-change-hook 'org-checklist))
+  (add-hook 'org-after-todo-state-change-hook 'org-checklist)
 
-;;; exporting
-(after 'org
+  ;;; exporting
   (setvar 'org-export-backends (cons 'md org-export-backends))
 
   ;; github flavored markdown
@@ -217,10 +229,8 @@ currently editing as being empty and other strange behaviors."
               (whitespace-mode -1)
               (whitespace-mode t))))
 
-;; third party packages
-(after 'org
-  ;; paste urls in org with the description as the title of the page
-  (require-package 'org-cliplink))
-
-(provide 'config-org)
+;;; third party packages
+;; beautiful bullets
+(require-package 'org-bullets)
+(add-hook 'org-mode-hook #'org-bullets-mode)
 ;;; config-org.el ends here
