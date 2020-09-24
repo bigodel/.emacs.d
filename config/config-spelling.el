@@ -34,7 +34,7 @@
     (add-hook 'text-mode-hook #'turn-on-flyspell)
     (add-hook 'prog-mode-hook #'flyspell-prog-mode)))
 
-(add-hook 'after-init-hook #'spelling-start-ispell)
+;; (add-hook 'after-init-hook #'spelling-start-ispell)
 
 (provide 'config-spelling)
 ;;; config-spelling.el ends here
