@@ -28,13 +28,16 @@
 (setvar 'lsp-log-io nil)                     ; log msgs from the ls in *lsp-log*
 (setvar 'lsp-print-performance nil)          ; print performance information
 (setvar 'lsp-session-file                ; where to store the session file
-        (expand-file-name "lsp-session-v1" dotemacs-cache-directory))
+        (expand-file-name "lsp/lsp-session-v1" dotemacs-cache-directory))
 (setvar 'lsp-diagnostics-modeline-scope :project) ; modeline show project err
 (setvar 'lsp-modeline-code-actions-enable nil) ; disable modeline code actions
 (setvar 'lsp-eldoc-enable-hover nil)    ; i'd rather see doc on a popup
 (setvar 'lsp-completion-provider :capf) ; force using capf
 (setvar 'lsp-enable-file-watchers nil)  ; disable file watchers
 (setvar 'lsp-enable-folding nil)        ; i prefer to use emacs' folding
+(setvar 'lsp-headerline-breadcrumb-enable t) ; enable breadcrumb
+(setvar 'lsp-headerline-breadcrumb-segments  ; what to show on the headerline
+        '(path-up-to-project file symbols))
 
 ;; the performance section recommends settings this variable. it is the amount
 ;; of data which emacs reads from processes. the default (at the time of
@@ -50,7 +53,7 @@
 ;; doc
 (setvar 'lsp-ui-doc-enable t)            ; enable or disable doc
 (setvar 'lsp-ui-doc-delay 0.5)           ; delay to wait and show doc
-(setvar 'lsp-ui-doc-max-width 60)        ; max width of the doc pop-up
+(setvar 'lsp-ui-doc-max-width 150)       ; max width of the doc pop-up
 (setvar 'lsp-ui-doc-use-webkit nil)      ; use emacs native pop ups
 (setvar 'lsp-ui-doc-include-signature t) ; include object signature
 (setvar 'lsp-ui-doc-position 'at-point)  ; position of the doc pop up
@@ -71,13 +74,10 @@
 (when (version<= "26" emacs-version)
   (require-package 'dap-mode)        ; has lsp-mode and treemacs as dependencies
 
+  ;;; variables
+  (setvar 'dap-breakpoints-file
+          (expand-file-name "lsp/dap-breakpoints" dotemacs-cache-directory))
   (dap-auto-configure-mode t)
-  (setvar 'dap-auto-configure-features '(sessions ; windows to show when in
-                                         locals   ;`dap-auto-configure-mode'
-                                         breakpoints
-                                         expressions
-                                         controls
-                                         tooltip))
 
   (add-hook 'dap-stopped-hook
             (lambda (arg)
