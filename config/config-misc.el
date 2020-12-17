@@ -26,9 +26,16 @@
 (after 'evil
   (evil-make-overriding-map disable-mouse-mode-map))
 
+;;; `which-key'
+(require-package 'which-key)
+(setvar 'which-key-idle-delay 1.0)      ; delay (in secs) for which-key pop up
+(setvar 'which-key-allow-evil-operators t) ; show evil operators with which key
+(which-key-mode)
+
 ;;; undo like vim (only needed if using evil-mode)
 (after 'evil
   (require-package 'undo-tree)
+  (setvar 'evil-undo-system 'undo-tree)
   (setvar 'undo-tree-auto-save-history t)
   (setvar 'undo-tree-enable-undo-in-region nil)
   (setvar 'undo-tree-history-directory-alist
