@@ -98,7 +98,7 @@
 (setvar 'doc-view-continuous t)          ; continuous mode in `doc-view-mode'
 (setvar 'doc-view-resolution 200)        ; resolution of images
 
-;;; `pdf-view-mode'
+;;; `pdf-tools'
 (require-package 'pdf-tools)
 ;; variables
 (setvar 'pdf-view-resize-factor 1.1)
@@ -113,7 +113,7 @@
             "Lambda function to use `pdf-tools' in
 `doc-view-mode' when in a pdf file."
             (require 'pdf-tools)
-            (pdf-tools-install)
+            (pdf-tools-install 'no-query)
             (pdf-view-mode)))
 
 ;;; better help
