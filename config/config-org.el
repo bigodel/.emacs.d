@@ -148,7 +148,8 @@ Try again or remove the file `%s' from the config folder" load-file-name))))))
 
 ;;; refile configuration
 (setvar 'org-refile-targets '((org-agenda-files :maxlevel . 9)
-                              (org-notes-file :maxlevel . 9)))
+                              (org-notes-file :maxlevel . 9)
+                              (org-secrets-file :maxlevel . 9)))
 (setvar 'org-refile-use-outline-path 'file) ; show the filename on refiling
 ;; we need to tell org to don't complete in steps since we're using ivy
 (setvar 'org-outline-path-complete-in-steps nil)
