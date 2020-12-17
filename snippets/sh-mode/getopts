@@ -1,0 +1,9 @@
+# key: getopts
+# name: getopts
+# --
+while getopts '?h' opt; do
+    case $opt in
+        h) help && exit 0 ;;
+        ?) >&2 help && exit 1 ;;
+    esac
+done
