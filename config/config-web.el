@@ -33,7 +33,7 @@
   (add-hook 'stylus-mode-hook #'rainbow-mode))
 
 ;;; `web-mode' installation
-(lazy-major-mode "\\.html?$" 'web-mode)
+(lazy-major-mode "\\.html?\\'" 'web-mode)
 (lazy-major-mode "\\.phtml\\'" 'web-mode)
 (lazy-major-mode "\\.tpl\\.php\\'" 'web-mode)
 (lazy-major-mode "\\.[agj]sp\\'" 'web-mode)
@@ -41,6 +41,7 @@
 (lazy-major-mode "\\.erb\\'" 'web-mode)
 (lazy-major-mode "\\.mustache\\'" 'web-mode)
 (lazy-major-mode "\\.djhtml\\'" 'web-mode)
+(lazy-major-mode "\\.ejs\\'" 'web-mode)
 
 ;;; `web-mode' configuration
 (after 'web-mode
