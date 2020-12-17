@@ -225,14 +225,39 @@ task."
     (when (member org-state org-done-keywords) ; org-state dynamically bound in
       (org-reset-checkbox-state-maybe))) ; org.el/org-todo
 
-  (add-hook 'org-after-todo-state-change-hook 'org-checklist)
+  (add-hook 'org-after-todo-state-change-hook 'org-checklist))
 
-  ;;; exporting
+;;; exporting
+(after 'ox
   (setvar 'org-export-backends (cons 'md org-export-backends))
+  (setvar 'org-export-backends (cons 'beamer org-export-backends))
+  (setvar 'org-export-backends (cons 'man org-export-backends))
 
-  ;; github flavored markdown
-  (require-package 'ox-gfm)
-  (setvar 'org-export-backends (cons 'gfm org-export-backends)))
+  ;; pandoc exporting
+  (when (executable-find "pandoc")
+    (require-package 'ox-pandoc)
+    (setvar 'org-export-backends (cons 'pandoc org-export-backends))))
+
+;;; babel
+(after 'ob
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((emacs-lisp . t)
+     (C . t)
+     (coq . t)
+     (awk . t)
+     (haskell . t)
+     (java . t)
+     (js . t)
+     (latex . t)
+     (ledger . t)
+     (lisp . t)
+     (makefile . t)
+     (python . t)
+     (ruby . t)
+     (sed . t)
+     (shell . t)
+     (sql . t))))
 
 ;;; {La}TeX configuration
 ;; TODO: create an article.tex inside tex/ for article templates and other kinds
@@ -240,6 +265,7 @@ task."
 ;; and it would be a snippet based on this template (ideally)
 
 ;;; misc
+;; redisplay inline images after executing a code with babel
 (add-hook 'org-babel-after-execute-hook #'org-redisplay-inline-images)
 
 (after 'whitespace
