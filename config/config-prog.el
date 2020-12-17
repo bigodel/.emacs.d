@@ -58,20 +58,19 @@ tabs."
 
 
 ;;; aggressive indent
-(defconst dotemacs-misc-aggressive-indent-hooks
-  '(c-mode-hook
-    cc-mode-hook
-    lisp-mode-hook
-    emacs-lisp-mode-hook
-    sh-mode-hook
-    java-mode-hook
-    python-mode-hook
-    makefile-mode-hook)
-  "Hooks for major modes to activate `aggressive-indent-mode'.")
+(defconst prog-aggressive-indent-modes
+  '(c-mode
+    cc-mode
+    lisp-mode
+    emacs-lisp-mode
+    sh-mode
+    java-mode
+    python-mode
+    makefile-mode)
+  "Major modes to activate `aggressive-indent-mode'.")
 
 (require-package 'aggressive-indent)
-(dolist (hook dotemacs-misc-aggressive-indent-hooks)
-  (add-hook hook #'aggressive-indent-mode))
+(add-hook-to-modes prog-aggressive-indent-modes #'aggressive-indent-mode)
 
 ;;; rainbow mode (show background color for strings)
 (require-package 'rainbow-mode)

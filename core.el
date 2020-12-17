@@ -1,4 +1,4 @@
-;;; core-boot.el --- Core file for the boot  -*- lexical-binding: t; -*-
+;;; core.el --- Core file for the boot  -*- lexical-binding: t; -*-
 
 ;; Author: João Pedro de Amorim Paula <maybe_add_email@later>
 
@@ -166,5 +166,39 @@ If DIR is provided, ask to create DIR."
 
 (add-to-list 'find-file-not-found-functions #'create-non-existent-directory)
 
+(defun add-hooks (hooks fn &optional local)
+  "Add hook to each of the HOOKS for FN.
+
+If LOCAL is non-nil modify the hook's buffer-local value rather
+than its global value."
+  (dolist (hook hooks)
+    (add-hook hook fn nil local)))
+
+(defun add-hook-to-modes (modes fn &optional local)
+  "Add hook for FN to MODES.
+
+If LOCAL is non-nil modify the hook's buffer-local value rather
+than its global value."
+  (dolist (mode modes)
+    (let ((hook (concat (symbol-name mode) "-hook")))
+      (add-hook (intern hook) fn nil local))))
+
+(defun remove-hooks (hooks fn &optional local)
+  "Remove hook to each of the HOOKS for FN.
+
+If LOCAL is non-nil modify the hook's buffer-local value rather
+than its global value."
+  (dolist (hook hooks)
+    (remove-hook hook fn local)))
+
+(defun remove-hook-from-modes (modes fn &optional local)
+  "Remove hook for FN to MODES.
+
+If LOCAL is non-nil modify the hook's buffer-local value rather
+than its global value."
+  (dolist (mode modes)
+    (let ((hook (concat (symbol-name mode) "-hook")))
+      (remove-hooks (intern hook) fn local))))
+
 (provide 'core-boot)
-;;; core-boot.el ends here
+;;; core.el ends here

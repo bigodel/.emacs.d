@@ -117,56 +117,57 @@
 ;; this is how it has to be set so it works on the daemon mode
 ;; or configure it on the XResources file
 ;; (add-to-list 'default-frame-alist '(font . "monospace-13"))
-(set-frame-font "monospace-13")
+(set-frame-font "monospace-13" t)
 
 ;; tooltip font
 (set-face-attribute 'tooltip nil :font "Sans Serif-13")
 
-;;; line numbers (only available in Emacs 26+)
-(defconst eyecandy-line-numbers-disabled-hooks
-  '(eshell-mode-hook
-    woman-mode-hook
-    Man-mode-hook
-    helpful-mode-hook
-    help-mode-hook
-    treemacs-mode-hook
-    dired-mode-hook
-    term-mode-hook
-    doc-view-mode-hook
-    pdf-view-mode-hook
-    lsp-ui-doc-frame-mode-hook
-    lsp-ui-imenu-mode-hook
-    magit-status-mode-hook
-    org-agenda-mode-hook
-    man-mode-hook
-    pomidor-mode-hook
-    proof-goals-mode-hook
-    proof-response-mode-hook)
+;;; `display-line-numbers-mode'
+(defconst eyecandy-line-numbers-disabled-modes
+  '(eshell-mode
+    woman-mode
+    Man-mode
+    helpful-mode
+    help-mode
+    treemacs-mode
+    dired-mode
+    term-mode
+    doc-view-mode
+    pdf-view-mode
+    lsp-ui-doc-frame-mode
+    lsp-ui-imenu-mode
+    magit-status-mode
+    org-agenda-mode
+    man-mode
+    pomidor-mode
+    proof-goals-mode
+    proof-response-mode
+    calc-mode
+    calc-trail-mode
+    undo-tree-visualizer-mode
+    ibuffer-mode)
   "Modes to disable `display-line-numbers-mode'.")
 
 (when (fboundp 'display-line-numbers-mode)
   (setvar 'display-line-numbers t)
   (setvar 'display-line-numbers-current-absolute t)
 
-  (dolist (hook eyecandy-line-numbers-disabled-hooks)
-    (add-hook hook (lambda ()
-                     "Disable `display-line-numbers-mode'."
-                     (display-line-numbers-mode -1)))))
+  (add-hook-to-modes eyecandy-line-numbers-disabled-modes
+                     (lambda ()
+                       "Disable `display-line-numbers-mode'."
+                       (display-line-numbers-mode -1))))
 
 ;;; hl-line
-(defconst eyecandy-hl-line-enabled-hooks
-  '(treemacs-mode-hook
-    dired-mode-hook
-    org-agenda-mode-hook
-    package-menu-mode-hook
-    profiler-report-mode-hook
-    ibuffer-mode-hook)
+(defconst eyecandy-hl-line-enabled-modes
+  '(treemacs-mode
+    dired-mode
+    org-agenda-mode
+    package-menu-mode
+    profiler-report-mode
+    ibuffer-mode)
   "Modes to enable `hl-line-mode'.")
 
-(dolist (hook eyecandy-hl-line-enabled-hooks)
-  (add-hook hook (lambda ()
-                   "Enable `hl-line-mode'."
-                   (hl-line-mode t))))
+(add-hook-to-modes eyecandy-hl-line-enabled-modes #'hl-line-mode)
 ;;; whitespace
 (setvar 'whitespace-style '(face trailing tabs tab-mark lines-tail empty))
 

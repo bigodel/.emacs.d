@@ -6,15 +6,17 @@
 
 ;;; Code:
 ;;; constants
-(defconst dotemacs-evil-emacs-state-hooks
+(defconst evil-emacs-state-hooks
   '(org-log-buffer-setup-hook
     org-capture-mode-hook)
   "List of hooks to automatically start up in Evil Emacs state.")
 
-(defconst dotemacs-evil-emacs-state-major-modes
+(defconst evil-emacs-state-major-modes
   '(ibuffer-mode
     bookmark-bmenu-mode
     calculator-mode
+    calc-mode
+    calc-trail-mode
     makey-key-mode
     dired-mode
     diff-mode
@@ -32,13 +34,9 @@
     flycheck-error-list-mode)
   "List of major modes that should default to Emacs state.")
 
-(defconst dotemacs-evil-motion-state-major-modes
+(defconst evil-motion-state-major-modes
   '(pomidor-mode)
   "List of major modes that should default to Motion state.")
-
-(defconst dotemacs-evil-emacs-state-minor-modes
-  '(magit-blame-mode)
-  "List of minor modes that when active should switch to Emacs state.")
 
 ;;; install `evil-mode'
 (require-package 'evil)
@@ -85,25 +83,16 @@
 (evil-ex-define-cmd "bd[elete]" (bind (kill-buffer (current-buffer))))
 
 ;; emacs state hooks
-(cl-loop for hook in dotemacs-evil-emacs-state-hooks
-         do (add-hook hook #'evil-emacs-state))
+(add-hooks evil-emacs-state-hooks #'evil-emacs-state)
 
 ;; emacs state in major modes
-(cl-loop for mode in dotemacs-evil-emacs-state-major-modes
-         do (evil-set-initial-state mode 'emacs))
+(dolist (mode evil-emacs-state-major-modes)
+  (evil-set-initial-state mode 'emacs))
 
 ;; motion state in major modes
-(cl-loop for mode in dotemacs-evil-motion-state-major-modes
-         do (evil-set-initial-state mode 'motion))
+(dolist (mode evil-motion-state-major-modes)
+  (evil-set-initial-state mode 'motion))
 
-;; emacs state in minor modes
-(cl-loop for mode in dotemacs-evil-emacs-state-minor-modes
-         do (let ((hook (concat (symbol-name mode) "-hook")))
-              (add-hook (intern hook) `(lambda ()
-                                         "Start minor mode in Emacs state."
-                                         (if ,mode
-                                             (evil-emacs-state)
-                                           (evil-normal-state))))))
 ;;; change the modeline tag for each state
 (after 'evil-common
   (evil-put-property 'evil-state-properties 'normal   :tag "N")
