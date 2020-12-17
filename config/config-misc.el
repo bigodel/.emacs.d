@@ -143,8 +143,16 @@ If HOOK is nil, make it a new global pair."
        (setvar 'electric-pair-pairs (append electric-pair-pairs ,pairs))
        (setvar 'electric-pair-text-pairs electric-pair-pairs))))
 
-;; add pairs to org mode
-(misc-add-electric-pairs 'org-mode-hook '((?` . ?')))
+;; disable auto-pairing of < in `org-mode'
+(add-hook
+ 'org-mode-hook
+ (lambda ()
+   (setvar 'electric-pair-inhibit-predicate
+           `(lambda (c)
+              (if (char-equal c ?<) t (,electric-pair-inhibit-predicate c)))
+           'local)))
+
+
 
 ;;; jump to definitions without TAGS
 (require-package 'dumb-jump)
