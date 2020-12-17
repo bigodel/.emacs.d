@@ -43,6 +43,18 @@
   (setvar 'undo-tree-visualizer-timestamps t)
   (setvar 'undo-tree-visualizer-diff t)
   (add-hook 'after-init-hook #'global-undo-tree-mode))
+;; (require-package 'undo-fu)
+;; (require-package 'undo-fu-session)
+;; (global-undo-fu-session-mode)
+;; ;; set evil's undo system to `undo-fu'
+;; (setvar 'evil-undo-system 'undo-fu)
+;; ;; `undo-fu' variables
+;; (setvar 'undo-fu-ignore-keyboard-quit t)
+;; ;; `undo-fu-session' variables
+;; (setvar 'undo-fu-session-directory (expand-file-name ; where to store undo
+;;                                     "undo-fu-session" ; session information
+;;                                     dotemacs-cache-directory))
+;; (setvar 'undo-fu-session-linear nil)) ; use non-linear undo
 
 ;;; better window management with `ace-window'
 (require-package 'ace-window)
