@@ -341,9 +341,7 @@ terminal windows easier."
 ;; (setvar 'browse-url-browser-function 'eww-browse-url)
 
 ;;; file and dir local variables
-;; (after 'helpful                         ; for some reason helpful resets this
-;;   (setvar 'enable-local-variables t))   ; enable local variables
-(setvar 'enable-local-variables t)      ; enable local variables
+(setvar 'enable-local-variables :all)   ; enable local variables
 (setvar 'enable-local-eval t)           ; enable eval in local variables
 (setvar 'enable-dir-local-variables t)  ; enable dir local variables
 (setvar 'enable-remote-dir-locals t)    ; dir-locals applied to remote files
@@ -365,7 +363,6 @@ terminal windows easier."
 (setvar 'track-eol t)                   ; vertical motion at eol keeps at eol
 (setvar 'create-lockfiles t)            ; create lockfiles (see manual for info)
 (setvar 'enable-recursive-minibuffers t) ; recursive minibuffers (be careful)
-(setvar 'enable-local-variables nil)     ; don't query about safe variables
 (setvar 'mouse-yank-at-point t)          ; don't move point to mouse paste
 (setvar 'truncate-lines nil)             ; display or not continuous lines
 (setvar 'truncate-partial-width-windows nil) ; respect the value of the above
