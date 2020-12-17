@@ -26,8 +26,8 @@
 ;; (setvar 'solarized-height-plus-2 1.0)
 ;; (setvar 'solarized-height-plus-3 1.0)
 ;; (setvar 'solarized-height-plus-4 1.0)
-(require-package 'zenburn-theme)
-(load-theme 'zenburn t)
+;; (require-package 'zenburn-theme)
+(load-theme 'wombat t)
 ;; make fringe same background color as line-number face
 ;; (when (version<= "26" emacs-version)
 ;;   (set-face-background 'fringe (face-background 'line-number)))
