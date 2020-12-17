@@ -171,7 +171,7 @@ after will enjoy the benefits."
 (setvar 'ibuffer-use-other-window t)           ; use other window
 ;; define filter groups
 (setvar 'ibuffer-saved-filter-groups
-        '(("home"
+        '(("default"
            ("erc" (mode . erc-mode))
            ("gnus" (or
                     (mode . message-mode)
@@ -199,7 +199,8 @@ after will enjoy the benefits."
                      (name . "^\\*scratch\\*$")
                      (name . "^\\*Messages\\*$")
                      (name . "^\\*Load Times\\*$")))
-           ("dired" (mode . dired-mode)))))
+           ("dired" (mode . dired-mode))
+           ("cest" (filename . "cestapp")))))
 
 ;; use the above defined filter group
 (add-hook 'ibuffer-mode-hook
