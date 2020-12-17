@@ -71,26 +71,9 @@ PREFIX arg as nil. Check its documentation for more details."
   `(bindings-define-prefix-keys ,keymap nil
      (,sequence ,binding ,description)))
 
-;;; show possible combinations of keys for prefix keys
-(require-package 'which-key)
-(setvar 'which-key-idle-delay 1.0)       ; delay (in secs) for which-key pop up
-(setvar 'which-key-allow-evil-operators t) ; show evil operators with which key
-(which-key-mode)
-
-;; TODO: this package is part of magit, so maybe add this to the vcs
-;; configuration file (where magit configuration is)
-(require-package 'transient)
-(setvar 'transient-history-file (expand-file-name "transient/history.el"
-                                                  dotemacs-cache-directory))
-(setvar 'transient-levels-file (expand-file-name "transient/levels.el"
-                                                 dotemacs-cache-directory))
-(setvar 'transient-values-file (expand-file-name "transient/values.el"
-                                                 dotemacs-cache-directory))
-
-;;; bindings
-;;; SPC as a prefix key
+;;; SPC bindings
+;; SPC as a prefix key
 (setvar 'bindings-space-map (make-sparse-keymap))
-;; SPC bindings
 (bindings-define-prefix-keys bindings-space-map "SPC"
   (" " #'execute-extended-command "M-x")
   ("x" ctl-x-map)
@@ -149,7 +132,11 @@ PREFIX arg as nil. Check its documentation for more details."
     ("p" projectile-command-map))
 
   (bindings-define-keys bindings-space-map
-    ("p" projectile-command-map)))
+    ("p" projectile-command-map))
+
+  (after 'evil
+    (evil-define-key '(normal visual motion) 'global
+      "gp" projectile-command-map)))
 
 ;; misc bindings
 (bindings-define-keys (current-global-map)
