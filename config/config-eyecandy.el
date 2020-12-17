@@ -186,7 +186,26 @@
 (require-package 'ws-butler)
 (ws-butler-global-mode)
 
+;;; `display-fill-column-indicator-mode' displays a character on `fill-column'
+(when (fboundp 'display-fill-column-indicator-mode)
+  (global-display-fill-column-indicator-mode t)
+
+  ;; disable fill column indicator in the same modes as line numbers and in
+  ;; `org-mode' because it doesn't behave well with `org-indent-mode'
+  (add-hook-to-modes eyecandy-line-numbers-disabled-modes
+                     (lambda ()
+                       "Disable `display-fill-column-indicator-mode'."
+                       (display-fill-column-indicator-mode -1)))
+  (add-hook 'org-mode-hook (lambda ()
+                             "Disable `display-fill-column-indicator-mode'."
+                             (display-fill-column-indicator-mode -1))))
+
 ;;; misc
+;; show a window divider on bottom with `window-divider-mode'
+(setvar 'window-divider-default-places 'bottom-only)
+(setvar 'window-divider-default-bottom-width 1)
+(window-divider-mode t)
+
 (setvar 'x-underline-at-descent-line t)       ; underline below font baseline
 
 ;; stop blinking cursor
