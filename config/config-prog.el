@@ -71,6 +71,14 @@ tabs."
 
 (require-package 'aggressive-indent)
 (add-hook-to-modes prog-aggressive-indent-modes #'aggressive-indent-mode)
+;; add some commands that should not trigger aggressive indent
+(after [aggressive-indent evil]
+  (add-to-list 'aggressive-indent-protected-commands 'evil-undo t)
+  (add-to-list 'aggressive-indent-protected-commands 'evil-redo t))
+(after [aggressive-indent ws-butler]
+  (add-to-list 'aggressive-indent-protected-commands 'ws-butler-before-save t)
+  (add-to-list 'aggressive-indent-protected-commands 'ws-butler-after-save t)
+  (add-to-list 'aggressive-indent-protected-commands 'ws-butler-before-revert t))
 
 ;;; rainbow mode (show background color for strings)
 (require-package 'rainbow-mode)
