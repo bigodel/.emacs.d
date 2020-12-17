@@ -195,5 +195,16 @@ If HOOK is nil, make it a new global pair."
                  :close      vimish-fold-refold)))
 (vimish-fold-global-mode t)
 
+;;; `ledger-mode'
+;; install and automatically use `ledger-mode' for files with .ldgr extension.
+;; this is not the standard extension for ledger, i just prefer.
+(lazy-major-mode "\\.ldgr\\'" 'ledger-mode)
+(after 'ledger-mode
+  (require-package 'flycheck-ledger))
+
+;;; `editorconfig' plugin to work with EditorConfig
+(require-package 'editorconfig)
+(editorconfig-mode t)
+
 (provide 'config-misc)
 ;;; config-misc.el ends here
