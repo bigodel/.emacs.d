@@ -42,6 +42,7 @@
     (after 'evil
       (bindings-define-key treemacs-mode-map
         (kbd "C-w") evil-window-map))))
+
 ;;; pdf
 (after 'doc-view
   (bindings-define-keys doc-view-mode-map
@@ -83,14 +84,6 @@
     ((kbd "M-g x") #'dumb-jump-prefer-external)
     ((kbd "M-g z") #'dumb-jump-go-prefer-external-other-window)))
 
-;;; folding
-(after [vimish-fold evil]
-  (evil-define-key '(normal motion) 'global
-    "zf" #'vimish-fold
-    "zd" #'vimish-fold-delete
-    "zE" #'vimish-fold-delete-all
-    "zA" #'vimish-fold-toggle-all))
-
 ;;; pomodoro timer
 (after "pomidor-autoloads"
   ;; start pomidor
@@ -123,7 +116,20 @@
       "h" #'pomidor-hold)
 
     (evil-define-key '(motion normal visual) 'global
-      "gp" pomidor-global-map)))
+      "gP" pomidor-global-map)))
+
+;;; folding
+(after [vimish-fold evil]
+  (evil-define-key '(normal motion) 'global
+    "zf" #'vimish-fold
+    "zd" #'vimish-fold-delete
+    "zE" #'vimish-fold-delete-all
+    "zA" #'vimish-fold-toggle-all))
+
+;;; `hyperbole'
+(after "hyperbole-autoloads"
+  ;; this already cover "SPC h h"
+  (bindings-define-key (current-global-map) (kbd "C-h h") 'hyperbole))
 
 (provide 'config-bindings-misc)
 ;;; bindings-misc.el ends here
