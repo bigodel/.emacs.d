@@ -29,6 +29,14 @@
 
 ;;; magit variables
 (after 'magit
+  ;; transient configuration
+  (setvar 'transient-history-file (expand-file-name "transient/history.el"
+                                                    dotemacs-cache-directory))
+  (setvar 'transient-levels-file (expand-file-name "transient/levels.el"
+                                                   dotemacs-cache-directory))
+  (setvar 'transient-values-file (expand-file-name "transient/values.el"
+                                                   dotemacs-cache-directory))
+
   (setvar 'vc-handled-backends (delq 'Git vc-handled-backends)) ; no vc for git
   (setvar 'magit-diff-arguments '("--histogram"))
   (setvar 'magit-completing-read-function 'ivy-completing-read)
