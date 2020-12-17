@@ -93,8 +93,11 @@
 (setvar 'doom-modeline-checker-simple-format nil) ; show one number on flycheck
 (setvar 'doom-modeline-vcs-max-length 20)         ; max length of branch name
 (setvar 'doom-modeline-github nil)      ; display the GitHub notifications
+(setvar 'doom-modeline-icon t)   ; force icons (they are disabled with --daemon)
 (setvar 'doom-modeline-modal-icon nil)  ; i'd rather have the tag from evil
-(setvar 'doom-modeline-project-detection 'project) ; default way to find project
+(setvar 'doom-modeline-buffer-file-name-style ; how to show buffer name
+        'truncate-with-project)
+;; (setvar 'doom-modeline-project-detection 'project) ; default way to find project
 ;; (setvar 'doom-modeline-buffer-file-name-style 'relative-to-project)
 ;; (setvar 'doom-modeline-indent-info t)           ; display indent info
 
