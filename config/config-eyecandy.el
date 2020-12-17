@@ -55,11 +55,10 @@
                       :foreground nil)) ; keep syntax highlighting
 
 ;; some customizations to the color of the highlighted line
-(after 'hl-line
-  ;; keep colors when on `hl-line'
-  (set-face-attribute 'hl-line nil
-                      :inherit nil
-                      :background (face-background 'highlight)))
+;; keep colors when on `hl-line'
+(set-face-attribute 'hl-line nil
+                    :inherit nil
+                    :background (face-background 'highlight))
 
 ;; i don't like these defaults because of colorblindness (mostly lsp)
 ;; (set-face-foreground 'error "OrangeRed")
