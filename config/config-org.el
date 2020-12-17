@@ -50,8 +50,13 @@ Try again or remove the file `%s' from the config folder" load-file-name))))))
 (defconst org-notes-file (expand-file-name "notes.org" org-directory)
   "The path to the file where to add notes, cheatsheets and etc.")
 
+(defconst org-secrets-file
+  (expand-file-name "secrets.org" (concat (or (getenv "XDG_DOCUMENTS_DIR")
+                                              "~/docs") "/secret"))
+  "The path to the file with sensitive information that I don't want public.")
+
 (defconst org-journal-file (expand-file-name "journal.org" org-directory)
-  "The path to the file where you want to make journal entries.")
+"The path to the file where you want to make journal entries.")
 
 ;;; agenda configuration
 (setvar 'org-agenda-files
