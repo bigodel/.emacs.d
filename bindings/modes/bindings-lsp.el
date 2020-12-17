@@ -129,12 +129,10 @@
 
       (evil-define-key '(normal visual motion) lsp-ui-doc-frame-mode-map
         "q" #'lsp-ui-doc-unfocus-frame)
+      ;; (define-key lsp-ui-doc-frame-mode-map "q" nil)
 
       (evil-define-key '(normal visual) lsp-ui-imenu-mode-map
-        "q" #'lsp-ui-imenu--kill)
-
-      (evil-define-key '(normal visual) lsp-ui-doc-frame-mode-map
-        "q" #'lsp-ui-doc-unfocus-frame)))
+        "q" #'lsp-ui-imenu--kill)))
 
   ;;; `dap-mode'
   (after 'dap-mode
