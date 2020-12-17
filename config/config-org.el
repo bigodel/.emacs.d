@@ -119,7 +119,8 @@ Try again or remove the file `%s' from the config folder" load-file-name))))))
 (setvar 'org-log-done 'note)
 (setvar 'org-todo-keywords
         '((sequence "TODO(t!)" "NEXT(n/!)" "STARTED(s@)" "|" "DONE(d@)")
-          (sequence "QUESTION(q!)" "WAITING(w@/!)" "|" "CANCELLED(c@/!)")))
+          (sequence "WAITING(w@/!)" "|" "CANCELLED(c@/!)")
+          (sequence "QUESTION(q!)" "|" "ANSWERED(a@/!)")))
 
 (setvar 'org-todo-keyword-faces
         '(("TODO" :foreground "red" :weight bold)
@@ -127,17 +128,19 @@ Try again or remove the file `%s' from the config folder" load-file-name))))))
           ("STARTED" :foreground "cyan" :weight bold)
           ("DONE" :foreground "green" :weight bold)
           ("QUESTION" :foreground "magenta" :weight bold)
+          ("ANSWERED" :foreground "purple" :weight bold)
           ("WAITING" :foreground "yellow" :weight bold)
           ("CANCELLED" :foreground "dark red" :weight bold)))
 
 (setvar 'org-todo-state-tags-triggers
-        '(("CANCELLED" ("cancelled" . t))
-          ("WAITING" ("waiting" . t))
-          ("QUESTION" ("question" . t))
-          ("TODO" ("waiting") ("cancelled") ("question"))
-          ("NEXT" ("waiting") ("cancelled") ("question"))
-          ("STARTED" ("waiting") ("cancelled") ("question"))
-          ("DONE" ("waiting") ("cancelled") ("question"))))
+        '(("CANCELLED" ("cancelled" . t) ("waiting"))
+          ("WAITING" ("waiting" . t) ("cancelled"))
+          ("QUESTION" ("question" . t) ("answered"))
+          ("ANSWERED" ("answered" . t) ("question"))
+          ("TODO" ("waiting") ("cancelled") ("question") ("answered"))
+          ("NEXT" ("waiting") ("cancelled") ("question") ("answered"))
+          ("STARTED" ("waiting") ("cancelled") ("question") ("answered"))
+          ("DONE" ("waiting") ("cancelled") ("question") ("answered"))))
 
 (defun org-summary-todo (n-done n-not-done)
   "Switch entry to DONE when all subentries are done."
