@@ -30,6 +30,10 @@ Try again or remove the file `%s' from the config folder" load-file-name))))))
 (setvar 'org-cycle-separator-lines 2) ; number os lines to keep between headers
 (setvar 'org-startup-indented t)      ; startup indented?
 (setvar 'org-startup-truncated t)     ; truncate lines in org? D:<
+(setvar 'org-startup-with-inline-images t) ; show inline images on startup
+;; the width of images in pixels. note that this will stretch images that aren't
+;; the pixel width set here, if it is a numeric value.
+(setvar 'org-image-actual-width (/ (display-pixel-width) 8))
 (setvar 'org-src-fontify-natively t)  ; fontify src code blocks?
 (setvar 'org-src-preserve-indentation t) ; preserve indentation (look the doc)
 (setvar 'org-return-follows-link t)   ; return works like C-c C-o
