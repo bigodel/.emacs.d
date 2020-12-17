@@ -58,6 +58,11 @@ just a few changes."
   (setvar 'TeX-debug-warnings t)           ; treat warnings as errors
   (setvar 'LaTeX-math-abbrev-prefix "C-;") ; latex-math prefix, default is `
 
+  ;; revert the PDF-buffer after the TeX compilation has finished. this is
+  ;; recommended when using `pdf-tools' to view TeX compilation pdf's
+  ;; (add-hook 'TeX-after-compilation-finished-functions
+  ;;           #'TeX-revert-document-buffer)
+
   ;;; reftex
   ;; start `reftex' and `LaTeX-math-mode' on `LaTeX-mode'
   (add-hook 'LaTeX-mode-hook #'LaTeX-math-mode)
