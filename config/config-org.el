@@ -92,23 +92,40 @@ Try again or remove the file `%s' from the config folder" load-file-name))))))
 (setvar 'org-capture-templates
         '(("t" "task" entry
            (file org-inbox-file)
-           "* TODO %?\n:LOGBOOK:\n- Captured on %U\n:END:\n[[%F][%f]]\n\n"
-           :empty-lines-before 1 :empty-lines-after 2)
+           "* TODO %?\n[[%F][%f]]\n\n"
+           :prepend t :empty-lines 1)
           ("q" "question" entry
            (file org-inbox-file)
-           "* QUESTION %? :question:\n:LOGBOOK:\n- Captured on %U\n:END:\n\n"
-           :empty-lines-before 1 :empty-lines-after 2)
+           "* QUESTION %? :question:\n\n"
+           :prepend t :empty-lines 1)
+          ("Q" "work related question" entry
+           (file org-inbox-file)
+           "* QUESTION %? :question:\n%A\n"
+           :prepend t :empty-lines 1)
           ("n" "note" entry
-           (file+headline org-notes-file "Refile") "* %? :refile:\n:LOGBOOK:\n- Captured on %U\n:END:\n\n"
-           :empty-lines-before 1 :empty-lines-after 2)
+           (file+headline org-notes-file "Refile") "* %? :refile:\n\n"
+           :prepend t :empty-lines 1)
+          ("s" "secret note" entry
+           (file+headline org-secrets-file "Refile") "* %? :refile:\n\n"
+           :prepend t :empty-lines 1)
           ("e" "event" entry
-           (file org-inbox-file) "* %? :event:\n%^T\n:LOGBOOK:\n- Captured on %U\n:END:\n\n"
-           :empty-lines-before 1 :empty-lines-after 2)
+           (file org-inbox-file) "* %? :event:\n%^T\n\n"
+           :prepend t :empty-lines 1)
           ("a" "appointment" entry
-           (file org-inbox-file) "* %? \n%^T\n:LOGBOOK:\n- Captured on %U\n:END:\n\n"
-           :empty-lines-before 1 :empty-lines-after 2)))
+           (file org-inbox-file) "* %? \n%^T\n\n"
+           :prepend t :empty-lines 1)))
 ;; default file for capturing
 (setvar 'org-default-notes-file org-inbox-file)
+
+;; keep the new line when refiling
+(add-hook 'org-after-refile-insert-hook
+          (lambda ()
+            "Insert a newline after the entries on refiling."
+            (goto-char (org-entry-end-position))
+            ;; unless there are two newlines one after the other, insert a
+            ;; newline
+            (unless (looking-back "\n\n" nil)
+              (newline 1))))
 
 ;;; TODO's
 ;; (setvar 'org-treat-S-cursor-todo-selection-as-state-change nil)
